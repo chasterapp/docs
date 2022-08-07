@@ -1,0 +1,47 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: 'Git SHA to deploy'
+        required: true
+        type: string
+  workflow_run:
+    workflows: [CI build]
+    types:
+      - completed
+env:
+  IMAGE_NAME: docs
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  REGISTRY_USER: ${{ github.actor }}
+  REGISTRY_PASSWORD: ${{ github.token }}
+  K8S_NAMESPACE: aaron
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    if: ${{ inputs.sha || github.event.workflow_run.conclusion == 'success' }}
+    steps:
+
+    - name: Checkout main
+      uses: actions/checkout@v2
+
+    - name: Set Kubernetes context
+      uses: Azure/k8s-set-context@v3.0
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.K8S_KUBECONFIG }}
+
+    - name: Deploy to Kubernetes cluster
+      uses: Azure/k8s-deploy@v4
+      with:
+        action: deploy
+        namespace: ${{ env.K8S_NAMESPACE }}
+        images: |
+          ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.sha || github.event.workflow_run.head_sha }}
+        manifests: |
+          k8s
+        imagepullsecrets: |
+          ghcr-secret

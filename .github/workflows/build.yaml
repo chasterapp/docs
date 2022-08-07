@@ -10,7 +10,7 @@ env:
 
 jobs:
   build:
-    name: Build Docker image
+    name: Build and push image
     runs-on: ubuntu-latest
     steps:
 
@@ -22,11 +22,12 @@ jobs:
       continue-on-error: true
 
     - name: Build container image
-      id: build-image
+      id: build_image
       uses: redhat-actions/buildah-build@v2
       with:
         image: ${{ env.IMAGE_NAME }}
         tags: ${{ env.IMAGE_TAGS }}
+        layers: true
         containerfiles: |
           ./Dockerfile
 
@@ -38,3 +39,4 @@ jobs:
         registry: ${{ env.IMAGE_REGISTRY }}
         username: ${{ env.REGISTRY_USER }}
         password: ${{ env.REGISTRY_PASSWORD }}
+        pull-images: false

@@ -46,8 +46,6 @@ spec:
     spec:
       containers:
       - name: docs
-        image: registry.gitlab.com/chaster/docs
+        image: ghcr.io/chasterapp/docs
         ports:
         - containerPort: 80
-      imagePullSecrets:
-      - name: regcred
