@@ -1,0 +1,51 @@
+---
+id: extension-random-events
+title: Random Events
+sidebar_label: Random Events
+slug: /extensions/random-events
+---
+
+Random events can happen and change your timer. Time added or removed, frozen lock, many things can happen. You don't know when it will happen, it's a surprise.
+
+:::caution
+The following page describes how the application works and the probabilities of the events. If you want to know this information, you can continue reading.
+:::
+
+## Difficulty
+
+The difficulty changes the regularity of events and the amount of time added or removed. The choice of the regularity of events follows a truncated normal distribution, between the values defined in the following table. Concretely, the time between each event is generally equal to the center of the minimum and maximum limits given in the table.
+
+| Difficulty | Regularity                          | Amount of time      |
+| ---------- | ----------------------------------- | ------------------- |
+| Easy       | 0 - 2 hours (avg. 1 hour)           | -20 min to 20 min   |
+| Normal     | 2 - 6 hours (avg. 4 hours)          | -2 hours to 2 hours |
+| Hard       | 6 - 18 hours (avg. 12 hours)        | -6 hours to 6 hours |
+| Expert     | 12 hours - 36 hours (avg. 24 hours) | -1 day to 1 day     |
+
+The difficulties are cumulative, meaning that for the hard difficulty, the easy and normal difficulties can also be applied for each event. The choice of the difficulty is made randomly according to the following weight matrix:
+
+| Configured difficulty | Easy | Normal | Hard | Expert |
+| --------------------- | ---- | ------ | ---- | ------ |
+| Easy                  | 100% | 0%     | 0%   | 0%     |
+| Normal                | 40%  | 60%    | 0%   | 0%     |
+| Hard                  | 20%  | 30%    | 50%  | 0%     |
+| Expert                | 10%  | 20%    | 30%  | 40%    |
+
+For example, if your lock is configured with the normal difficulty, for each event you will have 40% chance to get an easy regularity (0 - 2 hours) for the next event, and 60% chance to get a normal regularity (2 - 6 hours). This chosen difficulty also apply when choosing the amount of time.
+
+## Events
+
+Events have a weight that determines their chance of being selected. The higher the weight, the more likely the event is to be selected.
+
+**In a normal situation**
+
+| Event           | Weight |
+| --------------- | ------ |
+| Change the time | 10     |
+| Freeze the lock | 1      |
+
+**When your lock is frozen**
+
+| Event             | Weight |
+| ----------------- | ------ |
+| Unfreeze the lock | 1      |

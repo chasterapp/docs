@@ -1,0 +1,50 @@
+---
+id: api-extensions-getting-started
+title: Extensions API
+sidebar_label: Getting started
+slug: /api-extensions/getting-started
+---
+
+:::caution
+The Extensions API is not yet available and the documentation is incomplete. [Submit your API request](https://forms.gle/U1tdM8U3w8Wdeqrz5) now to be notified of its release.
+:::
+
+## Introduction
+
+The Extensions API allows you to develop your own extension on Chaster. The goal is to provide an open system in which any developer can create their own application, and offer it to other users, allowing Chaster features to be extended without limits.
+
+The objective of the API is to allow everyone to integrate their system into the Chaster site. You will be able to create all types of extensions:
+
+- Connected safe-locks: lock and unlock your lock 
+- Games: dice roll, blackjack, poker, slot machine
+- Link with other services: Write for me, Faproulette
+
+## Create an extension
+
+For an external developer, onboarding is done in a few steps:
+
+### Apply for the Extensions API
+
+To start creating an extension, you will need to apply for the Extensions API here, explaining your ideas and what you would like to build. This allows us to best tailor the API and features for your use case.
+
+Once your request is accepted, you will have access to a developer portal, allowing you to create applications and extensions. You will also have access to a private developer channel, allowing you to ask all your questions.
+
+### Configure your extension
+
+On the developer portal, you can create a new extension associated with your application. You will need to fill in various information about the extension and how it works: name, icon, modes, available actions, etc. This information will be displayed on Chaster and visible to all members.
+
+When you create an application, it will have the status "Test" and will be visible only by you on Chaster. You will be able to add up to 20 users to the developer portal who will be able to view and use the application.
+
+### Build your application
+
+The integration with Chaster works with iframes: the content of your extension will be integrated on the Chaster page in an iframe taking the size of the screen. At a minimum, your application will need to implement a web page, accessible through a link, which will be embedded in an iframe on Chaster, allowing users to interact with your system. An authorization code will be passed as a parameter to the URL of your web page, which you will have to exchange on the server side for an access token. This token will allow you to retrieve the information of the current user and his lock.
+
+You can also implement a second web page, allowing to configure a lock. This page takes as parameter of the URL a configuration identifier, which you will have to exchange on the server side against a configuration object. 
+
+### Manage data
+
+The API allows you to fill in webhook URLs. When a lock changes status (new lock, unlocked lock, etc.), the API will send you an HTTP request to the URL of your choice. This will allow you to be informed and to update your system when a change occurs on our side.
+
+### Test and validate the application
+
+Once your extension is developed, you will need to have it validated by the Chaster team. This allows us to check the available extensions, and to offer quality extensions. Send us a message when you are ready to release your application.

@@ -1,0 +1,60 @@
+---
+id: api-endpoints
+title: Endpoints
+sidebar_label: Endpoints
+slug: /api-endpoints
+---
+
+The Public API is a REST API composed of multiple endpoints.
+
+Find the documentation of the Public API on this link: https://api.chaster.app/api
+
+## Authentication
+
+To authenticate and use the protected resources, you must obtain a developer token or an access token. When making a request, pass your token in the HTTP Authorization header, prefixed with Bearer. Here is an example of request:
+
+```
+GET /conversations
+Content-type: application/json
+Authorization: Bearer <your-developer-or-access-token>
+```
+
+```bash
+curl \
+  --location \
+  --request GET \
+  --header 'Authorization: Bearer <your-developer-or-access-token>' \
+  'https://api.chaster.app/conversations'
+```
+
+## Rate limits
+
+To limit the volume of data to be processed and the number of requests, limits have been implemented on the number of requests that can be made. These limits allow us to ensure the reliability of the site and the API.
+
+Rate limit information is returned in the response headers:
+
+| Header                | Description                                  |
+| --------------------- | -------------------------------------------- |
+| X-RateLimit-Limit     | Number of requests permitted per time period |
+| X-RateLimit-Remaining | Number of requests you can still make        |
+| X-RateLimit-Reset     | Timestamp when your rate limit will reset    |
+
+:::caution
+Keep in mind that an API method may be subject to several overlapping rate limits. The headers return information about which one you are closest to exceeding.
+:::
+
+Here are the endpoints concerned by rate limits:
+
+| Endpoint                               | Description           | Type | Limit | Time period |
+| -------------------------------------- | --------------------- | ---- | ----- | ----------- |
+| `*`                                    | All endpoints         | IP   | 100   | 1 minute    |
+| `POST /locks/shared-locks`             | Create a shared lock  | User | 10    | 30 minutes  |
+| `POST /conversations`                  | Create a conversation | User | 20    | 1 day       |
+| `POST /conversations/{conversationId}` | Send a message        | User | 500   | 1 day       |
+
+## OpenAPI specification
+
+All available endpoints are documented using the OpenAPI 3.0 specification. Find the documentation here:
+
+- Swagger: https://api.chaster.app/api
+- JSON specification file: https://api.chaster.app/api-json

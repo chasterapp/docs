@@ -1,0 +1,53 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: docs-ingress
+  namespace: aaron
+  labels:
+    name: docs-ingress
+spec:
+  rules:
+  - host: docs.chaster.app
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: docs-service 
+            port:
+              number: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: docs-service
+  namespace: aaron
+spec:
+  selector:
+    app: docs
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docs
+  namespace: aaron
+spec:
+  selector:
+    matchLabels:
+      app: docs
+  template:
+    metadata:
+      labels:
+        app: docs
+    spec:
+      containers:
+      - name: docs
+        image: registry.gitlab.com/chaster/docs
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: regcred

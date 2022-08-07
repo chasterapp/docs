@@ -1,0 +1,91 @@
+---
+id: api-getting-started
+title: Getting started - API
+sidebar_label: Getting started
+slug: /api-getting-started
+---
+import ImageCaption from '../src/components/ImageCaption';
+
+Here is all the information you need to start using the Chaster API.
+
+## Apply for a developer access
+
+To use the Chaster API, you will first need access to the developer area. You can request it by [filling out this form](https://forms.gle/U1tdM8U3w8Wdeqrz5). Describe what you want to create with the API, and what your goals are.
+
+:::important
+The API is still in beta, your feedback is welcome! We need to know what you plan to create in order to create and deliver an optimal version of the API.
+:::
+
+Once the developer access is obtained, you will have access to an interface in your settings, allowing you to create applications. You will also have access to a private channel for developers on our Discord server, where you can ask any questions you want about the API and development.
+
+## Developer community
+
+As a partner developer, you will have access to a private #developers channel on Discord. Feel free to use it during the use of the API, we will be happy to help you. You can especially :
+
+- Ask your questions about using the API
+- Make suggestions or improvements if you are missing features
+- Request help with problems
+- Report a problem
+
+You can also contact us by e-mail on an address dedicated to developers: developers@chaster.app
+
+If you have a security issue, or need to share sensitive data with us, please contact us by email only.
+
+## Create your first application
+
+On your [developer interface](https://chaster.app/developers/applications), you can create an application that will allow you to use the API. Once the application is created, you will have access to your client ID and your client secret. These keys will allow you to authenticate a user on the API with OAuth 2.
+
+## Chaster APIs
+Chaster offers you two different APIs, to use according to your needs. 
+
+### Public API
+
+The Public API allows you to interact with the interface and objects of a user. You can access personal locks, and if the user is a keyholder, shared locks and the list of locked users. This is the easiest way to use the Chaster API.
+
+Before using the API, you must obtain either a developer token or an access token, belonging to the user whose data you want to access. You can obtain a token in two ways:
+- Generate a developer token from the [developer interface](https://chaster.app/developers/applications). This token will be linked to your Chaster account, which is useful if you are developing an application just for you.
+- Use OAuth 2 to obtain an access token, to allow any user to log in and use your application.
+
+If you are creating an app just for you, or want to access Chaster data in your app, or even create a web or mobile client, you can use the Public API.
+
+The specification is available here: https://api.chaster.app/api
+
+#### Locks
+
+Scope: `locks`
+
+You can see the user's lock list, create a lock, and perform the possible actions by the wearer: add time, retrieve the history, retrieve the combination once the lock is unlocked.
+
+#### Shared Locks
+
+Scope: `shared_locks`
+
+You can access the list of the user's shared locks, create, modify or delete them. 
+
+#### Keyholder
+
+Scope: `keyholder`
+
+You can access the list of wearers controlled by the user. You also have access to the wearers' keyholding requests.
+You can control the locks of the wearers: add or remove time, retrieve the history or the combination.
+
+#### Messaging
+
+Scope: `messaging`
+
+You can see and send private messages.
+
+### Extensions API
+
+:::caution
+The Extensions API is not yet available. [Submit your API request](https://forms.gle/U1tdM8U3w8Wdeqrz5) now to be notified of its release.
+:::
+
+The Extensions API allows you to create an extension that will be available to all users. This API aims to provide an advanced integration of your application in Chaster, to provide a unique experience and unlimited features for users.
+
+This API requires more work and you will have to go through an integration process before you can publish your extension on Chaster. This includes testing your extension to ensure its quality.
+
+Here are some ideas of applications you can make:
+- Connected safe-locks: lock and unlock your lock 
+- Games: dice roll, blackjack, poker, slot machine
+- Link with other services: connected sextoys, sync with games
