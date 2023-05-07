@@ -8,7 +8,7 @@ slug: /api/public-api/oauth-2
 OAuth2 is an authentication standard that allows any user to use your application. OAuth allows you to obtain an **access token**, which you can use to authenticate the user in API requests.
 
 :::info
-If you intend to use the API only for yourself, you can use a [developer token](/api-developer-token) that will be linked to your account, which is easier to set up.
+If you intend to use the API only for yourself, you can use a [developer token](/api/public-api/developer-token) that will be linked to your account, which is easier to set up.
 :::
 
 OAuth can be complicated to set up for developers, because of the number of steps, but we will try to make it as simple as possible here, so that you can use the API fully, and always safely.
@@ -50,7 +50,7 @@ You will need to pass the following GET parameters:
 - **client_id=client_id**: the application's client ID
 - **redirect_uri=CALLBACK_URL**: URL to redirect back to
 - **response_type=code**: specifies that your application is requesting an authorization code grant
-- **scope=profile**: specifies [the scopes](/api-scopes) your application is requesting, separated by a space
+- **scope=profile**: specifies [the scopes](/api/reference/scopes) your application is requesting, separated by a space
 - **state=state_key**: should be used to prevent forgery attacks, by passing a unique value to the user you are authenticating and checking it when the authentication is complete.
 
 Your URL should look like this:
