@@ -20,15 +20,19 @@ module.exports = {
   },
   apiSidebar: {
     "API Basics": [
-      "api-introduction",
-      "api-getting-started",
-      "api-create-application",
+      "api/basics/introduction",
+      "api/basics/getting-started",
+      "api/basics/create-application",
     ],
-    "Public API": ["api-developer-token", "api-oauth-2", "api-endpoints"],
+    "Public API": [
+      "api/public-api/developer-token",
+      "api/public-api/oauth-2",
+      "api/public-api/endpoints",
+    ],
     "Extensions API": [
-      "api-extensions-getting-started",
-      "api-extensions-configuration",
+      "api/extensions-api/getting-started",
+      "api/extensions-api/configuration",
     ],
-    Reference: ["api-scopes"],
+    Reference: ["api/reference/scopes"],
   },
 };

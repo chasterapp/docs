@@ -1,69 +1,70 @@
 module.exports = {
-  title: 'Chaster',
-  tagline: 'Explore a new chastity experience, with custom time-based locks and adventures made for you.',
-  url: 'https://docs.chaster.app',
-  baseUrl: '/',
-  onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
-  favicon: 'img/favicon.ico',
-  organizationName: 'chaster',
-  projectName: 'docs',
+  title: "Chaster",
+  tagline:
+    "Explore a new chastity experience, with custom time-based locks and adventures made for you.",
+  url: "https://docs.chaster.app",
+  baseUrl: "/",
+  onBrokenLinks: "throw",
+  onBrokenMarkdownLinks: "warn",
+  favicon: "img/favicon.ico",
+  organizationName: "chaster",
+  projectName: "docs",
   themeConfig: {
     colorMode: {
-      defaultMode: 'dark',
+      defaultMode: "dark",
       disableSwitch: true,
     },
     navbar: {
-      title: 'Chaster Docs',
+      title: "Chaster Docs",
       logo: {
-        alt: 'Chaster Logo',
-        src: 'img/logo.png',
+        alt: "Chaster Logo",
+        src: "img/logo.png",
       },
       items: [
         {
-          to: '/',
-          activeBasePath: 'docs',
-          label: 'User guide',
-          position: 'left',
+          to: "/",
+          activeBasePath: "docs",
+          label: "User guide",
+          position: "left",
         },
         {
-          to: '/api-introduction',
-          label: 'API',
-          position: 'left',
+          to: "/api/basics/introduction",
+          label: "API",
+          position: "left",
         },
         {
-          href: 'https://chaster.app',
-          label: 'Website',
-          position: 'right',
+          href: "https://chaster.app",
+          label: "Website",
+          position: "right",
         },
       ],
     },
     footer: {
-      style: 'dark',
+      style: "dark",
       links: [
         {
-          title: 'Community',
+          title: "Community",
           items: [
             {
-              label: 'Discord',
-              href: 'https://discord.gg/rDhfywB',
+              label: "Discord",
+              href: "https://discord.gg/rDhfywB",
             },
             {
-              label: 'Twitter',
-              href: 'https://twitter.com/chasterapp_',
+              label: "Twitter",
+              href: "https://twitter.com/chasterapp_",
             },
           ],
         },
         {
-          title: 'More',
+          title: "More",
           items: [
             {
-              label: 'Changelog',
-              href: 'https://chaster.app/changelogs',
+              label: "Changelog",
+              href: "https://chaster.app/changelogs",
             },
             {
-              label: 'Developers',
-              href: 'https://chaster.app/developers',
+              label: "Developers",
+              href: "https://chaster.app/developers",
             },
           ],
         },
@@ -73,14 +74,14 @@ module.exports = {
   },
   presets: [
     [
-      '@docusaurus/preset-classic',
+      "@docusaurus/preset-classic",
       {
         docs: {
-          sidebarPath: require.resolve('./sidebars.js'),
-          routeBasePath: '/',
+          sidebarPath: require.resolve("./sidebars.js"),
+          routeBasePath: "/",
         },
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
+          customCss: require.resolve("./src/css/custom.css"),
         },
       },
     ],
