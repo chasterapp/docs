@@ -1,21 +1,21 @@
 module.exports = {
   sidebar: {
     Chaster: ["home", "your-first-lock", "chaster-plus"],
-    Locks: ["lock-options", "lock-status", "offer-your-session"],
+    Locks: ["locks/options", "locks/status", "locks/offer-your-session"],
     Features: [
-      "features",
-      "features-shared-links",
-      "features-pillory",
-      "features-peer-verification",
+      "features/features",
+      "features/shared-links",
+      "features/pillory",
+      "features/peer-verification",
     ],
-    Activity: ["activity"],
+    Activity: ["activity/activity"],
     Extensions: [
-      "extensions",
-      "extension-dice",
-      "extension-penalties",
-      "extension-random-events",
-      "extension-temporary-opening",
-      "extension-verification-picture",
+      "extensions/extensions",
+      "extensions/dice",
+      "extensions/penalties",
+      "extensions/random-events",
+      "extensions/temporary-opening",
+      "extensions/verification-picture",
     ],
   },
   apiSidebar: {
