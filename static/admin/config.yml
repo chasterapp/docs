@@ -28,15 +28,15 @@ collections:
     meta: 
       path:
         widget: string
-        label: 'Path'
-        index_file: 'index'
-  - name: "settings"
-    label: "Settings"
+        label: Path
+        index_file: index
+  - name: settings
+    label: Settings
     files:
-      - name: "sidebar"
-        label: "Sidebar"
-        file: "sidebars.json"
+      - name: sidebar
+        label: Sidebar
+        file: sidebars.json
         fields:
-          - label: "Content"
-            name: "body"
-            widget: "text"
+          - label: Content
+            name: body
+            widget: text
