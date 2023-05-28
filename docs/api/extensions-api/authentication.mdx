@@ -1,0 +1,32 @@
+---
+id: authentication
+title: Authentication
+sidebar_label: Authentication
+slug: /api/extensions-api/authentication
+---
+
+To interact with user sessions and create your extension, you will need to make calls to the Extensions API. The API requires authentication using your developer token.
+
+## Make a request to the Extensions API
+
+All endpoints to the Extensions API start with `/api/extensions`. The list of available endpoints is available here: [https://api.chaster.app/api/](https://api.chaster.app/api/). To authenticate and use these endpoints, you need to generate a developer token for your account and using the same application as your extension.
+
+- Go to your Developer interface, and select your application
+- In the left sidebar, select “Tokens”
+- If you don’t have a token yet, generate it.
+
+This token is a bearer token. To make a request, simply send this token in the `Authorization` header:
+
+```
+Authorization: Bearer <token>
+```
+
+For example, if you want to fetch a session, you would use the endpoint `GET /api/extensions/sessions/:sessionId` and call it like this:
+
+```bash
+curl \
+  --location 'https://api.chaster.app/api/extensions/sessions/:sessionId' \
+  --header 'Authorization: Bearer <token>'
+```
+
+Replace `<token>` with your developer token.

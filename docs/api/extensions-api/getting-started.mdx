@@ -15,13 +15,19 @@ The Extensions API allows you to develop your own extension on Chaster. The goal
 
 The objective of the API is to allow everyone to integrate their system into the Chaster site. You will be able to create all types of extensions:
 
-- Connected safe-locks: lock and unlock your lock 
+- Connected safe-locks: lock and unlock your lock
 - Games: dice roll, blackjack, poker, slot machine
 - Link with other services: Write for me, Faproulette
 
 ## Create an extension
 
 For an external developer, onboarding is done in a few steps:
+
+- **Apply for the Extensions API.** Contact us explaining what you would like to build.
+- **Create and build your extension.** Configure your extension on the Developer interface, and build it using the API.
+- **Test and validate the extension.** Your extension is tested and validated by the Chaster team.
+
+![Extension creation workflow](/img/extensions-api-onboarding-flow.png)
 
 ### Apply for the Extensions API
 
@@ -39,7 +45,7 @@ When you create an application, it will have the status "Test" and will be visib
 
 The integration with Chaster works with iframes: the content of your extension will be integrated on the Chaster page in an iframe taking the size of the screen. At a minimum, your application will need to implement a web page, accessible through a link, which will be embedded in an iframe on Chaster, allowing users to interact with your system. An authorization code will be passed as a parameter to the URL of your web page, which you will have to exchange on the server side for an access token. This token will allow you to retrieve the information of the current user and his lock.
 
-You can also implement a second web page, allowing to configure a lock. This page takes as parameter of the URL a configuration identifier, which you will have to exchange on the server side against a configuration object. 
+You can also implement a second web page, allowing to configure a lock. This page takes as parameter of the URL a configuration identifier, which you will have to exchange on the server side against a configuration object.
 
 ### Manage data
 

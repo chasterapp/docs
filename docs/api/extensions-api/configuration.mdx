@@ -9,7 +9,7 @@ slug: /api/extensions-api/configuration
 
 ### Slug
 
-The slug is the unique identifier of your extension, and must be filled in at the time of creation. Once created, it cannot be modified. The slug of an extension always starts with `api-`, and must only contain alphanumeric characters, and dashes.
+The slug is the unique identifier of your extension, and is generated when creating your extension based on its name. Once created, it cannot be modified. The slug of an extension only contains alphanumeric characters, and dashes.
 
 ### Display name
 
@@ -26,6 +26,8 @@ This is the description of your extension, it is a paragraph explaining how your
 ### Icon
 
 The icon you choose must be one of the regular icons available on FontAwesome 5, which you can find [list here](https://fontawesome.com/icons?d=gallery&p=1&s=regular). The icon will be displayed in the list of extensions.
+
+Contact us if you want to change the icon of your extension.
 
 ### Enabled
 
@@ -53,12 +55,33 @@ If this option is enabled, once the lock is created the user will have to wait t
 
 ## Configuration
 
-### Default configuration
+### Default configuration (JSON)
 
 A JSON object representing the default configuration of a session.
 
-### Configuration description
+### Default data (JSON)
 
-A Handlebars template displaying the configuration description.
+A JSON object representing the default data of a session.
+
+### Configuration description (Handlebars)
+
+A Handlebars template displaying the configuration description. This is useful when your extension needs a configuration before loading the lock, and you want to display a description of the configuration to the user.
 
 Chaster displays a text on each lock page describing the configuration of the extension. The Handlebars template takes as input the configuration object of your extension, and should return as output the configuration description, in textual form.
+
+For example, if I develop a picture verification extension, and I need to configure a number of pictures required, I can create a configuration description like this:
+
+```handlebars
+{{nbPictures}} pictures required
+```
+
+With a default confiugration like this:
+```json
+{ "nbPictures": 3 }
+```
+
+The configuration description will be displayed like this:
+
+![Form to confiugre the custom configuration](/img/extensions-api-configuration-config-description.png)
+
+Read the [Handlebars documentation](https://handlebarsjs.com/guide/) to learn how to use Handlebars and create your template.

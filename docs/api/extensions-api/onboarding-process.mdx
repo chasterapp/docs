@@ -1,0 +1,54 @@
+---
+id: onboarding-process
+title: Onboarding process
+sidebar_label: Onboarding process
+slug: /api/extensions-api/onboarding-process
+---
+
+## Create your first extension
+
+You can create an extension from the [Developer interface](https://chaster.app/developers/applications).
+
+- Select the application in which you want to create the extension.
+- In the sidebar, click on “Extensions”, then click on “+ Create an extension”
+- Enter the extension name. This is the name displayed to Chaster users and can be changed later.
+
+Note: The extension slug will be generated from the extension name entered when creating the extension. This slug is used in further API requests to identify on which extension the actions are done, and is displayed on your developer interface. You cannot change this slug afterwards.
+
+## Build your extension
+
+The Extensions API has several features that you can use or not, depending on your needs. Your extension should at least implement a main page before going live.
+
+- [**The main page.**](/api/extensions-api/main-page) This web page is embedded in an iframe when a wearer or keyholder accesses your extension during a session. This is the main way Chaster users will interact with your extension. This page is required and must be hosted by yourself.
+- **The configuration page.** When a user creates a lock (self lock or shared lock), you can display a custom configuration page to allow users to configure the extension before starting a session, or for keyholders to modify a session. It will be embedded in an iframe and must also be hosted by yourself.
+- **Lock actions.** You can make changes to the current session: add or remove time, change the frozen status, or put the user in pillory.
+- **Regular actions.** If your extension has regular actions (examples: turn the wheel of fortune, roll the dice), you can use the Chaster regularity feature to know how many actions are remaining, and log an action when the user interacts with your extension.
+- **Logs.** If your extension has custom actions, you can add your own entries to the lock history.
+- **Custom data.** You can store data for a session in a key-value format.
+- **Webhooks**. You can receive events when there is a change on a session (examples: lock updated, time changed).
+
+## Test your extension
+
+Once your extension is created on the Developer interface, it will be in testing mode. In this mode, only the users who has access to the application can load a lock with your extension enabled (by default, you, and if requested, other users granted manually).
+
+Once the main page URL is filled, you can test your extension by creating a self-lock.
+
+On the lock creation form, your extension will appear in the list of extensions. Click on the “+ Add more extensions…” button to display the list of all extensions.
+
+### Test with a shared lock
+
+If you create a shared lock with your extension enabled, other users won’t be able to load your lock. It will still be displayed on the Explore page, but will be marked as unavailable for other users.
+
+:::info
+Set your shared lock as private to hide your test lock from other users (”Hide this lock from your public profile” option).
+:::
+
+### Test with a keyholder
+
+If you want to test your extension as a keyholder, you need to create another Chaster account. One account will be the wearer, and the other one will be the keyholder. By default, your other account won’t be able to access the extension and load shared locks.
+
+To give your other account access to the application, contact us, mentioning the Client ID and the account username. Note that they will be able to access all extensions in the application, as the rights are granted by application. You can add up to 20 accounts to the application.
+
+:::info
+The granting process to an application is currently done manually, and will be available in the Developer interface in the future.
+:::

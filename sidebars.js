@@ -31,6 +31,9 @@ module.exports = {
     ],
     "Extensions API": [
       "api/extensions-api/getting-started",
+      "api/extensions-api/onboarding-process",
+      "api/extensions-api/authentication",
+      "api/extensions-api/main-page",
       "api/extensions-api/configuration",
     ],
     Reference: ["api/reference/scopes"],
