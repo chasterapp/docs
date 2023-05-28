@@ -7,7 +7,6 @@ media_folder: assets/img/uploads
 collections:
   - name: docs_chaster
     label: Docs - Chaster
-    label_singular: Docs - Chaster
     folder: docs
     preview_path: '{{slug}}'
     create: true
@@ -19,7 +18,6 @@ collections:
       - { name: body, label: Body, widget: markdown }
   - name: docs_locks
     label: Docs - Locks
-    label_singular: Docs - Locks
     folder: docs/locks
     preview_path: 'locks/{{slug}}'
     create: true
@@ -31,7 +29,6 @@ collections:
       - { name: body, label: Body, widget: markdown }
   - name: docs_features
     label: Docs - Features
-    label_singular: Docs - Features
     folder: docs/features
     preview_path: 'features/{{slug}}'
     create: true
@@ -43,7 +40,6 @@ collections:
       - { name: body, label: Body, widget: markdown }
   - name: docs_activity
     label: Docs - Activity
-    label_singular: Docs - Activity
     folder: docs/activity
     preview_path: 'activity/{{slug}}'
     create: true
@@ -55,7 +51,6 @@ collections:
       - { name: body, label: Body, widget: markdown }
   - name: docs_extensions
     label: Docs - Extensions
-    label_singular: Docs - Extensions
     folder: docs/extensions
     preview_path: 'extensions/{{slug}}'
     create: true
