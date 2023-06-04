@@ -8,7 +8,8 @@
     "Locks": [
       "locks/options",
       "locks/status",
-      "locks/offer-your-session"
+      "locks/offer-your-session",
+      "locks/findom"
     ],
     "Features": [
       "features/features",
