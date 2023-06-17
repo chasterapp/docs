@@ -1,0 +1,111 @@
+---
+title: Lock actions
+sidebar_label: Lock actions
+---
+
+Lock actions allow you to make changes to a running lock. These actions can include adding or removing time, changing the frozen status, or putting the user in pillory. By implementing lock actions in your extension, you can provide additional functionality and interactions for the wearer or keyholder.
+
+
+## Run lock actions
+
+To perform lock actions, you can use the following API endpoint:
+
+- `POST /api/extensions/sessions/:sessionId/action`: Run an action on the lock.
+
+The `:sessionId` parameter in the endpoint should be replaced with the ID of the specific session you want to apply the action to. To explore the documentation for the lock actions endpoint and view the API specifications, visit [the API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerActionsController_doAction).
+
+To run a lock action, send a POST request to the above endpoint with the following request body structure:
+
+```typescript
+{
+  "action": LockActionModel
+}
+```
+
+The `LockActionModel` represents the specific action you want to perform and can have the following types:
+
+### Add Time
+
+```typescript
+{
+  "name": "add_time",
+  "params": 300 // The amount of time to add, in seconds
+}
+```
+
+Use the `add_time` action to add time to a lock. Specify the duration in seconds using the `params` field.
+
+### Remove Time
+
+```typescript
+{
+  "name": "remove_time",
+  "params": 300 // The amount of time to remove, in seconds
+}
+```
+
+The `remove_time` action allows you to remove time from a lock. Specify the duration to remove in seconds using the `params` field.
+
+### Freeze
+
+```typescript
+{
+  "name": "freeze"
+}
+```
+
+The `freeze` action freezes a lock, preventing the wearer from making changes or ending the session.
+
+### Unfreeze
+
+```typescript
+{
+  "name": "unfreeze"
+}
+```
+
+The `unfreeze` action unfreezes a previously frozen lock, allowing the wearer to make changes.
+
+### Toggle Freeze
+
+```typescript
+{
+  "name": "toggle_freeze"
+}
+```
+
+The `toggle_freeze` action toggles the freeze status of a lock. If the lock is currently frozen, it will be unfrozen, and vice versa.
+
+### Pillory
+
+```typescript
+{
+  "name": "pillory",
+  "params": {
+    "duration": 300, // The pillory duration in seconds
+    "reason": string // Optional: The reason displayed on the pillory
+  }
+}
+```
+
+The `pillory` action puts the user in [pillory](/features/pillory) for the specified duration. The `duration` field represents the pillory duration in seconds. Additionally, you can provide an optional `reason` field to display a custom reason on the pillory.
+
+## Lock history
+
+When a lock action is run using this endpoint, a corresponding log entry is automatically created in the lock history. This log entry serves as a record of the action performed by your extension and is visible to the wearer and keyholder within Chaster.
+
+By including this log entry, Chaster users can easily track and review the changes made to the lock session. For example, if you add time to a lock, the log entry will display: "*Extension name* added time".
+
+![Custom Dice added time, 10 minutes](/img/extensions-api-lock-actions.png)
+
+## Use cases
+
+You can leverage lock actions within your extensions to enhance the chastity experience. Here are some ideas:
+
+- **Add Time**: Introduce time management challenges or consequences, adding lock time when wearers fail to meet conditions or tasks within the allocated timeframe, encouraging timely completion.
+- **Remove Time**: Create engaging challenges or rewards that deducts wearers lock time for successful completion, fostering motivation and a sense of progress.
+- **Freeze / unfreeze**: Implement disciplinary measures or time-restricted activities to enhance control.
+- **Toggle Freeze**: Add surprise elements or challenging variations by alternating the lock state between frozen and unfrozen.
+- **Pillory**: Use the pillory as a punishment mechanism or voluntary lock enhancement, intensifying restrictions or challenges within the chastity journey.
+
+These concise suggestions inspire developers to leverage lock actions creatively, tailoring their extensions to provide unique and engaging experiences for Chaster users.

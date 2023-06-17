@@ -45,8 +45,15 @@
       "api/extensions-api/getting-started",
       "api/extensions-api/onboarding-process",
       "api/extensions-api/authentication",
-      "api/extensions-api/main-page",
-      "api/extensions-api/configuration"
+      {
+        "Create your extension": [
+          "api/extensions-api/create-your-extension/main-page",
+          "api/extensions-api/create-your-extension/lock-actions",
+          "api/extensions-api/create-your-extension/session-metadata"
+        ]
+      },
+      "api/extensions-api/configuration",
+      "api/extensions-api/sessions"
     ],
     "Reference": [
       "api/reference/scopes"

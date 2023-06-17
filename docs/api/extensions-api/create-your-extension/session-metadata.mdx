@@ -1,0 +1,68 @@
+---
+title: Session metadata
+sidebar_label: Session metadata
+---
+
+Session metadata allows you to enhance lock sessions by providing additional information and actions on the lock page. It consists of two features: **Reasons Preventing Unlocking** and **Home Actions**.
+
+## Metadata object
+
+The metadata object represents the structure of the JSON object used to update the session metadata. It should adhere to the following structure:
+
+```json
+{
+  "reasonsPreventingUnlocking": ["Reason 1", "Reason 2"],
+  "homeActions": [
+    {
+      "slug": "action_slug",
+      "title": "Action Title",
+      "description": "Action Description",
+      "icon": "fa-icon",
+      "badge": "badge_value"
+    }
+  ]
+}
+```
+
+The `reasonsPreventingUnlocking` field is an array of strings that lists the reasons blocking the unlocking of the lock. Each string represents a specific reason preventing the lock from being unlocked.
+
+The `homeActions` field is an array of objects, with each object representing an action displayed on the lock page. It includes properties such as `slug`, `title`, `description`, `icon`, and an optional `badge` for displaying additional information.
+
+You should construct their metadata object according to this structure when updating the session metadata using the `PUT /api/extensions/sessions/:sessionId/metadata` endpoint.
+
+You can fetch the current metadata for a lock session using the endpoint `GET /api/extensions/sessions/:sessionId` (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerActionsController_getExtensionSession)).
+
+## Reasons preventing unlocking
+
+Use the `reasonsPreventingUnlocking` array to block the unlocking of a running lock session. By adding reasons to this array, you can communicate to the wearer and keyholder the specific conditions or requirements that must be met before the lock can be unlocked.
+ 
+It is your responsibility to update this array based on the extension's status or criteria.
+
+:::caution
+If an item is added to the array and not subsequently updated or removed, the lock will remain locked until you remove manually the reasons.
+:::
+
+
+![Tasks required to unlock: All cards not found yet](/img/extensions-api-metadata-reasons.png)
+
+## Home actions
+
+Home actions provide a list of customizable actions that are displayed on the wearer's lock page. When a wearer clicks on an action, they will be redirected to the extension page. You can configure the displayed action with the following properties:
+
+- **slug**: An identifier that is returned to the extension when the user navigates to the extension page.
+- **title**: The title displayed on the list item for the action.
+- **description**: The description displayed on the list item for the action.
+- **icon**: The icon associated with the action, which must be one of the valid FontAwesome 5 icons.
+- **badge**: (Optional) Displays a small badge on the list item, useful for indicating notifications or counts associated with the action (e.g., the number of tasks to do or remaining actions in the extension).
+
+![Actions, List item, Pick cards, Find your card among the deck. Spade icon, 2 actions remaining](/img/extensions-api-metadata-home-action.png)
+
+## Update metadata
+
+You can update the metadata for a lock session using the following endpoint:
+
+- `PUT /api/extensions/sessions/:sessionId/metadata`: Update metadata for an extension lock session.
+
+To explore the documentation for the metadata endpoint and view the API specifications, visit [the API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerActionsController_setMetadata).
+
+To update the session metadata, you should include the desired `reasonsPreventingUnlocking` and `homeActions` in the metadata object and make a PUT request to the above endpoint, replacing `:sessionId` with the ID of the session they want to update.
