@@ -49,6 +49,7 @@
         "Create your extension": [
           "api/extensions-api/create-your-extension/main-page",
           "api/extensions-api/create-your-extension/lock-actions",
+          "api/extensions-api/create-your-extension/regular-actions",
           "api/extensions-api/create-your-extension/session-metadata"
         ]
       },

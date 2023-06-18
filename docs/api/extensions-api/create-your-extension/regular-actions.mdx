@@ -1,0 +1,75 @@
+---
+title: Regular actions
+sidebar_label: Regular actions
+---
+
+Regular actions feature allows you to create actions that can be performed regularly according to the configuration set by the wearer. This system provides you with information on the mode chosen by the user, the remaining number of actions, the next available action date, and the ability to fetch previous submitted regular actions.
+
+The regular action system can be used in a variety of ways, such as:
+
+- Create a Dice extension where wearers can roll the dice regularly.
+- Implement a Task Tracker extension where wearers can mark completed tasks regularly.
+- Build a Fitness Challenge extension where wearers can log their daily workouts or activities.
+
+:::info
+The regular action system only provides the system for submitting and managing regular actions (know how many actions the wearer can still do). You will need to implement the logic and functionality of your extension by yourself.
+:::
+
+## Fetch previous regular actions
+
+To retrieve information about previous submitted regular actions, you can use the following endpoint:
+- `GET /api/extensions/sessions/:sessionId/regular-actions`:  Get submitted regular actions
+
+The `:sessionId` parameter in the endpoint should be replaced with the ID of the specific session you want to apply the action to. To explore the documentation for the regular actions endpoint and view the API specifications, visit [the API documentation](https://api.chaster.app/api#/Partner%20Extensions/SessionRegularActionController_getRegularActions).
+
+This endpoint returns an object with the following structure:
+
+```json
+{
+  "mode": "non_cumulative",
+  "regularity": 3600,
+  "nbActionsRemaining": 0,
+  "nextActionDate": "2023-06-01T15:05:00.000Z",
+  "actions": [
+    { "date": "2023-06-01T13:00:00.000Z", "payload": { "diceRolled": 2 } },
+    { "date": "2023-06-01T14:05:00.000Z", "payload": { "diceRolled": 6 } },
+  ]
+}
+```
+
+- **mode**: The mode chosen by the wearer for the extension. It can be one of the available modes mentioned in the [Available Modes](/api/extensions-api/configuration#available-modes) documentation.
+- **regularity**: The regularity displayed in the configuration, applicable if the user selects the cumulative or non-cumulative mode. For extensions that only support the Unlimited mode, this parameter is not required.
+- **nbActionsRemaining**: The number of remaining regular actions. If the mode is set to Unlimited, it returns -1.
+- **nextActionDate**: The date when the next regular action can be performed. If the mode is set to Unlimited, it returns the current date.
+- **actions**: A list of previous submitted regular actions, including the date and payload (if provided) for each action.
+
+This information allows you to determine the date when the action can be done, and the number of actions remaining for the wearer within your extension.
+
+## Submit a regular action
+
+To submit a regular action on the lock, use the following endpoint:
+- `POST /api/extensions/sessions/:sessionId/regular-actions`: Submit a regular action on the lock (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/SessionRegularActionController_submitRegularAction)).
+
+The request should include the following structure:
+
+- **payload**: The payload of the regular action, stored in a key-value object format. You can include any desired data in this object, which can be retrieved later when fetching the list of previous regular actions.
+
+By submitting a regular action, you can customize and record specific interactions or events within your extension.
+
+If the regular action is submitted successfully, the endpoint returns the same object as the `GET` endpoint, with the updated information.
+
+### When the number of actions remaining is 0
+
+If the number of actions remaining is 0, the endpoint returns a `422 Unprocessable Entity` error with the following structure:
+
+```json
+{
+  "message": "You cannot submit a regular action because you do not have any action remaining. Please wait for the next regular action date and try again."
+}
+```
+
+In this case, you must wait for the next regular action date to submit a new regular action.
+
+## Use regular actions in your extension
+
+It is recommended to use the returned information from the `GET` endpoint, such as `nextActionDate` and `nbActionsRemaining`, to inform and guide the wearer within your extension regarding the timing and availability of regular actions.
