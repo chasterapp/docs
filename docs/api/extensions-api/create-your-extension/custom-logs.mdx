@@ -1,0 +1,42 @@
+---
+title: Custom logs
+sidebar_label: Custom logs
+---
+
+You can create custom log entries in the lock history. This feature is useful for extensions that have their own specific actions or events and want to report these logs to provide a detailed history of the lock session.
+
+## Create a custom log entry
+
+To create a custom log entry, you can use the following endpoint:
+
+- `POST /api/extensions/sessions/:sessionId/logs/custom`: Create a custom log entry for an extension lock session  (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerLogController_logCustomAction)).
+
+## Parameters
+
+The endpoint expects the following parameters in the request body:
+
+- **title**: Specifies the title of the log action. This should be a brief summary or headline for the action.
+- **description**: Specifies the detailed description or additional information about the log action.
+- **role** (optional): Specifies the user type who initiated the action. It can be one of the following values: `wearer`, `keyholder`, or `extension` itself.
+- **icon** (optional): Specifies the FontAwesome icon to be displayed in the log entry. The icon should be chosen from the FontAwesome v5 regular icons collection. You can refer to the [FontAwesome v5 regular icons](https://fontawesome.com/v5/search?o=r&s=regular) for available options.
+- **color** (optional): Specifies the color of the log action. This parameter accepts a hexadecimal color code (e.g., `#FF0000` for red).
+
+## Usage
+
+To create a custom log entry, make a `POST` request to the endpoint mentioned above, providing the necessary parameters in the request body. The created log entry will be added to the lock history.
+
+![Lock history](/img/extensions-api-custom-logs.png)
+
+## Display the username
+
+When specifying the `title` parameter in the custom log entry, you can include the string `%USER%` within the text. This placeholder will be automatically replaced with the name of the user who initiated the action.
+
+The actual user name will be determined based on the `role` parameter provided in the request body.
+- If the role is set to "wearer", the placeholder `%USER%` will be replaced with the name of the wearer.
+- If the role is set to "keyholder", the placeholder `%USER%` will be replaced with the name of the keyholder, if there is one.
+- If the role is set to "extension", the extension name will be displayed.
+- If the corresponding user is the one who initiated the action, the placeholder will be replaced with "You".
+
+This dynamic substitution adds a personal touch to the log entries and provides clearer context about the user who performed the action.
+
+Example: If the `role` is set to "wearer" and the `title` is "%USER% picked a card", and the wearer's name is "John", the resulting log entry will display "John picked a card" in the lock history for the keyholder. For the wearer, the log entry will display "You picked a card".

@@ -50,7 +50,9 @@
           "api/extensions-api/create-your-extension/main-page",
           "api/extensions-api/create-your-extension/lock-actions",
           "api/extensions-api/create-your-extension/regular-actions",
-          "api/extensions-api/create-your-extension/session-metadata"
+          "api/extensions-api/create-your-extension/custom-logs",
+          "api/extensions-api/create-your-extension/session-metadata",
+          "api/extensions-api/create-your-extension/custom-data"
         ]
       },
       "api/extensions-api/configuration",

@@ -1,0 +1,39 @@
+---
+title: Custom data
+sidebar_label: Custom data
+---
+
+You can store session-specific data in a key-value format with custom data. If you don't want to use your own database to store information, you can store any information needed in the session custom data. This allows extensions to maintain additional information or configuration related to a specific lock session on Chaster.
+
+## Set session custom data
+
+To set custom data for a session, you can use the following endpoint:
+
+- `PUT /api/extensions/sessions/:sessionId/data`: Set session custom data (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/SessionDataController_setData)).
+
+The endpoint expects a JSON object in the request body with a single key, `data`, containing the custom data in key-value format. You can structure and store the data as per your extension's requirements.
+
+### Example
+
+```json
+{
+  "data": {
+    "cardsPicked": 5,
+    "lastPickedAt": "2023-01-01T00:00:00.000Z"
+  }
+}
+```
+
+## Retrieve session data
+
+To retrieve session information, including the custom data you have set, you can use the following endpoint:
+
+-  `GET /api/extensions/sessions/:sessionId` (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerActionsController_getExtensionSession)).
+
+This endpoint returns all the information related to the extension lock session, including the custom data stored using the `PUT` endpoint.
+
+## Usage
+
+To set custom data, make a `PUT` request to the specified endpoint, providing the session ID and the custom data in the request body. Ensure that the custom data is structured in a key-value format that suits your extension's requirements.
+
+By using custom data, you can enhance the functionality and flexibility of your extension by storing and retrieving session-specific information as needed.
