@@ -3,4 +3,46 @@ title: Extension sessions
 sidebar_label: Extension sessions
 ---
 
-Hello
+A session in Chaster represents an instance of your extension running on an active lock. There are two ways a session can be created: 
+
+1. **Self-Lock**: When a wearer creates a self-lock, it automatically creates a session associated with that lock. The session inherits the configuration set up during the lock creation.
+2. **Shared Lock**: When a keyholder creates a shared lock, it can be loaded by other users. When a shared lock is loaded, it creates a session that applies the configuration set up on the shared lock.
+
+## List running sessions
+
+To fetch the running extension sessions, you can use the following endpoint:
+
+- `POST /api/extensions/sessions/search`: Search for extension sessions (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerSessionController_getSessions)).
+
+This endpoint allows you to search for extension sessions based on various criteria. To make the request, you need to provide a payload in this form:
+
+```json
+{
+  "status": "locked",
+  "extensionSlug": "your-extension-slug",
+  "limit": 15,
+  "paginationLastId": null
+}
+```
+
+- `extensionSlug`: The slug of the extension for which you want to fetch sessions. This field is required.
+- `limit`: The maximum number of extension sessions to return in the response. The default value is 15, but you can adjust it as needed.
+- `paginationLastId`: The ID of the last session from the previous page. If provided, the API will return sessions that come after this ID.
+- `status`: The status of the locks to return. The default value is `locked`, which retrieves ongoing sessions. You can also choose `unlocked` or `deserted`, or retrieve all sessions by setting it to `all`.
+
+The response contains search results. It includes the following fields:
+- `count`: The total count of extension sessions that match the search criteria.
+- `hasMore`: A boolean indicating whether there are more sessions available beyond the ones returned in the current response.
+- `results`: An array of extension sessions, which provide detailed information about each extension session, including the session ID, extension details, configuration, metadata, and more. Read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerSessionController_getSessions) for more information.
+
+By using the pagination feature, you can retrieve sessions in batches according to the specified limit and pagination ID. This allows you to efficiently navigate through large sets of extension sessions. Each result contains a `paginationId`, used to make the next request. Simply make subsequent requests with the last ID from the previous page to fetch the next set of sessions.
+
+## Fetch one session
+
+To fetch information about a specific session, you can use the following endpoint:
+
+- `GET /api/extensions/sessions/:sessionId`: Retrieve information from an extension session (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerActionsController_getExtensionSession)).
+
+The response will provide comprehensive information about the extension lock session.
+
+To retrieve session information, replace `:sessionId` in the endpoint URL with the actual `sessionId` value. Look at the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerActionsController_getExtensionSession) for more information about the response.

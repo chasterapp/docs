@@ -44,19 +44,22 @@
     "Extensions API": [
       "api/extensions-api/getting-started",
       "api/extensions-api/onboarding-process",
+      "api/extensions-api/review-process",
       "api/extensions-api/authentication",
+      "api/extensions-api/sessions",
       {
         "Create your extension": [
           "api/extensions-api/create-your-extension/main-page",
+          "api/extensions-api/create-your-extension/configuration-page",
           "api/extensions-api/create-your-extension/lock-actions",
           "api/extensions-api/create-your-extension/regular-actions",
           "api/extensions-api/create-your-extension/custom-logs",
           "api/extensions-api/create-your-extension/session-metadata",
-          "api/extensions-api/create-your-extension/custom-data"
+          "api/extensions-api/create-your-extension/custom-data",
+          "api/extensions-api/create-your-extension/webhooks"
         ]
       },
-      "api/extensions-api/configuration",
-      "api/extensions-api/sessions"
+      "api/extensions-api/configuration"
     ],
     "Reference": [
       "api/reference/scopes"

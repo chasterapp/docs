@@ -1,0 +1,205 @@
+---
+title: Configuration page
+sidebar_label: Configuration page
+---
+
+The configuration page allows users of your extension to configure it, either on a shared lock, before starting a self-lock, or during a session for keyholders. On the lock configuration page, you can display a custom configuration page, and generate a configuration object that will be associated with the session.
+
+Like the main page, the configuration page is a web page hosted by yourself, and embedded in an iframe in the Chaster app. The implementation of the configuration page is optional, but recommended if your extension offers customizations.
+
+## Configuration page
+
+The configuration page can be accessed everywhere where extensions can be configured by users:
+
+- As a wearer, when creating a self-lock
+- As a keyholder, when creating a shared lock
+- As a keyholder, when editing a session (for a running session)
+
+When your extension is added and selected, the configuration page is accessible by clicking on the “Configure” button. Your page will be displayed in a modal, in an iframe.
+
+![](/img/extensions-api-configuration-page-configure.png)
+
+![](/img/extensions-api-configuration-page-modal.png)
+
+## Configuration object
+
+The configuration of your extension is represented as a JSON object. The goal of this page is to create this configuration object, that will be provided later when creating a session. When accessed by the keyholder during a session, this page can also update a configuration for an existing session.
+
+The configuration page is not mandatory to implement the Extensions API. However, it is recommended if your extension requires configuration before starting the extension (example: for a Wheel of Fortune extension, configure the possible choices).
+
+When a session is created, the configuration object is provided in the session object, in the`config` field. For example, it is provided in the endpoint `GET /api/extensions/sessions/:sessionId`. You can configure the default configuration object on the Developer interface, in your extension configuration. If the default configuration is filled, all newly created sessions will have this configuration, unless it has been modified by the user from the configuration page.
+
+## Develop your configuration page
+
+The configuration page is a web page that must be accessible through a public URL. It must be accessible over HTTPS. Your page will be included in an iframe in a modal. Make sure it is adapted to the width of the configuration modal, as it can also be displayed on devices with a small viewport.
+
+For development purposes, you can set a privately-accessible URL (in your local network), to easily develop your extension, but it must be hosted before validating your extension.
+
+## Retrieve and update the configuration
+
+Your configuration page will first need to retrieve the current configuration to be edited, depending on the context. For example:
+
+- When a keyholder edits the extension during a session, we will provide the configuration of the current session.
+- When a wearer creates a self-lock, and clicks on “Configure” for the first time, we will provide the default configuration.
+
+### Workflow
+
+This diagram shows the workflow of the configuration page, that you need to implement.
+
+![Sequence diagram of the configuration page](/img/extensions-api-configuration-page-diagram.png)
+
+<>
+  {/* ```mermaid
+sequenceDiagram
+    Modal->>Frontend: Render iframe<br/>Pass `partnerConfigurationToken`
+		Note over Frontend: addEventListener('message', ...)
+    Frontend->>Modal: postMessage<br/>'capabilities', save: true
+    Frontend->>+Backend: Pass partnerConfigurationToken
+    Backend->>+Extensions API: GET /extensions/configurations/:token
+    Extensions API-->>-Backend: Configuration with context
+    Backend-->>-Frontend: Configuration
+    Note over Frontend: 👤 User edits configuration
+    Note over Modal: 👤 User clicks on 'Save changes'
+    Modal->>Frontend: postMessage<br/>{type: 'chaster',<br/>event: 'partner_configuration_save'}
+    Frontend-->>Modal: postMessage<br/>{type: 'partner_configuration',<br/>event: 'save_loading'}
+    Frontend->>+Backend: Pass configuration object
+    Note over Backend: Validate configuration
+    Backend->>+Extensions API: POST /extensions/configurations/:token
+    Note over Extensions API: Save configuration
+    Extensions API-->>-Backend: 
+    Backend->>Frontend: Configuration saved
+    Frontend-->>Modal: postMessage<br/>{type: 'partner_configuration',<br/>event: 'save_success'}
+``` */}
+</>
+
+### Retrieve the configuration
+
+We provide in hash params a configuration token (`partnerConfigurationToken`) that will be used to fetch the configuration JSON object to edit. You first need to retrieve this parameter from the hash params, and then pass it to your backend to make requests. Note that this parameter can only be retrieved by your web application.
+
+> Example: If my configuration page URL is `https://lock-opener.example.com/config`, the iframe will redirect to `https://lock-opener.example.com/config#%7B%22partnerConfigurationToken%22%3A%22arandomtoken%22%7D`.
+
+The hash params passed in the URL is a URI-encoded JSON string. You will need to parse it to retrieve the configuration token. You can use this code snippet to decode the hash parameter and get the configuration token.
+
+```jsx
+const hash = window.location.hash.substring(1);
+const params = JSON.parse(decodeURIComponent(hash));
+const configurationToken = params.partnerConfigurationToken;
+```
+
+To fetch this configuration object, you need to pass the token to your backend. In your backend, make a request to the following endpoint:
+
+- `GET /api/extensions/configurations/:token`: Retrieve the extension configuration from a configuration token (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerConfigurationController_getConfiguration)).
+
+Pass the configuration token in the URL.
+
+:::caution
+Every call to the Extensions API must pass through your backend. Your frontend cannot call directly the Extensions API for security reasons.
+:::
+
+**Response**
+
+The response will be a JSON object representing the configuration, and additional details on the context.
+
+```json
+{
+  "config": { "tasks": ["Task 1", "Task 2"] },
+  "user": "userId",
+  "sessionId": null,
+  "extensionSlug": "cards",
+  "createdAt": "2023-06-01T00:00:00.000Z"
+}
+```
+
+- **config**: The configuration object. You want to return this object to your frontend.
+- **user**: The user ID of the user who is editing the configuration.
+- **sessionId**: The session ID of the session being edited. If the configuration is edited outside of a session (when creating a self-lock or a shared lock), this field will be null.
+- **extensionSlug**: The slug of the extension being edited.
+- **createdAt**: The date when the configuration was created.
+
+You can then return the configuration object to your frontend, and display your configuration form.
+
+### Save configuration
+
+Once the form is displayed, users can edit the form. Once the modifications are done, you need to save the configuration from your frontend, before the user closes the modal. This can be done via the following endpoint:
+
+- `PUT /api/extensions/configurations/:token`: Update the extension configuration from a configuration token (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerConfigurationController_updateConfiguration)).
+
+The configuration modal has a save button that you can use to first save the configuration object on your side, before closing the modal. To implement it, you must support the save capability.
+
+**Capabilities**
+
+A capability is a set of features your configuration page can support. We currently have the save capability. To support a capability, your configuration page needs to send a message to the modal, to tell it that it supports this capability.
+
+```js
+// Send a message to the Chaster modal to tell it that your configuration page
+// supports the save capability
+window.parent.postMessage(
+  JSON.stringify({
+    type: "partner_configuration",
+    event: "capabilities",
+    payload: { features: { save: true } },
+  })
+)
+```
+
+| Capability | Value     | Description                                                                                                                                                                                                                                                                                                                        |
+| ---------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| save       | `boolean` | When enabled, the configuration page is capable of listening to the `partner_configuration_save` event. This event is triggered when the user clicks on the "Save" button.<br/><br/>When triggered, the configuration page needs to save its configuration, and post the `save_success` event back to the modal when this is done. |
+
+**Add an event listener to receive events from Chaster**
+
+The configuration page is displayed in an iframe in a modal. When the user clicks on the "Save" button, the modal needs to send an event to your configuration page. To receive events from the app, you need to add an event listener on the `message` event.
+
+When the user clicks on the "Save" button, the modal will send a `partner_configuration_save` event to your configuration page. You need to listen to this event, and save the configuration on your side before posting the `save_success` event.
+
+Here is an example of how to listen to the `partner_configuration_save` event, and save the configuration on your side.
+
+```js
+// Add an event listener to receive events from Chaster
+addEventListener("message", async (event) => {
+  if (typeof data !== "string") return
+
+  const { type, event } = JSON.parse(data)
+
+  if (type === "chaster" && event === "partner_configuration_save") {
+    // Show a spinner loader on the modal
+    window.parent.postMessage(
+      JSON.stringify({ type: "partner_configuration", event: "save_loading" }),
+      "*"
+    )
+
+    // Send the configuration to your backend to save it
+    await fetch(`/lock-opener/configuration/${configurationToken}`, {
+      method: "PUT",
+      body: configuration,
+    })
+
+    // Close the modal
+    window.parent.postMessage(
+      JSON.stringify({ type: "partner_configuration", event: "save_success" }),
+      "*"
+    )
+  }
+})
+```
+
+If your request fails, you can post the `save_failed` event to the modal. This stops the spinner loader on the modal.
+
+```js
+try {
+  await fetch(`/lock-opener/configuration/${configurationToken}`, {
+    method: "PUT",
+    body: configuration,
+  })
+}
+catch (err) {
+  // Stop the spinner loader on the modal
+  window.parent.postMessage(
+    JSON.stringify({ type: "partner_configuration", event: "save_failed" }),
+    "*"
+  )
+
+  // Handle your errors in your configuration page
+  showToast(err.message)
+}
+```

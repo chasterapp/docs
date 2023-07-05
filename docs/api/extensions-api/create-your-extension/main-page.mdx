@@ -3,8 +3,6 @@ title: Main page
 sidebar_label: Main page
 ---
 
-# Main page
-
 The main page is the main way wearers and keyholders interact with your extension. It is a web page hosted by yourself, and embedded in an iframe in the Chaster app.
 
 ## General
@@ -117,3 +115,17 @@ For passive extensions (those without user interaction, such as random events), 
 The main page can be accessed both by wearers and keyholders. Depending on the role, you might want to display different information, or even a different interface. For example, if you build an extensions to verify wearer pictures, the wearer should see a form to upload their pictures, while the keyholder should see a list of pictures previously uploaded.
 
 The role is available in the response of the endpoint `GET /api/extensions/auth/sessions/:mainToken`. When fetching the session information, you can return the value of the `role` field to your frontend so it knows what interface it should display.
+
+<>
+  {/* ```mermaid
+sequenceDiagram
+    Note over Chaster: 👤 User accesses<br/>the extension page
+    Chaster->>Frontend: Embed main page URL
+		Note over Frontend: Parse hash params (window.location.hash)<br/>Retrieve `mainToken`
+    Frontend->>+Backend: Pass the `mainToken`
+    Backend->>+Extensions API: GET /auth/sessions/:mainToken
+    Extensions API-->>-Backend: Object with session and lock
+    Backend-->>-Frontend: Needed information
+    Note over Frontend: Render your extension
+``` */}
+</>

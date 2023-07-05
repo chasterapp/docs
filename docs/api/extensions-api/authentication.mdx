@@ -3,7 +3,7 @@ title: Authentication
 sidebar_label: Authentication
 ---
 
-To interact with user sessions and create your extension, you will need to make calls to the Extensions API. The API requires authentication using your developer token.
+To interact with user sessions and create your extension, you will need to make calls from your backend to the Extensions API. The API requires authentication using your developer token.
 
 ## Make a request to the Extensions API
 
@@ -28,3 +28,7 @@ curl \
 ```
 
 Replace `<token>` with your developer token.
+
+:::danger
+Do not share your developer token with anyone. It is a secret key that allows anyone who has it to make requests to the API on your behalf.
+:::
