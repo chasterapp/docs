@@ -1,0 +1,64 @@
+---
+title: Action Logs
+sidebar_label: Action Logs
+---
+
+# Action Logs
+
+Action Logs provide a detailed record of significant events and actions that occur during a lock session on Chaster. These logs are generated automatically when specific events take place, providing transparency and insight into the progression of a lock. Action Logs help both wearers and keyholders monitor and understand the activity within a lock session.
+
+## Understanding action logs
+
+Each Action Log entry includes essential information about the event or action, such as the type of event, a description, an icon, and more. These logs offer a comprehensive view of lock-related activities and interactions, enhancing the overall user experience.
+
+Action Logs within Chaster are unique and organized within specific namespaces, making it easier to distinguish between different types of logs. Each Action Log type is associated with a prefix that indicates its namespace. Common Action Logs, which cover fundamental lock-related events, use the prefix `default`.
+
+However, extensions developed by partners or third-party developers can introduce their own custom Action Log types with distinct prefixes. This namespace approach ensures that Action Logs remain organized and identifiable, even when multiple extensions contribute to the lock session log history. It provides flexibility for developers to add unique log types tailored to their extension functionality.
+
+Below is a table listing the common Action Log types and their descriptions:
+
+### Common Action Logs
+
+**Prefix:** `default`
+
+| Type                       | Description                           |
+| -------------------------- | ------------------------------------- |
+| `locked`                   | New lock started                      |
+| `unlocked`                 | Lock unlocked                         |
+| `deserted`                 | Lock deserted                         |
+| `timer_hidden`             | Timer hidden                          |
+| `timer_revealed`           | Timer revealed                        |
+| `time_logs_hidden`         | Time information hidden from the logs |
+| `time_logs_revealed`       | Time information revealed in the logs |
+| `time_changed`             | Time added or removed                 |
+| `locktober_points_changed` | Locktober points added or removed     |
+| `combination_verified`     | Combination image verified            |
+| `combination_failed`       | Combination image rejected            |
+| `lock_frozen`              | Lock frozen                           |
+| `lock_unfrozen`            | Lock unfrozen                         |
+| `session_offer_accepted`   | Keyholding request accepted           |
+| `max_limit_date_increased` | Maximum date limit increased          |
+| `max_limit_date_removed`   | Maximum date limit removed            |
+| `keyholder_trusted`        | Keyholder trusted                     |
+
+### Extension Action Logs
+
+**Prefix:** `default` (for Chaster extensions)
+
+| Type                             | Description                                                |
+| -------------------------------- | ---------------------------------------------------------- |
+| `dice_rolled`                    | Dice: Dice rolled                                          |
+| `timer_guessed`                  | Guess the Timer: timer guessed correctly                   |
+| `link_time_changed`              | Share links: A visitor voted for the lock and changed time |
+| `pillory_in`                     | Pillory: The wearer entered the pillory                    |
+| `pillory_out`                    | Pillory: The wearer left the pillory                       |
+| `random_event`                   | Random Events: A random event was triggered                |
+| `tasks_task_assigned`            | Tasks: A task was assigned to the wearer                   |
+| `tasks_vote_ended`               | Tasks: A vote for a task ended                             |
+| `tasks_task_completed`           | Tasks: A vote for a task was completed                     |
+| `tasks_task_failed`              | Tasks: A vote for a task failed                            |
+| `temporary_opening_opened`       | Hygiene Opening: A hygiene opening has started             |
+| `temporary_opening_locked`       | Hygiene Opening: The session has been resumed              |
+| `temporary_opening_locked_late`  | Hygiene Opening: The session has been resumed late         |
+| `verification_picture_submitted` | Verification picture: A verification picture was submitted |
+| `wheel_of_fortune_turned`        | Wheel of Fortune: The wheel was turned                     |

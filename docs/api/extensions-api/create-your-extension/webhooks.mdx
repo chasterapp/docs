@@ -1,8 +1,71 @@
 ---
-title: Webhooks 🚧
-sidebar_label: Webhooks 🚧
+title: Webhooks
+sidebar_label: Webhooks
 ---
 
+# Webhooks
+
+Webhooks provide a way for Chaster to notify your extension when certain events occur, allowing your extension to take action in response to these events. In this guide, you'll learn how to configure and use webhooks in your Chaster extension.
+
+## What are webhooks?
+
+Webhooks are HTTP callbacks or HTTP POST requests that are triggered by specific events. When an event of interest occurs, Chaster sends an HTTP POST request to a URL that you specify, allowing your extension to receive and process the event data.
+
+Webhooks are useful for various purposes, including:
+
+- Keeping your extension in sync with Chaster data.
+- Sending notifications or updates to your extension when specific events occur.
+- Triggering actions or workflows in your extension based on Chaster events.
+
+## Why to use webhooks?
+
+Using webhooks in your Chaster extension enables real-time communication between Chaster and your extension, ensuring that your extension can respond to events promptly and accurately. Here are some reasons to use webhooks:
+
+- **Real-time updates**: Webhooks provide instant notifications of events, allowing your extension to react immediately when something happens on Chaster.
+
+- **Automation**: Webhooks enable automation by triggering actions or workflows in your extension in response to Chaster events, reducing manual intervention.
+
+- **Better user experience**: With webhooks, you can provide a more interactive and dynamic experience for Chaster users by delivering timely information and updates.
+
+## Configuring webhooks
+
+To configure webhooks for your Chaster extension, follow these steps:
+
+1. **Access Developer Interface**: Log in to Chaster and access the Developer Interface.
+
+2. **Extension Settings**: Navigate to your extension settings within the Developer Interface.
+
+3. **Extension URLs**: In the Extension URLs section, you'll find options to configure webhooks. Enter the URL where you want to receive webhook notifications for each event type. This URL should be publicly accessible over HTTPS.
+
+## Handling webhooks
+
+### Responding to a request
+
+When an event occurs, Chaster will send an HTTP POST request to the specified webhook URL. Upon receiving a webhook, your extension should promptly respond with an HTTP status code in the 2xx range (e.g., 200 OK) to acknowledge the receipt of the notification. This response serves as confirmation that your extension has successfully received the event data. Responding promptly ensures the delivery of subsequent webhooks.
+
+### Retries
+
+Chaster employs a retry mechanism for webhook notifications to improve reliability. If the initial HTTP POST request to your webhook URL fails to receive a response within 10 seconds or encounters an error, Chaster will make up to four additional attempts. These retries use an exponential backoff strategy, with each attempt delayed by 60 seconds longer than the previous one. This means that the first retry occurs after 1 minute, the second after 2 minutes, and so on.
+
+### Debugging
+
 :::caution
-Webhooks are still incomplete and will be released in the next few weeks.
+The debug section is not available yet, but will be added soon.
 :::
+
+To assist you in monitoring webhook delivery and troubleshooting any potential issues, Chaster Developer Interface maintains a history of sent webhooks. This history includes details about the HTTP status codes of the responses your extension provided. You can access this information to review the webhook notifications sent by Chaster and to debug any problems that may arise during webhook handling.
+
+If you encounter difficulties, need guidance on webhook implementation, or require help with debugging webhook reception, don't hesitate to reach out to us.
+
+## Event types
+
+To determine which event types to monitor and configure webhooks for, consider the specific requirements of your extension. Here are the available event types:
+
+- `extension_session.created`: Monitor this event to receive notifications when a new session is created. This can happen when a new lock is created with your extension enabled, or when your extension is enabled on a running lock.
+- `extension_session.updated`: Monitor this event to receive notifications when an existing session is updated.
+- `extension_session.deleted`: Monitor this event to receive notifications when a session is deleted.
+- `action_log.created`: Monitor this event to receive notifications when a new action log entry is created, such as when a lock is unlocked, time is added, etc.
+
+Choose the event types that are relevant to your extension functionality and use cases.
+
+To know exactly the data that is sent with each event type, please refer to the [API documentation](https://api.chaster.app/api) and the model `WebhookEventForPublic`.

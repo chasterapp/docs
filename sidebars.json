@@ -62,7 +62,8 @@
       "api/extensions-api/configuration"
     ],
     "Reference": [
-      "api/reference/scopes"
+      "api/reference/scopes",
+      "api/reference/action-logs"
     ]
   }
 }
