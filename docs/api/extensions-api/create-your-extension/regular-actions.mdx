@@ -45,6 +45,16 @@ This endpoint returns an object with the following structure:
 
 This information allows you to determine the date when the action can be done, and the number of actions remaining for the wearer within your extension.
 
+## Know if the wearer can perform a regular action
+
+To know if the wearer can perform a regular action, you can use the value of the `nbActionsRemaining` parameter.
+
+- If the value is greater than 0, the wearer can perform a regular action.
+- If the value is -1, the wearer can perform a regular action, as the number of actions is unlimited.
+- If the value is 0, the wearer cannot perform a regular action, and you should inform the wearer that they must wait for the next regular action date.
+
+To know the date when the next regular action can be performed, you can use the value of the `nextActionDate` parameter.
+
 ## Submit a regular action
 
 To submit a regular action on the lock, use the following endpoint:

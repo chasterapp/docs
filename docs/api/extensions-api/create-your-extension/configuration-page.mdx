@@ -59,16 +59,16 @@ sequenceDiagram
     Extensions API-->>-Backend: Configuration with context
     Backend-->>-Frontend: Configuration
     Note over Frontend: 👤 User edits configuration
-    Note over Modal: 👤 User clicks on 'Save changes'
+    Note over Modal: 👤 User clicks on ave changes'
     Modal->>Frontend: postMessage<br/>{type: 'chaster',<br/>event: 'partner_configuration_save'}
-    Frontend-->>Modal: postMessage<br/>{type: 'partner_configuration',<br/>event: 'save_loading'}
+    Frontend-->>Modal: postMessage<br/>{type: 'partner_configuration',<br/>event: ave_loading'}
     Frontend->>+Backend: Pass configuration object
     Note over Backend: Validate configuration
     Backend->>+Extensions API: POST /extensions/configurations/:token
     Note over Extensions API: Save configuration
     Extensions API-->>-Backend: 
     Backend->>Frontend: Configuration saved
-    Frontend-->>Modal: postMessage<br/>{type: 'partner_configuration',<br/>event: 'save_success'}
+    Frontend-->>Modal: postMessage<br/>{type: 'partner_configuration',<br/>event: ave_success'}
 ``` */}
 </>
 
@@ -204,3 +204,35 @@ catch (err) {
   showToast(err.message)
 }
 ```
+
+## Adapt the iframe height
+
+The `iframe-resizer` library offers a convenient solution for ensuring that your extension configuration page within the Chaster app adjusts its height based on the content width. While it not mandatory, we highly recommend integrating this library into your extension configuration page.
+
+### Why use iframe-resizer?
+
+The configuration page is displayed within an iframe in the Chaster app, which means the height and width of the iframe are predefined. Without the iframe-resizer library, it can be challenging to create a responsive design that adapts to varying content widths.
+
+Integrating iframe-resizer ensures that your extension configuration page looks and functions well, regardless of the device or screen size. `iframe-resizer` simplifies the process of dynamically adjusting the iframe height based on its content.
+
+### How to integrate iframe-resizer
+
+To integrate the iframe-resizer library into your extension configuration page, follow these steps:
+
+1. **Include the Library**: Download the iframe-resizer library from [here](https://github.com/davidjbradshaw/iframe-resizer).
+
+You can install it via NPM:
+
+```bash
+npm install --save iframe-resizer
+```
+
+Or just include it via a CDN link in your HTML file:
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.9/iframeResizer.contentWindow.js"></script>
+```
+
+2. **Test and Adjust**: On the Chaster app, test your configuration page in different scenarios and devices to ensure that it dynamically adjusts its height according to the content width.
+
+Remember that while this integration is highly recommended for a seamless user experience, it not mandatory.
