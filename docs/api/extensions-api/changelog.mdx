@@ -1,0 +1,55 @@
+---
+title: Changelog
+sidebar_label: Changelog
+---
+
+## 2024-01-16
+
+**New features**
+
+- Webhooks are now available for extensions.
+  - You can configure webhooks in the Developer interface.
+  - Available events: `extension_session.created`, `extension_session.updated`, `extension_session.deleted`, `action_log.created`.
+  - Documentation: [Webhooks](/api/extensions-api/create-your-extension/webhooks)
+- Resize the configuration iframe to the content height.
+  - The configuration iframe can now resize to the height of the content.
+  - You need to use the `iframe-resizer` library in your configuration page.
+  - Documentation: [Adapt the iframe height](/api/extensions-api/create-your-extension/configuration-page#adapt-the-iframe-height)
+- Added `geolocation` permission to the main and configuration pages.
+
+**Bug fixes**
+
+- Fixed: The configuration description template was not rendered in the lock extension settings.
+
+
+## 2023-10-13
+
+**New features**
+
+- You can now modify the users who have access to your application.
+  - Users with access can use your private test extensions.
+  - You can add up to 20 accounts to an application.
+
+
+## 2023-07-09: Extensions API Launch in Test Mode
+
+Hi everyone! We're thrilled to announce that the Extensions API is now live in test mode. 🎉
+You can access the [complete documentation](/api/extensions-api/getting-started).
+
+During this phase, we invite you to dive into the documentation, explore the API, and start building and testing your extensions. This is an exciting opportunity for you to unleash your creativity and integrate new features into the Chaster platform.
+
+**📚 Documentation and Feedback**
+We encourage you to thoroughly review the documentation and provide us with your valuable feedback. If you encounter any bugs, missing features, or have suggestions for improvement, please don't hesitate to reach out. Your input will play a vital role in shaping the final version of the Extensions API.
+
+**🛠️ Test Mode and Limited Access**
+During this test phase, extensions will be limited to test mode, meaning only you as the developer (and any limited users you choose) will be able to load and interact with your extensions. This allows you to experiment, fine-tune, and ensure everything works seamlessly before releasing to the wider Chaster community.
+
+**🚀 Next Steps**
+If all goes well with testing and implementation, our plan is to officially release the Extensions API for public access in Q4. We're excited to see the first set of working extensions in action and witness the value they bring to the Chaster platform.
+
+**📩 Contact and Support**
+For any questions, assistance, or when you're ready to request a review to validate your extension, our dedicated support channel is #api-support. Please create a thread per user and use it as your point of contact with our team. We'll be there to provide guidance, address queries, and help you throughout the process.
+
+Thank you for being part of this journey as we expand the possibilities of Chaster with the Extensions API. We can't wait to see the innovative extensions you create!
+
+Happy coding! 💪🚀

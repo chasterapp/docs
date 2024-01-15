@@ -59,7 +59,8 @@
           "api/extensions-api/create-your-extension/webhooks"
         ]
       },
-      "api/extensions-api/configuration"
+      "api/extensions-api/configuration",
+      "api/extensions-api/changelog"
     ],
     "Reference": [
       "api/reference/scopes",
