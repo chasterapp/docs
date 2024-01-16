@@ -157,10 +157,10 @@ Here is an example of how to listen to the `partner_configuration_save` event, a
 
 ```js
 // Add an event listener to receive events from Chaster
-addEventListener("message", async (event) => {
-  if (typeof data !== "string") return
+addEventListener("message", async (e) => {
+  if (typeof e.data !== "string") return
 
-  const { type, event } = JSON.parse(data)
+  const { type, event } = JSON.parse(e.data)
 
   if (type === "chaster" && event === "partner_configuration_save") {
     // Show a spinner loader on the modal
