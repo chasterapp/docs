@@ -45,6 +45,7 @@
       "api/extensions-api/getting-started",
       "api/extensions-api/onboarding-process",
       "api/extensions-api/review-process",
+      "api/extensions-api/guidelines",
       "api/extensions-api/authentication",
       "api/extensions-api/sessions",
       {
