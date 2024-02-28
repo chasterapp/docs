@@ -61,8 +61,8 @@ Home actions provide a list of customizable actions that are displayed on the we
 
 You can update the metadata for a lock session using the following endpoint:
 
-- `PUT /api/extensions/sessions/:sessionId/metadata`: Update metadata for an extension lock session.
+- `PATCH /api/extensions/sessions/:sessionId`: Update partial information for an extension lock session.
 
-To explore the documentation for the metadata endpoint and view the API specifications, visit [the API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerActionsController_setMetadata).
+To explore the documentation for the metadata endpoint and view the API specifications, visit [the API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerActionsController_patchExtensionSession).
 
 To update the session metadata, you should include the desired `reasonsPreventingUnlocking` and `homeActions` in the metadata object and make a PUT request to the above endpoint, replacing `:sessionId` with the ID of the session they want to update.

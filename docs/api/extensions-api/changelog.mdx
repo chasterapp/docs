@@ -3,6 +3,26 @@ title: Changelog
 sidebar_label: Changelog
 ---
 
+## 2024-02-27
+
+**New features**
+
+- New endpoint `PATCH /api/extensions/sessions/{sessionId}` to update session information.
+  - You can now update session config.
+  - You can now update session data, metadata using the `PATCH` method, instead of the `PUT` methods.
+- Following endpoints are now deprecated. Please use the new `PATCH` method instead.
+  - `PUT /api/extensions/sessions/{sessionId}/metadata`
+  - `PUT /api/extensions/sessions/{sessionId}/data`
+- Add basic authentication for webhooks
+  - Configure Basic HTTP authentication for your webhooks.
+  - When you configure a webhook, you can now provide a username and password.
+
+**Bug fixes**
+
+- Fixed: The provided configuration token was not valid when the user opened the configuration modal for another extension before.
+- Fixed: Any update of a running session done by a keyholder was overriding the configuration of all external extensions, if the configuration modal has not been opened before.
+- Fixed: The Discord `/lock` slash command was not working for locks with an external extension.
+
 ## 2024-01-16
 
 **New features**

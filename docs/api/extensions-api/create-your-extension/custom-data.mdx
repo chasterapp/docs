@@ -9,7 +9,7 @@ You can store session-specific data in a key-value format with custom data. If y
 
 To set custom data for a session, you can use the following endpoint:
 
-- `PUT /api/extensions/sessions/:sessionId/data`: Set session custom data (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/SessionDataController_setData)).
+- `PATCH /api/extensions/sessions/:sessionId`: Set session custom data (read [the API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerActionsController_patchExtensionSession)).
 
 The endpoint expects a JSON object in the request body with a single key, `data`, containing the custom data in key-value format. You can structure and store the data as per your extension's requirements.
 
