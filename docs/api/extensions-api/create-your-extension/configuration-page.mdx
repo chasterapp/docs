@@ -205,6 +205,14 @@ catch (err) {
 }
 ```
 
+## Edit a session configuration manually during a session
+
+You can also edit the configuration of a session manually during a session. This can be useful if you want to update the configuration of a session without requiring the keyholder to edit the configuration page.
+
+- `PATCH /api/extensions/sessions/:sessionId`: Update partial information for an extension lock session (read [the API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerActionsController_patchExtensionSession)).
+
+The endpoint expects a JSON object in the request body, including a `config` key, containing the new config in key-value format.
+
 ## Adapt the iframe height
 
 The `iframe-resizer` library offers a convenient solution for ensuring that your extension configuration page within the Chaster app adjusts its height based on the content width. While it not mandatory, we highly recommend integrating this library into your extension configuration page.

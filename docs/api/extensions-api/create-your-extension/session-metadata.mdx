@@ -65,4 +65,4 @@ You can update the metadata for a lock session using the following endpoint:
 
 To explore the documentation for the metadata endpoint and view the API specifications, visit [the API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerActionsController_patchExtensionSession).
 
-To update the session metadata, you should include the desired `reasonsPreventingUnlocking` and `homeActions` in the metadata object and make a PUT request to the above endpoint, replacing `:sessionId` with the ID of the session they want to update.
+To update the session metadata, you should include the desired `reasonsPreventingUnlocking` and `homeActions` to the metadata object and make a PATCH request to the above endpoint, replacing `:sessionId` with the ID of the session they want to update.
