@@ -3,6 +3,22 @@ title: Changelog
 sidebar_label: Changelog
 ---
 
+## 2024-03-17
+
+**New features**
+
+- Added support for [handlebars-helpers](https://github.com/helpers/handlebars-helpers) in configuration descriptions.
+  - You can now use handlebars helpers in the configuration description template.
+  - Documentation: [Configuration page](/api/extensions-api/configuration#configuration-description-handlebars)
+- Added a custom helper for Handlebars templates
+  - `durationFromSeconds`: Convert a number of seconds to a human-readable duration
+  - Documentation: [Configuration page](/api/extensions-api/configuration#configuration-description-handlebars)
+
+**Bug fixes**
+
+- Fixed: The field `availableHomeActions` is correctly marked as optional on the API documentation.
+- Fixed: Improved latency for endpoints using the developer token as authentication method.
+
 ## 2024-02-27
 
 **New features**

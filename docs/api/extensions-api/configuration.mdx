@@ -85,3 +85,17 @@ The configuration description will be displayed like this:
 ![Form to confiugre the custom configuration](/img/extensions-api-configuration-config-description.png)
 
 Read the [Handlebars documentation](https://handlebarsjs.com/guide/) to learn how to use Handlebars and create your template.
+
+#### Additional helpers
+
+We also support helpers provided by [handlebars-helpers](https://github.com/helpers/handlebars-helpers).
+
+#### Custom handlebars helpers
+
+To simplify the creation of your configuration description, we have added some custom helpers to the Handlebars engine.
+
+- `durationFromSeconds`: Convert a number of seconds to a human-readable duration
+
+```handlebars
+{{durationFromSeconds 3600}} # 1 hour
+```
