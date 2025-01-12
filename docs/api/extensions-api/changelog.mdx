@@ -2,6 +2,19 @@
 title: Changelog
 sidebar_label: Changelog
 ---
+## 2024-07-08
+
+**Minor changes**
+
+- Removed deprecated endpoint `POST /locks/shared-locks/:sharedLockId/archive`
+  - For information, all routes starting with `/locks/shared-locks` are deprecated.
+  - Please use the routes starting with `/shared-locks` instead.
+- Rate limits are now per user when using an OAuth token.
+
+**Bug fixes**
+
+- Fixed: The "Start timeout" option in extensions configuration is now working for cumulative mode.
+- Fixed: Time updates are now provided to webhooks when time updates are hidden for the wearer.
 
 ## 2024-03-17
 
