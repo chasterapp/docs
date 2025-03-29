@@ -62,6 +62,7 @@
         ]
       },
       "api/extensions-api/configuration",
+      "api/extensions-api/penalties",
       "api/extensions-api/changelog"
     ],
     "Reference": [

@@ -2,6 +2,18 @@
 title: Changelog
 sidebar_label: Changelog
 ---
+## 2025-03-29
+
+**New features**
+
+- Added Penalties API for extensions
+  - Extensions can now create habits (recurring or time-limited actions)
+  - New endpoints to manage penalties:
+    - `POST /api/extensions/sessions/:sessionId/penalties/increment`
+    - `POST /api/extensions/sessions/:sessionId/penalties/time-limit/create`
+    - `POST /api/extensions/sessions/:sessionId/penalties/time-limit/cancel`
+  - Documentation: [Penalties](/api/extensions-api/penalties)
+
 ## 2024-07-08
 
 **Minor changes**

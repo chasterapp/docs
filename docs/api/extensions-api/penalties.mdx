@@ -1,0 +1,153 @@
+---
+title: Penalties
+sidebar_label: Penalties
+---
+
+The Penalties system allows extensions to create habits (actions) that wearers must perform while locked. This can be used to enforce regular check-ins, task completion, or any other time-based or recurring actions.
+
+## Overview
+
+The Penalties system supports two types of habits:
+
+1. **Recurring habits**: Actions that must be performed a certain number of times within a regular time period (e.g., hourly, daily, weekly).
+2. **Time-limited habits**: Actions that must be completed within a specific timeframe after being triggered.
+
+## Configuration
+
+Before implementing the API endpoints, you need to configure your habits in the developer interface. You'll need to fill out a form with the following fields:
+
+**Name**: A unique identifier for your habit. This should be 1-20 characters long and can only contain lowercase letters, numbers, hyphens, and underscores. This is what you'll use in your API calls.
+
+**Label**: The display name that users will see in the interface. This should be a clear, human-readable description of the habit.
+
+**Type**: Choose between "Recurring" or "Time limit" depending on how you want the habit to work.
+
+**Parameters text**: (optional) A text that explains to users what actions they need to perform. For example, "Number of dice rolls required" or "Time to submit verification picture".
+
+**Punishment text**: (optional) A text that explains what will happen if the user fails to complete the required actions. For example, "Penalty for not rolling the dice in time" or "Penalty for not submitting verification picture".
+
+![extensions-api-penalties-configuration](/img/extensions-api-penalties-configuration.png)
+
+Once you've configured your habits in the developer interface, they will automatically appear in the Penalties extension configuration when users are setting up their locks. Users can then enable these habits and configure their specific parameters (like number of actions required and penalties) according to their preferences.
+
+![extensions-api-penalties-in-config-modal](/img/extensions-api-penalties-in-config-modal.png)
+
+See the [penalty documentation](/extensions/penalties) for more information on how to configure your habits.
+
+### Habit types
+
+#### Recurring habits
+Recurring habits are perfect for actions that need to be performed regularly. You can set how many times the action needs to be completed within a specific time period (hourly, daily, or weekly). For example, you might require users to roll dice three times per day or complete a task once every two hours. The system will track these actions and apply penalties if the minimum number of actions isn't completed within the specified period.
+
+#### Time-limited habits
+Time-limited habits are designed for actions that need immediate attention. When triggered, the user must complete the action within a specific timeframe. For example, you might give users 2 hours to submit a verification picture after being requested, or 30 minutes to complete a task. If the action isn't completed within the time limit, a penalty will be applied.
+
+## API Implementation
+
+### Incrementing Actions
+
+Use this endpoint to record completed actions for both recurring and time-limited habits.
+
+- `POST /api/extensions/sessions/:sessionId/penalties/increment`: 
+Increment a penalty on an extension lock session (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerPenaltyActionsController_incrementPenalty)).
+
+
+Request body:
+```json
+{
+  "habitName": "string",  // The name of the habit as configured
+  "count": 1              // Number of actions to record (optional, defaults to 1)
+}
+```
+
+### Time-limited habits
+
+#### Creating a time limit
+
+When a time-limited action needs to be performed, create a new time limit period:
+
+- `POST /api/extensions/sessions/:sessionId/penalties/time-limit/create`: 
+Create a new time limit period for a habit (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerPenaltyActionsController_createTimeLimitPeriod)).
+
+Request body:
+```json
+{
+  "habitName": "string"  // The name of the habit as configured
+}
+```
+
+#### Canceling a time limit
+
+If you need to cancel an ongoing time limit period:
+
+- `POST /api/extensions/sessions/:sessionId/penalties/time-limit/cancel`: 
+Cancel a time limit period for a habit (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerPenaltyActionsController_cancelTimeLimitPeriod)).
+
+Request body:
+```json
+{
+  "habitName": "string"  // The name of the habit as configured
+}
+```
+
+## Example implementation
+
+### Example 1: Dice rolling extension
+
+Let's implement a dice rolling extension that requires users to roll dice 3 times per day.
+
+1. First, configure the recurring habit in the developer interface:
+   - Name: `roll-the-dice`
+   - Label: "Roll the Dice"
+   - Type: Recurring
+   - Parameters text: "Number of dice rolls required"
+   - Punishment text: "Penalty for not rolling the dice in time"
+
+2. When the user rolls the dice on your extension, increment the action:
+```json
+POST /api/extensions/sessions/:sessionId/penalties/increment
+{
+  "habitName": "roll-the-dice",
+  "count": 1
+}
+```
+
+Our penalty system will automatically track if the user has completed their 3 rolls for the day and apply penalties if they haven't.
+
+### Example 2: Verification picture extension
+
+Let's implement a verification picture system that gives users a time limit to submit a picture.
+
+1. First, configure the time-limited habit in the developer interface:
+   - Name: `submit-verification`
+   - Label: "Submit Verification Picture"
+   - Type: Time limit
+   - Parameters text: "Time to submit verification picture"
+   - Punishment text: "Penalty for not submitting verification picture"
+
+2. When requesting a verification picture:
+```json
+POST /api/extensions/sessions/:sessionId/penalties/time-limit/create
+{
+  "habitName": "submit-verification"
+}
+```
+
+3. When the user submits the picture:
+```json
+POST /api/extensions/sessions/:sessionId/penalties/increment
+{
+  "habitName": "submit-verification"
+}
+```
+
+4. If the verification needs to be cancelled:
+```json
+POST /api/extensions/sessions/:sessionId/penalties/time-limit/cancel
+{
+  "habitName": "submit-verification"
+}
+```
+
+Our penalty system will automatically track if the user has submitted the picture within the time limit and apply penalties if they haven't.
+

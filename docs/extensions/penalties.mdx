@@ -35,13 +35,27 @@ You can configure the frequency of a recurring action, which can be set to a spe
 
 ![Actions required. This determines how many times you need to complete the action during each regularity period.](/img/penalties-config-regularity.png)
 
-For recurring actions, the period starts as soon as the lock is created and aligns with your day, starting and ending based on your profile's timezone. For example, if you choose one action per day and you create your lock at 5pm, the period will start at 5pm and end at midnight, and the next period will start at midnight and end at 11:59pm the following day.
-
 :::info
 Actions are not cumulative: if you complete more actions than the minimum number required for a given period, those additional actions will not count towards the next period.
 :::
 
 Examples of actions that can trigger penalties include rolling dice, assigning tasks, or adding verification pictures.
+
+#### Penalty reset schedule
+
+You can choose how the penalty periods reset:
+
+- **Reset based on lock start time**: The penalty period will begin when the lock is created. This means your first period will start at the moment you create the lock, and subsequent periods will be calculated from that initial start time.
+- **Reset at a fixed time**: The penalty period will reset at a specific time you choose (default is midnight). This option allows you to align all penalty periods with a consistent time of day, making it easier to track and manage your actions.
+
+When using **Reset at a fixed time**, the first period includes a grace period to help you get started:
+
+For recurring actions **in days**, when you create a lock, the first period combines both the remaining time of the current day and the entire next day. This ensures that you have time to complete the action during the initial period. Here are some examples:
+- If you choose one action per day and create your lock at 5pm, your first period will run from 5pm until 11:59pm the next day. After this extended first period, subsequent periods will align with your day based on your profile's timezone, starting at midnight and ending at 11:59pm.
+- If you choose one action every 2 days, your first period includes the current day and the following 2 days. For instance, if you create a lock at 10 AM on a Wednesday, the first period will run from 10 AM Wednesday until 11:59 PM Friday. Subsequent periods will then be 2 days long, starting at midnight and ending at 11:59 PM every second day thereafter.
+
+For recurring actions **in hours**, periods are aligned with fixed time slots in the day, computed from midnight. For example:
+- If you configure an action every 3 hours, the periods will be: 12 AM to 3 AM, 3 AM to 6 AM, 6 AM to 9 AM, and so on. When you create a lock, your first period will run from the creation time until the end of the current time slot. For instance, if you create a lock at 2 PM with actions required every 3 hours, your first period will be from 2 PM to 6 PM (end of the 12 PM - 3 PM slot plus next period 3 PM to 6 PM), then the next period will be from 6 PM to 9 PM, and so on.
 
 ### Time-limited actions
 
@@ -89,4 +103,3 @@ Each penalty period can have one of the following statuses:
 - Cancelled: A penalty period can be cancelled if the corresponding extension is disabled, or if the wearer is inactive.
 
 ![Penalty history](/img/penalties-extension-history.png)
-
