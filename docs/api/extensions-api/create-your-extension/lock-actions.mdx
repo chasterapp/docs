@@ -90,6 +90,17 @@ The `toggle_freeze` action toggles the freeze status of a lock. If the lock is c
 
 The `pillory` action puts the user in [pillory](/features/pillory) for the specified duration. The `duration` field represents the pillory duration in seconds. Additionally, you can provide an optional `reason` field to display a custom reason on the pillory.
 
+### Set timer visibility
+
+```typescript
+{
+  "name": "set_display_remaining_time",
+  "params": boolean // Whether to display the remaining time
+}
+```
+
+The `set_display_remaining_time` action sets the timer visibility to the specified value. If the value is `true`, the remaining time will be displayed to the wearer, otherwise it will be hidden.
+
 ## Lock history
 
 When a lock action is run using this endpoint, a corresponding log entry is automatically created in the lock history. This log entry serves as a record of the action performed by your extension and is visible to the wearer and keyholder within Chaster.
