@@ -1,0 +1,111 @@
+---
+title: Tasks
+sidebar_label: Tasks
+---
+
+Receive tasks and earn points to be unlocked.
+
+## Introduction
+
+The Tasks extension allows you to spice up your session by receiving tasks to complete. You can configure a list of tasks you want to do, assign points to each task, and set a goal of points required to get unlocked. Tasks can be assigned randomly, chosen by you from the list (if configured), or voted on by other users.
+
+Each task can be customized with specific requirements, including verification pictures, minimum completion time, and point values. This extension offers flexibility in how you engage with tasks during your session, whether you prefer structure through required task completion or more freedom in choosing your activities.
+
+## Configuration
+
+### Task points
+
+By configuring points, you can assign a point value to each task. As you complete tasks, you earn more points toward your goal. Set a target number of points required to get unlocked, making your release dependent on successfully completing tasks.
+
+To enable task points, check the "Enable task points" option in the configuration. Once enabled, you can specify the number of points required to unlock your session.
+
+### Task verification
+
+Require a photo as proof of task completion. When enabled, tasks can be configured to require a verification picture demonstrating that you have successfully finished the task. This adds an extra layer of accountability to your session.
+
+To enable peer verification for tasks, check the "Enable peer verification" option. You can also configure the penalty that will be applied when your verification is rejected by the community.
+
+A peer verification request lasts up to 6 hours. If you complete a task with peer verification enabled and task points configured, you will need to wait up to 6 hours for the community to validate your submission before your points are granted.
+
+For more information about how peer verification works, including how other members validate your images and the voting process, refer to the [Peer verification](/features/peer-verification) documentation.
+
+### Tasks
+
+Configure the tasks you would like to do during your session. For each task, you can specify:
+
+- **Task name**: Enter a description of the task you want to complete.
+- **Points**: If task points are enabled, set the number of points granted for completing this task.
+- **Verification picture required**: If peer verification is enabled, you can require a verification picture for this specific task. When enabled, you must upload and have your verification picture approved before the task can be marked as complete.
+- **Timed task**: Enable this option to require a minimum time before the task can be marked complete. When a timed task is assigned, you must first start a timer and wait for the specified duration to pass before you can complete the task.
+  - **Duration**: Set the minimum time required to complete the timed task (e.g., 15 minutes).
+
+You can add up to 100 different tasks to your configuration.
+
+### Assign and edit options
+
+Configure how tasks are assigned and managed during your session:
+
+- **Allow editing tasks while you are locked**: When enabled, you can add, remove, or modify tasks even after your lock has started.
+- **Allow you to assign a task randomly or by creating a vote**: When disabled, you will not be able to assign tasks to yourself. Your keyholder or the automatic penalty system (if configured) will be responsible for assigning tasks.
+- **Allow you to choose your own task from the list**: When enabled, you can select a specific task from your configured task list instead of being assigned a random one or creating a vote.
+- **Give a penalty when a task is abandoned**: Configure whether abandoning a task results in a penalty. You can specify which lock actions to perform when a task is abandoned (e.g., adding time, freezing, pillorying).
+
+:::info
+If you enable "Allow wearer to configure tasks" without configuring any tasks, the task list will be empty initially, and you will need to configure your tasks for the first time when the lock starts.
+:::
+
+## Using the extension
+
+### Assigning tasks
+
+Depending on your configuration, you can assign tasks in different ways:
+
+- **Random assignment**: Click the button to receive a random task from your configured task list.
+- **Create a vote**: Start a vote where other users can choose which task you should complete. You can configure the vote duration and whether votes should start automatically after the previous vote finishes.
+- **Choose from list**: If enabled in your configuration, you can select a specific task from your task list.
+
+### Task details
+
+Once a task is assigned, you can view its details, including:
+
+- The task description
+- Point value (if points are enabled)
+- Whether verification is required
+- Timer duration (if it's a timed task)
+
+### Timed tasks
+
+If a task is configured as a timed task, you must complete the following steps:
+
+1. **Start the timer**: Click the button to begin the task timer. This ensures you spend the minimum required time on the task.
+2. **Wait for completion**: The timer will count down the specified duration. You cannot complete the task until this timer has finished.
+3. **Complete the task**: Once the timer reaches zero, you can mark the task as complete.
+
+:::caution
+If you have the Penalties extension enabled and configured for time-limited actions, make sure you complete your timed tasks within the allowed timeframe to avoid receiving penalties.
+:::
+
+### Completing tasks
+
+To complete a task:
+
+1. If the task is timed, ensure the timer has finished.
+2. If peer verification is required for the task, upload a verification picture demonstrating task completion.
+3. If peer verification is enabled and required, wait for the community to validate your submission. Peer verification lasts up to 6 hours, so your points will be granted once the verification is accepted (which may take up to 6 hours).
+4. If no verification is required, simply mark the task as complete.
+
+If task points are enabled, you will earn the configured points upon successful completion. When you reach the target number of points required, your lock will be unlocked.
+
+### Abandoning tasks
+
+You can abandon a task at any time if you decide you don't want to complete it. However, if your configuration includes penalties for abandoned tasks, the specified lock actions will be applied when you abandon a task.
+
+Consider carefully before abandoning tasks, especially if you have configured strict penalties or if completing the task would contribute significantly toward your point goal.
+
+### Votes
+
+If vote functionality is enabled, you can create votes to let other users decide which task you should complete:
+
+1. **Start a vote**: Create a new vote with your configured task list.
+2. **Vote duration**: Other users have the configured duration to vote on which task you should receive.
+3. **Selected task**: The task selected by the majority of the votes will be assigned to you. If there is a draw, the task will be assigned randomly from the ones with the most votes.

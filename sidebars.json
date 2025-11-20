@@ -10,6 +10,7 @@
     "Locks": [
       "locks/options",
       "locks/status",
+      "locks/settings",
       "locks/offer-your-session",
       "locks/findom"
     ],
@@ -27,6 +28,7 @@
       "extensions/dice",
       "extensions/penalties",
       "extensions/random-events",
+      "extensions/tasks",
       "extensions/temporary-opening",
       "extensions/verification-picture"
     ]

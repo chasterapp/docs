@@ -66,6 +66,10 @@ module.exports = {
               label: "Developers",
               href: "https://chaster.app/developers",
             },
+            {
+              label: "Docs GitHub",
+              href: "https://github.com/chasterapp/docs",
+            },
           ],
         },
       ],
@@ -86,5 +90,5 @@ module.exports = {
       },
     ],
   ],
-  plugins: [require.resolve('docusaurus-lunr-search')],
+  plugins: [require.resolve("docusaurus-lunr-search")],
 };
