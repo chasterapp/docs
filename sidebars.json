@@ -63,8 +63,16 @@
           "api/extensions-api/create-your-extension/webhooks"
         ]
       },
+      {
+        "Interact with extensions": [
+          "api/extensions-api/interact-with-extensions/actor-system",
+          "api/extensions-api/interact-with-extensions/tasks",
+          "api/extensions-api/interact-with-extensions/hygiene-opening",
+          "api/extensions-api/interact-with-extensions/pillory",
+          "api/extensions-api/interact-with-extensions/penalties"
+        ]
+      },
       "api/extensions-api/configuration",
-      "api/extensions-api/penalties",
       "api/extensions-api/changelog"
     ],
     "Reference": [

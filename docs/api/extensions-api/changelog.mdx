@@ -3,6 +3,33 @@ title: Changelog
 sidebar_label: Changelog
 ---
 
+## 2026-01-23
+
+**New features**
+
+- Added extension icon editing
+  - Developers can now edit their extension icons directly from the extension configuration page
+- Added Actor system for extensions
+  - For some endpoints, extensions can now specify who is performing an action: wearer, keyholder, or the extension itself
+  - This enables proper attribution in action logs and the Chaster user interface
+  - Documentation: [Actor System](/api/extensions-api/interact-with-extensions/actor-system)
+- Added Pillory API for extensions
+  - Extensions can now retrieve the current pillory status for a lock session
+  - New endpoint: `GET /api/extensions/sessions/:sessionId/pillory/status`
+  - Check if a user is in the pillory and get details about active votes
+  - Documentation: [Pillory](/api/extensions-api/interact-with-extensions/pillory)
+- Added Tasks API for extensions
+  - Extensions can now programmatically interact with the Tasks extension
+  - New endpoints:
+    - `POST /api/extensions/sessions/:sessionId/tasks/assign` - Assign tasks to wearers
+    - `POST /api/extensions/sessions/:sessionId/tasks/start-timer` - Start timers for timed tasks
+    - `POST /api/extensions/sessions/:sessionId/tasks/complete` - Complete or fail tasks
+  - Documentation: [Tasks](/api/extensions-api/interact-with-extensions/tasks)
+- Added Hygiene Opening API for extensions
+  - Extensions can now temporarily unlock locks using the Hygiene Opening extension
+  - New endpoint: `POST /api/extensions/sessions/:sessionId/temporary-opening/open`
+  - Documentation: [Hygiene Opening](/api/extensions-api/interact-with-extensions/hygiene-opening)
+
 ## 2025-11-20
 
 **New features**
@@ -24,7 +51,7 @@ sidebar_label: Changelog
     - `POST /api/extensions/sessions/:sessionId/penalties/increment`
     - `POST /api/extensions/sessions/:sessionId/penalties/time-limit/create`
     - `POST /api/extensions/sessions/:sessionId/penalties/time-limit/cancel`
-  - Documentation: [Penalties](/api/extensions-api/penalties)
+  - Documentation: [Penalties](/api/extensions-api/interact-with-extensions/penalties)
 
 ## 2024-07-08
 

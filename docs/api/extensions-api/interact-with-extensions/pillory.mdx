@@ -1,0 +1,76 @@
+---
+title: Pillory
+sidebar_label: Pillory
+---
+
+The Extensions API allows your extension to integrate with the Pillory feature, enabling you to check if a user is currently in the pillory and retrieve information about pending pillory votes. This read-only endpoint enables you to build extensions that react to pillory status, display statistics, or modify behavior based on whether the wearer is being publicly displayed.
+
+## Overview
+
+The pillory is a public display feature where users are shown to the community, often as a consequence for not meeting requirements or as part of their lock experience. Your extension can use this API to:
+
+- Check if a wearer is currently in the pillory
+- Get details about active pillory votes
+- See how many people have voted and how much time has been added
+- Build conditional logic based on pillory status
+
+To learn how the pillory works from a user perspective, see the [Pillory feature documentation](/features/pillory).
+
+:::info
+Your extension must work with locks that have the Pillory extension configured. If the Pillory extension is not enabled on a lock, these endpoints will return an error.
+:::
+
+:::info
+This is a read-only endpoint. To put a user in the pillory, use the [Pillory lock action](/api/extensions-api/create-your-extension/lock-actions#pillory).
+:::
+
+## Use Cases
+
+Here are some ways you might use the Extensions API to interact with Pillory in your extension:
+
+- **Conditional behavior**: Modify your extension's behavior when a user is pilloried (e.g., increase difficulty, change available actions)
+- **Statistics extensions**: Track and display pillory statistics, voting patterns, or time added
+- **UI indicators**: Display pillory status in your extension's interface
+- **Analytics**: Analyze pillory patterns and their impact on lock sessions
+- **Gamification**: Incorporate pillory status into game mechanics or point systems
+
+## API Implementation
+
+### Get Pillory Status
+
+Retrieve the current pillory status for a lock session.
+
+- `GET /api/extensions/sessions/:sessionId/pillory/status`:
+Get the current pillory status for a lock session (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerPilloryActionsController_getStatus)).
+
+#### Response
+
+The endpoint returns an object containing an array of active pillory votes:
+
+```json
+{
+  "votes": [
+    {
+      "_id": "507f1f77bcf86cd799439011",
+      "nbVotes": 42,
+      "totalDurationAdded": 7200,
+      "voteEndsAt": "2026-01-24T12:00:00.000Z",
+      "reason": "Failed to complete task on time",
+      "createdAt": "2026-01-23T12:00:00.000Z"
+    }
+  ]
+}
+```
+
+#### Response Fields
+
+- **votes**: Array of active pillory vote objects. Empty array if the user is not in pillory.
+
+For each vote object:
+
+- **_id**: Unique identifier for this pillory vote period
+- **nbVotes**: Number of people who have voted on this pillory
+- **totalDurationAdded**: Total time added in seconds from all votes combined
+- **voteEndsAt**: ISO 8601 timestamp when the pillory voting period ends
+- **reason**: The reason why the user was put in the pillory
+- **createdAt**: ISO 8601 timestamp when the pillory vote started

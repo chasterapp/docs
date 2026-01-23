@@ -1,0 +1,53 @@
+---
+title: Actor system
+sidebar_label: Actor system
+---
+
+The actor system allows extensions to specify who is performing an action, enabling proper attribution in action logs and the Chaster user interface. This system is used by several extension interaction endpoints to track whether actions are initiated by the wearer, keyholder, or the extension itself.
+
+## Overview
+
+When your extension performs certain actions (such as assigning tasks or temporarily opening locks), the actor system lets you specify who is responsible for that action. This information is recorded in the lock's action history and displayed to users, providing transparency about how and why actions occurred.
+
+The actor system ensures accurate attribution and helps users understand whether they, their keyholder, or your extension's automation triggered a specific action.
+
+## Actor types
+
+The actor system supports three types of actors:
+
+| Actor type | When to use | Example scenarios | Notes |
+|------------|-------------|-------------------|-------|
+| `wearer` | When the locked person initiates the action through your extension | • A user clicks a button in your extension interface to assign themselves a task<br/>• The wearer requests a temporary unlock through your extension's UI | Actions appear as performed by the user in action logs, showing their direct involvement |
+| `keyholder` | When the keyholder initiates the action through your extension | • A keyholder opens your extension and assigns a task to their wearer<br/>• The keyholder uses your extension to grant a temporary unlock | The lock must have a keyholder assigned. If the lock has no keyholder and you specify `keyholder`, the API will return an error. Actions appear as performed by the keyholder in action logs |
+| `extension` | When your extension automatically performs an action based on its own logic or algorithms | • An AI Keyholder extension that automatically assigns tasks based on algorithms or user behavior<br/>• A scheduled automation that triggers actions at specific times<br/>• An extension that responds to external events or data to take actions | Actions appear as performed by your extension in action logs, showing that it was an automated action rather than a user-initiated one |
+
+## Best Practices
+
+### Choose the accurate actor
+
+Always select the actor that truly initiated the action. If a user clicked a button, use `wearer` or `keyholder` depending on who clicked. If your code decided automatically, use `extension`. Never misattribute actions, as this affects trust and transparency.
+
+### Transparency is key
+
+Users and keyholders rely on action logs to understand their lock's history. Accurate actor attribution builds trust in your extension, helps users understand what happened and why, prevents confusion about who triggered actions, and maintains clear accountability.
+
+### Handle missing keyholders
+
+If your extension allows keyholder-initiated actions, check if the lock has a keyholder before using `keyholder`. Provide clear error messages if a keyholder is required but missing, and consider offering alternative flows for locks without keyholders.
+
+### Document actor behavior
+
+In your extension's documentation for users:
+
+- Explain when your extension acts autonomously (using `extension`)
+- Clarify which actions require user or keyholder initiation
+- Help users understand how actions will appear in their lock history
+
+## APIs using the actor system
+
+The following extension interaction APIs use the actor system:
+
+- **[Tasks](/api/extensions-api/interact-with-extensions/tasks)**: Assign tasks, start timers, and complete tasks with actor attribution
+- **[Hygiene Opening](/api/extensions-api/interact-with-extensions/hygiene-opening)**: Temporarily open locks with proper actor tracking
+
+Each of these endpoints requires an `actor` parameter in the request body to specify who is performing the action.

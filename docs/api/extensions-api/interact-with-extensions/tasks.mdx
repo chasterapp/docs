@@ -1,0 +1,113 @@
+---
+title: Tasks
+sidebar_label: Tasks
+---
+
+The Extensions API allows your extension to integrate with the Tasks extension, enabling you to programmatically assign tasks to wearers, manage timed tasks, and complete tasks on behalf of users. This powerful integration enables you to build AI companions, automation tools, gamification systems, and much more by leveraging Chaster's built-in Tasks extension.
+
+## Overview
+
+The Tasks extension lets users earn points by completing tasks, working toward unlocking their lock. Your extension can use this API to:
+
+- Assign custom tasks programmatically
+- Start timers for timed tasks that require minimum completion time
+- Complete tasks and mark them as done or failed
+- Build intelligent task management systems
+- Create automated task flows
+
+To learn how Tasks work from a user perspective, see the [Tasks extension documentation](/extensions/tasks).
+
+:::info
+Your extension must work with locks that have the Tasks extension configured. If the Tasks extension is not enabled on a lock, these endpoints will return an error.
+:::
+
+## Use cases
+
+Here are some ways you might use the Extensions API to interact with Tasks in your extension:
+
+- **AI Keyholder**: Build an AI companion that assigns personalized tasks based on user behavior, preferences, or progress
+- **External task integration**: Connect Chaster with external task management systems
+- **Event-driven tasks**: Assign tasks automatically based on external events or triggers
+- **Gamification layers**: Create complex game mechanics that assign challenges and track completion
+- **Training programs**: Implement structured training or habit-building programs with progressive tasks
+
+## API Implementation
+
+### Assign a task
+
+Assign a new task to the wearer. This creates a task assignment that the wearer must complete.
+
+- `POST /api/extensions/sessions/:sessionId/tasks/assign`:
+Assign a new task to the wearer (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerTaskActionsController_assignTask)).
+
+#### Request body
+
+```json
+{
+  "task": {
+    "task": "Complete 50 push-ups",
+    "points": 10,
+    "requireVerificationPicture": false,
+    "duration": 0
+  },
+  "actor": "extension"
+}
+```
+
+**Fields:**
+
+- **task** (required): The task object containing task details
+  - **task** (string, required): The task description (what the wearer needs to do)
+  - **points** (number, required): Points awarded upon successful completion
+  - **requireVerificationPicture** (boolean, optional): Whether the task requires photo proof. If not set, the task will not require verification pictures.
+  - **duration** (number, optional): Minimum time in seconds for timed tasks (60-86400 seconds for timed)
+- **actor** (required): Who is assigning the task (`wearer`, `keyholder`, or `extension`)
+
+#### Task duration
+
+For timed tasks, you must call the [Start Task Timer](#start-task-timer) endpoint before the wearer can complete the task.
+
+#### Verification pictures
+
+When `requireVerificationPicture` is `true`:
+
+- The wearer must upload a photo as proof of task completion
+- If peer verification is enabled in the Tasks configuration, the photo will be reviewed by the community
+- The task cannot be marked complete until the photo is uploaded (and approved if peer verification is enabled)
+
+:::important
+If you set `requireVerificationPicture` to `true`, you will not be able to complete the task using the API. Only the wearer can complete tasks that require verification pictures through the Tasks extension interface.
+:::
+
+### Start task timer
+
+Start the timer for a timed task. This endpoint must be called before a timed task can be completed.
+
+- `POST /api/extensions/sessions/:sessionId/tasks/start-timer`:
+Start the timer for a timed task (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerTaskActionsController_startTaskTimer)).
+
+:::important
+This endpoint only works if a timed task is currently assigned. If the current task is not timed, it will return an error. The timer must complete before the task can be completed.
+:::
+
+### Complete a task
+
+Mark the current task as complete or failed. This awards points (if successful) and removes the task from the wearer's active task list.
+
+- `POST /api/extensions/sessions/:sessionId/tasks/complete`:
+Mark the current task as complete or failed (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerTaskActionsController_completeTask)).
+
+#### Request body
+
+```json
+{
+  "actor": "extension",
+  "isCompleted": true
+}
+```
+
+**Fields:**
+
+- **actor** (required): Who is completing the task (`wearer`, `keyholder`, or `extension`)
+- **isCompleted** (boolean, required): `true` if the task was completed successfully, `false` if it failed
+

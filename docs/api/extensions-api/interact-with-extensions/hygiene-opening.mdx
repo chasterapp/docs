@@ -1,0 +1,61 @@
+---
+title: Hygiene opening
+sidebar_label: Hygiene opening
+---
+
+The Extensions API allows your extension to integrate with the Hygiene opening extension, enabling you to temporarily unlock locks so wearers can clean their chastity device or handle other necessary tasks. This endpoint uses the actor system to track who initiated the unlock.
+
+## Overview
+
+Hygiene opening provides a controlled way to temporarily unlock a lock for essential activities like cleaning or hygiene, with automatic penalties if the wearer exceeds the allowed time. Your extension can use this API to:
+
+- Grant temporary unlocks as rewards
+- Allow remote keyholders to unlock wearers temporarily
+- Implement scheduled unlock systems
+- Build emergency unlock mechanisms
+- Create unlock-based gamification features
+
+To learn how Hygiene Opening works from a user perspective, see the [Hygiene Opening documentation](/extensions/temporary-opening).
+
+:::info
+Your extension must work with locks that have the Hygiene Opening extension configured. If the Hygiene Opening extension is not enabled on a lock, these endpoints will return an error.
+:::
+
+## Use cases
+
+Here are some ways you might use the Extensions API to interact with Hygiene Opening in your extension:
+
+- **Reward systems**: Grant temporary unlock time as a reward for completing tasks or achievements
+- **Remote keyholder apps**: Allow keyholders to remotely grant hygiene breaks to their wearers
+- **Scheduled unlocks**: Implement automated unlock schedules based on time or other conditions
+- **Emergency access**: Provide controlled emergency unlock functionality with proper logging
+
+## API Implementation
+
+### Open lock temporarily
+
+Temporarily unlock a lock according to the Hygiene Opening extension configuration.
+
+- `POST /api/extensions/sessions/:sessionId/temporary-opening/open`:
+Temporarily unlock a lock (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerOpenLockActionsController_openLock)).
+
+#### Request body
+
+```json
+{
+  "actor": "extension"
+}
+```
+
+**Fields:**
+
+- **actor** (required): Who is performing the unlock action. Must be one of:
+  - `wearer`: The locked person is unlocking themselves
+  - `keyholder`: The keyholder is unlocking the wearer
+  - `extension`: Your extension is automatically granting the unlock
+
+#### Response
+
+**Success (201 Created):**
+
+The lock will be temporarily unlocked. No response body is returned, but the action is logged in the lock history.

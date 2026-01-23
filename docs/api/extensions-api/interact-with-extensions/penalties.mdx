@@ -3,7 +3,9 @@ title: Penalties
 sidebar_label: Penalties
 ---
 
-The Penalties system allows extensions to create habits (actions) that wearers must perform while locked. This can be used to enforce regular check-ins, task completion, or any other time-based or recurring actions.
+The Penalties API allows your extension to integrate with the Penalties extension, creating habits (actions) that wearers must perform while locked. This can be used to enforce regular check-ins, task completion, or any other time-based or recurring actions, adding accountability, consequences, and structured routines to your extension's features.
+
+To learn how Penalties work from a user perspective, see the [Penalties extension documentation](/extensions/penalties).
 
 ## Overview
 
@@ -40,7 +42,7 @@ See the [penalty documentation](/extensions/penalties) for more information on h
 Recurring habits are perfect for actions that need to be performed regularly. You can set how many times the action needs to be completed within a specific time period (hourly, daily, or weekly). For example, you might require users to roll dice three times per day or complete a task once every two hours. The system will track these actions and apply penalties if the minimum number of actions isn't completed within the specified period.
 
 #### Time-limited habits
-Time-limited habits are designed for actions that need immediate attention. When triggered, the user must complete the action within a specific timeframe. For example, you might give users 2 hours to submit a verification picture after being requested, or 30 minutes to complete a task. If the action isn't completed within the time limit, a penalty will be applied.
+Time-limited habits are designed for actions that need immediate attention. When triggered, the user must complete the action within a specific timeframe. For example, you might give users 2 hours to submit a verification picture after being requested, or 30 minutes to complete a task assigned through the [Tasks API](/api/extensions-api/interact-with-extensions/tasks). If the action isn't completed within the time limit, a penalty will be applied.
 
 ## API Implementation
 
