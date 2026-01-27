@@ -47,7 +47,7 @@ Assign a new task to the wearer (read the [API documentation](https://api.chaste
   "task": {
     "task": "Complete 50 push-ups",
     "points": 10,
-    "requireVerificationPicture": false,
+    "verificationRequired": false,
     "duration": 0
   },
   "actor": "extension"
@@ -59,7 +59,7 @@ Assign a new task to the wearer (read the [API documentation](https://api.chaste
 - **task** (required): The task object containing task details
   - **task** (string, required): The task description (what the wearer needs to do)
   - **points** (number, required): Points awarded upon successful completion
-  - **requireVerificationPicture** (boolean, optional): Whether the task requires photo proof. If not set, the task will not require verification pictures.
+  - **verificationRequired** (boolean, optional): Whether the task requires photo proof. If not set, the task will not require verification pictures.
   - **duration** (number, optional): Minimum time in seconds for timed tasks (60-86400 seconds for timed)
 - **actor** (required): Who is assigning the task (`wearer`, `keyholder`, or `extension`)
 
@@ -69,14 +69,14 @@ For timed tasks, you must call the [Start Task Timer](#start-task-timer) endpoin
 
 #### Verification pictures
 
-When `requireVerificationPicture` is `true`:
+When `verificationRequired` is `true`:
 
 - The wearer must upload a photo as proof of task completion
 - If peer verification is enabled in the Tasks configuration, the photo will be reviewed by the community
 - The task cannot be marked complete until the photo is uploaded (and approved if peer verification is enabled)
 
 :::important
-If you set `requireVerificationPicture` to `true`, you will not be able to complete the task using the API. Only the wearer can complete tasks that require verification pictures through the Tasks extension interface.
+If you set `verificationRequired` to `true`, you will not be able to complete the task using the API. Only the wearer can complete tasks that require verification pictures through the Tasks extension interface.
 :::
 
 ### Start task timer
