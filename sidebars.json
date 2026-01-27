@@ -18,7 +18,7 @@
       "features/features",
       "features/shared-links",
       "features/pillory",
-      "features/peer-verification"
+      "features/verification"
     ],
     "Activity": [
       "activity/activity"
@@ -29,7 +29,7 @@
       "extensions/penalties",
       "extensions/random-events",
       "extensions/tasks",
-      "extensions/temporary-opening",
+      "extensions/hygiene-opening",
       "extensions/verification-picture"
     ]
   },

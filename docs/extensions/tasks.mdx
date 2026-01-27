@@ -23,11 +23,16 @@ To enable task points, check the "Enable task points" option in the configuratio
 
 Require a photo as proof of task completion. When enabled, tasks can be configured to require a verification picture demonstrating that you have successfully finished the task. This adds an extra layer of accountability to your session.
 
-To enable peer verification for tasks, check the "Enable peer verification" option. You can also configure the penalty that will be applied when your verification is rejected by the community.
+To enable verification for tasks, check the "Enable verification" option. You can choose who can validate your submissions:
 
-A peer verification request lasts up to 6 hours. If you complete a task with peer verification enabled and task points configured, you will need to wait up to 6 hours for the community to validate your submission before your points are granted.
+- **Community members**: Allows other members to review and validate your task completion images through a voting process
+- **Only my keyholder**: Restricts validation to your keyholder only, keeping the verification process private
 
-For more information about how peer verification works, including how other members validate your images and the voting process, refer to the [Peer verification](/features/peer-verification) documentation.
+You can also configure the penalty that will be applied when your verification is rejected.
+
+When using community verification, a verification request lasts up to 6 hours. If you complete a task with community verification enabled and task points configured, you will need to wait up to 6 hours for the community to validate your submission before your points are granted. With keyholder verification, you'll need to wait for your keyholder to review and approve your submission.
+
+For more information about how verification works, including the validation process and requirements for each mode, refer to the [Verification](/features/verification) documentation.
 
 ### Tasks
 
@@ -35,7 +40,7 @@ Configure the tasks you would like to do during your session. For each task, you
 
 - **Task name**: Enter a description of the task you want to complete.
 - **Points**: If task points are enabled, set the number of points granted for completing this task.
-- **Verification picture required**: If peer verification is enabled, you can require a verification picture for this specific task. When enabled, you must upload and have your verification picture approved before the task can be marked as complete.
+- **Verification picture required**: If verification is enabled, you can require a verification picture for this specific task. When enabled, you must upload and have your verification picture approved before the task can be marked as complete.
 - **Timed task**: Enable this option to require a minimum time before the task can be marked complete. When a timed task is assigned, you must first start a timer and wait for the specified duration to pass before you can complete the task.
   - **Duration**: Set the minimum time required to complete the timed task (e.g., 15 minutes).
 
@@ -90,8 +95,10 @@ If you have the Penalties extension enabled and configured for time-limited acti
 To complete a task:
 
 1. If the task is timed, ensure the timer has finished.
-2. If peer verification is required for the task, upload a verification picture demonstrating task completion.
-3. If peer verification is enabled and required, wait for the community to validate your submission. Peer verification lasts up to 6 hours, so your points will be granted once the verification is accepted (which may take up to 6 hours).
+2. If verification is required for the task, upload a verification picture demonstrating task completion.
+3. If verification is enabled and required, wait for validation:
+   - **Community verification**: Wait for the community to validate your submission. Verification lasts up to 6 hours, so your points will be granted once the verification is accepted (which may take up to 6 hours).
+   - **Keyholder verification**: Wait for your keyholder to review and approve your submission.
 4. If no verification is required, simply mark the task as complete.
 
 If task points are enabled, you will earn the configured points upon successful completion. When you reach the target number of points required, your lock will be unlocked.
