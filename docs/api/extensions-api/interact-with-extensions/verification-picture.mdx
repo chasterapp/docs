@@ -1,0 +1,61 @@
+---
+title: Verification picture
+sidebar_label: Verification picture
+---
+
+The Extensions API allows your extension to integrate with the Verification Picture extension, enabling you to programmatically request verification pictures from wearers. This endpoint uses the actor system to track who initiated the request.
+
+## Overview
+
+The Verification Picture extension allows keyholders and extensions to request photo proof that the wearer is still properly locked. Your extension can use this API to:
+
+- Request verification pictures on demand
+- Build automated verification schedules
+- Integrate verification with other extension features
+- Implement accountability systems
+
+To learn how Verification Picture works from a user perspective, see the [Verification Picture documentation](/extensions/verification-picture).
+
+:::info
+Your extension must work with locks that have the Verification Picture extension configured. If the Verification Picture extension is not enabled on a lock, this endpoint will return an error.
+:::
+
+## Use cases
+
+Here are some ways you might use the Extensions API to interact with Verification Picture in your extension:
+
+- **Random checks**: Implement random verification requests to keep wearers accountable
+- **Scheduled verifications**: Create automated verification schedules based on time or events
+- **Post-action verification**: Request verification after specific actions (e.g., after a hygiene opening)
+- **AI keyholder**: Build intelligent systems that request verification based on behavior patterns
+- **Gamification**: Integrate verification requests into game mechanics or challenges
+
+## API Implementation
+
+### Request a verification picture
+
+Request a verification picture from the wearer. This creates a pending verification request that the wearer must fulfill.
+
+- `POST /api/extensions/sessions/:sessionId/verification-picture/request`:
+Request a verification picture from the wearer (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerVerificationPictureActionsController_requestVerificationPicture)).
+
+#### Request body
+
+```json
+{
+  "actor": "extension"
+}
+```
+
+**Fields:**
+
+- **actor** (required): Who is requesting the verification picture. Must be one of:
+  - `wearer`: The locked person is requesting a verification (uncommon)
+  - `keyholder`: The keyholder is requesting verification from the wearer
+  - `extension`: Your extension is automatically requesting verification
+
+#### Response
+
+**Success (201 Created):**
+
+A verification picture request is created. The wearer will be notified and must submit a photo. No response body is returned, but the action is logged in the lock history.
