@@ -29,3 +29,9 @@
 code {
   color: #fc6e5e;
 }
+
+.img-mobile {
+  max-width: 300px;
+  display: block;
+  margin-bottom: 2rem;
+}
