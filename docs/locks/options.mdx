@@ -26,11 +26,17 @@ The limitation is disabled by default. If you are a beginner, we advise you to e
 
 You can set the maximum lock time or date, or leave the default maximum initial lock duration.
 
+:::info
+This option is a safety measure for wearers. It cannot be changed by the keyholder.
+:::
+
 ### Set a minimum lock time
 
 You can set a minimum lock time to prevent your lock from being unlocked before a certain duration has elapsed. While "Limit lock time" sets a ceiling, this option sets a floor: the lock cannot be unlocked before the minimum time, regardless of other factors.
 
 This option is disabled by default. When enabled, you choose a minimum lock duration. For shared locks using date mode, you can set a minimum date instead.
+
+The keyholder can change the minimum lock time, but cannot set it above the maximum lock time defined by the **Limit lock time** option.
 
 :::info
 The minimum lock time and the **Limit lock time** option work independently. You can use one, both, or neither. Together, they define a window: you are guaranteed to stay locked for at least the minimum time, and guaranteed to be released by the maximum time.
