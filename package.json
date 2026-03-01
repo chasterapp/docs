@@ -10,7 +10,8 @@
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "serve": "docusaurus serve",
-    "clear": "docusaurus clear"
+    "clear": "docusaurus clear",
+    "lint:docs": "bash .claude/hooks/lint-docs.sh"
   },
   "engines": {
     "node": ">=22.0"

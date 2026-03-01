@@ -12,6 +12,7 @@ Your lock can be unlocked when all of the following conditions are met:
 - The timer has elapsed.
 - The lock is not frozen.
 - No extensions are blocking the unlocking process.
+- If a **minimum lock time** is set, the minimum duration has been reached.
 
 ### Unlocking process
 
@@ -60,6 +61,22 @@ In such cases, you can either:
 
 ### Deserted locks
 
-A deserted lock occurs when a wearer archives a running lock. When deserted, the combination will not be displayed to the wearer after desertion. You can recover the combination picture or code 7 days after desertion by contacting [support](/contacting-support).
+A deserted lock occurs when you archive a running lock before the timer has elapsed. Deserting means you chose to abandon your session commitment. Because of this, your combination is not given back to you automatically. Chaster requires you to explicitly acknowledge that you broke your commitment before you can access it again.
+
+#### Recovering your combination
+
+After a mandatory 7-day waiting period, a "Recover combination" option appears in the archived lock menu. Before that, the option is disabled and shows how many days remain.
+
+To recover your combination:
+
+1. Go to your archived locks and find the deserted lock.
+2. Open the lock menu and click **Recover combination**.
+3. Read the confirmation modal carefully. It explains that you abandoned your session, that the recovery is permanently logged on your account, and that it may affect your stats in the future.
+4. Click **Recover combination** to confirm.
+5. Your combination becomes viewable from the lock menu using "View combination".
+
+:::warning
+Recovering your combination does not erase the desertion. Your lock stays marked as deserted, and every recovery is permanently recorded. This may count against you in future stats and reputation features. If you find yourself recovering combinations regularly, consider setting shorter sessions or using the [Limit lock time](/locks/options) option instead.
+:::
 
 

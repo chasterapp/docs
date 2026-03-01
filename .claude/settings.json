@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(cat | jq -r '.tool_input.file_path // .tool_input.filePath // empty') && if [[ \"$FILE\" == *.mdx ]] || [[ \"$FILE\" == *.md ]]; then bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/lint-docs.sh\" \"$FILE\"; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

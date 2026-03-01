@@ -3,18 +3,34 @@ title: Dice
 sidebar_label: Dice
 ---
 
-With every action, you and the bot roll a dice. If you do more than he does, time is removed. If the bot does more, time is added.
+With every action, you and the bot roll a die. If you score higher, time is removed. If the bot scores higher, time is added.
 
 ## Introduction
 
-The Dice extension affects the time of your lock, and can add or remove time depending on your luck. When you use the extension, a six-sided die will be rolled for you. You will play against a bot, which will also roll a six-sided die.
+The Dice extension affects the time of your lock, and can add or remove time depending on your luck. When you use the extension, a die will be rolled for you. You will play against a bot, which will also roll a die. By default, both players roll a six-sided die (d6), but you can choose from a variety of polyhedral dice or set a custom number of sides.
 
-- If the bot rolls higher than you, time will be added to your score.
-- If you roll a higher result than the bot, time will be taken away from you.
+- If the bot rolls higher than you, time will be added to your lock.
+- If you roll a higher result than the bot, time will be removed from your lock.
 - In case of a tie, the time is not modified.
 
 ## Configuration
 
-### Time multiplier (in seconds)
+### Dice type
 
-The time multiplier indicates the time to add or remove from your lock. The difference between the dice values obtained is multiplied by this time multiplier, to give the final time to add or remove.
+You can choose the type of die used in the extension. Select one of the common presets or enter a custom number of sides.
+
+- **d4**: four-sided die
+- **d6**: six-sided die (default)
+- **d8**: eight-sided die
+- **d10**: ten-sided die
+- **d12**: twelve-sided die
+- **d20**: twenty-sided die
+- **Custom**: enter any number of sides from 2 to 100
+
+:::tip
+Higher-sided dice increase the possible range of results, which means bigger potential time swings when combined with the time multiplier.
+:::
+
+### Time multiplier
+
+The time multiplier indicates the time to add or remove from your lock. The difference between the two dice values is multiplied by this time multiplier, to give the final time to add or remove.
