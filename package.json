@@ -11,7 +11,8 @@
     "deploy": "docusaurus deploy",
     "serve": "docusaurus serve",
     "clear": "docusaurus clear",
-    "lint:docs": "bash .claude/hooks/lint-docs.sh"
+    "lint:docs": "bash .claude/hooks/lint-docs.sh",
+    "compress:images": "sharp --palette --compressionLevel 9 -i 'static/img/*.png' -o static/img/"
   },
   "engines": {
     "node": ">=22.0"
@@ -44,6 +45,7 @@
     "@types/react": "^18.3.18",
     "@types/react-helmet": "^6.1.6",
     "@types/react-router-dom": "^5.3.3",
+    "sharp-cli": "^5.2.0",
     "typescript": "^5.7.3"
   }
 }
