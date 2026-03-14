@@ -50,6 +50,46 @@ More information on [Offer your session](/locks/offer-your-session).
 
 ### Test lock
 
-When enabled, your lock will be in test mode. This ensures that it doesn't affect your statistics or archivements. This option is useful to thoroughly test the functionality of your a lock without any impacy on your overall progress.
+A test lock lets you try Chaster features without affecting your statistics or reputation. Test locks are visually marked with a blue "Test" chip so you can easily distinguish them from real locks.
 
-In case you forgot to enable this option during the lock creation process, you can still do it after. Once the lock is archived, you can set it as a test lock by accessing your list of archived locks.
+![Test lock chip on an archived lock](/img/test-lock-chip-archived.png)
+
+#### Enabling at creation time
+
+The "Test lock" checkbox is available during lock creation under the lock options. It is always available with no restrictions.
+
+![Test lock toggle in the lock creation form](/img/test-lock-creation-toggle.png)
+
+#### What test locks exclude
+
+Marking a lock as a test lock excludes it from all statistics, including:
+
+- **Wearer statistics:** shortest, longest, and average lock durations, completed locks count, deserted locks count
+- **Keyholder statistics:** active locks, completed locks, unique wearers, total keyholding time
+
+Deserting a test lock also has no impact on your reputation. Instead of the usual warning about negative consequences, you will see a softer informational message explaining what would happen on a real lock.
+
+#### Setting an archived lock as a test lock
+
+If you forgot to enable the test lock option during lock creation, you can still mark the lock as a test lock after it has been archived.
+
+From your list of archived locks, open the three-dot menu on the lock and select **Set as test lock**.
+
+![Set as test lock option in the archived lock menu](/img/test-lock-archived-menu.png)
+
+A confirmation modal will ask you to confirm your choice, since this action is irreversible.
+
+![Set as test lock confirmation modal](/img/test-lock-confirmation-modal.png)
+
+#### Conditions
+
+The following conditions must be met to set an archived lock as a test lock:
+
+- The lock must be **unlocked** (archived). You cannot mark an active lock as a test lock.
+- **Deserted keyholder locks** cannot be marked as test locks. If the lock had a keyholder and was deserted, the option will be greyed out.
+- Only the **wearer** can set a lock as a test lock. Keyholders cannot do this.
+- The action is **irreversible**: once a lock is marked as a test lock, it cannot be changed back to a real lock.
+
+:::info
+Test locks are different from the "Not in stats" indicator, which appears when a lock was created before a statistics reset. Resetting your statistics excludes all older locks from your stats, while test locks are individually excluded regardless of when they were created.
+:::
