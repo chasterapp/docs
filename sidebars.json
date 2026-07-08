@@ -39,7 +39,8 @@
       "extensions/random-events",
       "extensions/tasks",
       "extensions/hygiene-opening",
-      "extensions/verification-picture"
+      "extensions/verification-picture",
+      "extensions/ai-keyholder"
     ]
   },
   "apiSidebar": {
