@@ -5,7 +5,7 @@ sidebar_label: Lock settings
 
 ## Introduction
 
-Once your lock is started and in locked status, you can access the lock settings page to manage various aspects of your session. This page allows you to configure safety limits, manage keyholder permissions, and perform advanced actions on your lock.
+Once your lock is started and in locked status, you can access the lock settings page to manage various aspects of your session. This page allows you to configure safety limits, review and change the lock's [permissions](/locks/permissions), and perform advanced actions on your lock. Pending permission changes also appear here for you to accept or reject.
 
 ## Lock settings
 
@@ -13,16 +13,16 @@ Once your lock is started and in locked status, you can access the lock settings
 
 When you create a lock, you can set a maximum lock date to ensure your lock cannot exceed a specific date. This acts as a safety feature, guaranteeing that you will be unlocked by the defined date regardless of any time additions from extensions, keyholders, or other features.
 
-Once the maximum lock date is set, you can only extend this date further into the future; you cannot advance it to an earlier date.
+Changing the maximum lock date is one of the lock's [permissions](/locks/permissions), and it always belongs to the wearer: your keyholder can never change it. If your contract grants you the permission (the "Standard" preset does), you can extend the date further into the future or remove it; the date can never be moved to an earlier one. If your contract does not grant it, changing the maximum date requires a permission change your keyholder accepts.
 
-If you have a maximum lock date configured, you can remove it. However, **this action is irreversible**: once you remove the maximum lock date, you cannot set it again for this lock. A lock without a maximum lock date cannot have one added later.
+A lock can also carry a minimum lock date, the companion limit. It is its own permission, granted to both you and your keyholder in the "Standard" preset. You can only move it later, never earlier; your keyholder, when granted the permission, can also lower or remove it. In all cases it can never pass the maximum lock date.
 
 :::tip
 If you're new to Chaster or trying new extensions, it's recommended to set a maximum lock date to avoid unexpectedly long sessions.
 :::
 
 :::caution
-Removing the maximum lock date is permanent. Once removed, you cannot restore this safety limit for your current lock.
+Removing the maximum lock date is permanent: once removed, it cannot be set again for this lock, and the guarantee that your session ends by a specific date is gone. Discuss it with your keyholder before removing it.
 :::
 
 ### Initial unlock date
@@ -31,26 +31,19 @@ This displays the original unlock date range that was randomly selected when you
 
 ## Permissions
 
-### Trust my keyholder
+Every lock carries a permission contract: an agreement, made when the lock is created or joined, that says what you and your keyholder can each do during the session, from adding time and freezing the timer to changing the date limits, hiding the timer, and managing extensions. The contract starts from a preset ("Standard", "Trusted keyholder", "Full trust") or a custom mix.
 
-By default, your keyholder has limited control over your lock. They can add or remove time, freeze your lock, and perform basic actions, but they cannot modify your lock's configuration or extensions.
+The **Permissions** section of the lock settings page shows your current contract. Click **Change permissions** to edit it. Changes that give the other party more control apply immediately; every other change is sent to them as a proposal they accept or reject. Pending proposals appear in this section too.
 
-If you enable the "Trust my keyholder" option, you grant your keyholder extended permissions to modify your lock settings.
+{/* SCREENSHOT: lock-settings-permissions-section.png | Wearer lock settings page, Permissions section showing the contract summary and the Change permissions button */}
 
-**When you trust your keyholder, they can:**
-- Enable new extensions
-- Edit current extension configurations
-- Disable existing extensions
+Trusting your keyholder is one of the contract's grants, not a separate mode: it gives your keyholder the "Manage extensions" permission, matching the "Trusted keyholder" preset. Like any grant, it can be taken back by agreement: removing it is a proposal your keyholder accepts.
 
-**What your keyholder cannot do (even when trusted):**
-- Increase the maximum lock duration
-- Archive your lock without your action
-
-:::caution
-Only enable this option if you have full confidence in your keyholder. This grants them significant control over your session, including the ability to add extensions that could extend or complicate your lock. **This action cannot be undone**: once you trust your keyholder, you cannot revoke this permission. Discuss with your keyholder before enabling this feature.
+:::info
+Unlocking, resigning as keyholder, and triggering an enabled safety mechanism are **never permissions**. They cannot be granted or taken away.
 :::
 
-When you click the "Trust my keyholder" button, a confirmation dialog will appear explaining these permissions.
+For the full explanation of every permission, the presets, and how changes are negotiated, see [Lock permissions](/locks/permissions).
 
 ## Advanced options
 
