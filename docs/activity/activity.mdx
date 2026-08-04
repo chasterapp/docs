@@ -3,8 +3,47 @@ title: Activity
 sidebar_label: Activity
 ---
 
-The activity page gathers all the news and the last posts of the members. This is the home page of the Chaster community, where anyone can post.
+The Activity page is the home of the Chaster community. It has two sections: the **Pillory**, where you can add time to the locks of pilloried members, and **Recent activity**, a feed of what is happening in the community.
 
-:::caution
-The activity page is still under construction, and features can change at any time.
+## Pillory
+
+The pillory panel shows members who are currently pilloried.
+
+Each pillory entry shows:
+
+- The pilloried member, their keyholder, and the reason for the pillory.
+- The lock timer, showing the remaining time of their lock.
+- A vote button to add time to their lock, with the time remaining to vote.
+
+Click the vote button to add time to the member's lock. The time added per vote is configured by the pillory settings of the lock. You must be logged in to vote, and you can only vote once per pillory.
+
+To learn more about how members end up in the pillory, see [Pillory](/features/pillory).
+
+### Browsing all pillories
+
+Click **See all pillories** to open the full pillory list. On this page, you can:
+
+- **Sort** entries by newest first, expiring first, most votes, or least votes.
+- **Filter** entries with the Filters button:
+  - **Hide already voted**: hide pillories you have already voted on.
+  - **Lock duration**: only show locks within a selected duration range.
+
+:::info
+Locks with a hidden timer are excluded from the results when the lock duration filter is active.
 :::
+
+## Recent activity
+
+The Recent activity feed shows posts from the community, such as task votes. More types of posts will be added over time.
+
+Each card shows the member and when it was posted. The timestamp links to the post's page, and the copy-link icon copies a shareable link.
+
+### Task votes
+
+When a lock uses community task voting, the vote appears in the feed. Choose a task to vote for it. See the [Tasks extension](/extensions/tasks) to learn how task votes are created. After voting, or by clicking **View replies**, you can see the current results. When the vote closes, the winning task is highlighted.
+
+You must be logged in to vote on tasks.
+
+### Filtering the feed
+
+Click the **Filters** button in the Recent activity header to choose which types of posts appear in your feed. Types you switch off are hidden entirely. Your filters are saved and applied the next time you visit.
