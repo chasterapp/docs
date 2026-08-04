@@ -3,6 +3,10 @@ title: Lock permissions
 sidebar_label: Lock permissions
 ---
 
+:::caution Feature preview
+Lock permissions are currently in **preview** and are being rolled out progressively. You may not see them in the app yet.
+:::
+
 ## Introduction
 
 Every lock carries a contract that says who may do what during the session. The contract is agreed when the lock is created or joined: the party who sets it up decides the terms, and the other party accepts them by joining. It can be changed later, by agreement between the wearer and the keyholder.
@@ -66,7 +70,7 @@ The contract is always shown before it binds anyone.
 - **When the wearer joins a shared lock**: the join screen shows the preset name and its sentence, plus everything that differs from Standard, both what a party gains and what a party loses. A "View all permissions" section lists the full contract. Joining is accepting.
 - **When the keyholder accepts a keyholding request**: the confirmation shows the same contract summary, with the notice that accepting starts a session under these permissions.
 
-{/* SCREENSHOT: permissions-consent-join.png | Join screen of a shared lock, wearer side, Trusted keyholder preset, showing the consent sentence and the differences from Standard */}
+![Join screen of a shared lock showing the Trusted keyholder preset, its consent sentence and the difference from Standard](/img/permissions-consent-join.png)
 
 :::caution
 A self-lock's contract is **fixed at creation**. Choosing a keyholder later through [Offer your session](/locks/offer-your-session) starts from that contract, so it deserves the same attention as any other lock setting.
@@ -84,9 +88,9 @@ A lock holds one pending request at a time. Sending a new one replaces the pendi
 
 Every change is written to the lock history: the permissions changing, a request being sent, and a request being rejected all appear there.
 
-{/* SCREENSHOT: permissions-change-review.png | Change permissions page, review step, showing the "Applies immediately" and "Sent for approval" buckets */}
+![Change permissions review step showing the "Applies immediately" and "Sent for approval" buckets](/img/permissions-change-review.png)
 
-{/* SCREENSHOT: permissions-pending-proposal.png | Pending proposal card on the lock settings page with the Accept, Reject, Counter-offer buttons */}
+![Pending proposal card on the lock settings page with the Reject, Counter-offer and Accept buttons](/img/permissions-pending-proposal.png)
 
 ## Trusting the keyholder
 
