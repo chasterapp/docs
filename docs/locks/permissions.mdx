@@ -1,0 +1,99 @@
+---
+title: Lock permissions
+sidebar_label: Lock permissions
+---
+
+:::caution Feature preview
+Lock permissions are currently in **preview** and are being rolled out progressively. You may not see them in the app yet.
+:::
+
+## Introduction
+
+Every lock carries a contract that says who may do what during the session. The contract is agreed when the lock is created or joined: the party who sets it up decides the terms, and the other party accepts them by joining. It can be changed later, by agreement between the wearer and the keyholder.
+
+## What is never a permission
+
+Unlocking, resigning and triggering an enabled safety mechanism are not permissions. They can never be granted, and they can never be taken away.
+
+- The wearer can always unlock when the lock's own rules allow it.
+- The keyholder can always [resign](/locks/settings#resign-as-keyholder).
+- Triggering a safety mechanism is never a permission: no contract can stop the wearer from using an enabled emergency release or answering a check-in. Whether a mechanism is **enabled**, however, is part of the bondage safety settings, which the "Edit the bondage safety settings" permission governs.
+
+:::info
+The contract governs actions **during** the session. It has no say over whether the session ends.
+:::
+
+## The permissions
+
+The contract covers exactly ten permissions. Each one names an action and says whether the wearer, the keyholder, or both may perform it.
+
+- **Add time**: add time to the lock's timer.
+- **Remove time**: remove time from the lock's timer.
+- **Freeze the timer**: pause the countdown.
+- **Unfreeze the timer**: resume a paused countdown.
+- **Change the minimum date**: change the earliest date the lock can end.
+- **Change the maximum date**: change the latest date the lock can end. This permission exists for the wearer only; the keyholder can never hold it.
+- **Show or hide the timer**: control whether the wearer sees the remaining time.
+- **Show or hide time values in history**: control whether time amounts appear in the lock history.
+- **Manage extensions**: add, remove and configure the lock's [extensions](/extensions).
+- **Edit the bondage safety settings**: change the check-in and release settings of a bondage lock. This permission only exists on bondage locks.
+
+There is no "lock settings" permission. The lock settings page is a surface, not a permission: each field on it maps to one of the permissions above, such as the two visibility permissions and the minimum date.
+
+## Direction rules
+
+Permissions decide **who** may act. Separate rules decide **which direction** each date limit can move:
+
+- The wearer can only raise the minimum date, never bring it earlier. The keyholder, when granted the permission, can move it in either direction or remove it. In all cases it can never pass the maximum date.
+- The maximum date can only be extended or removed, never brought earlier. Removing it is permanent: a lock without a maximum date cannot have one added later.
+
+Even a wearer holding the "Change the maximum date" permission cannot shorten the maximum date, and the keyholder can never touch it at all.
+
+## Presets
+
+The contract usually takes the form of a preset. Each preset is shown on the consent screens with the sentence below.
+
+- **Standard**: the safe default. The keyholder runs the session and the wearer keeps their safety rails. Consent sentence: "The keyholder runs the session with the usual controls; extensions stay as configured."
+- **Trusted keyholder**: Standard, plus extension management for the keyholder. Consent sentence: "The keyholder controls everything about the session, including extensions."
+- **Full trust**: every permission each party can hold. Consent sentence: "Wearer and keyholder can both change anything at any time."
+- **Custom**: any other mix of permissions, picked by hand. If a custom contract is edited back to a preset's exact settings, it snaps to that preset.
+
+## Bondage safety belongs to the wearer
+
+Under Standard, the keyholder cannot change the check-in interval, the dead man's switch or the emergency release of a bondage lock. These settings exist to protect the wearer's physical safety, so they stay in the wearer's hands unless the wearer explicitly grants them away. A party holding this permission can turn the mechanisms on or off, so granting it means trusting the keyholder with the safety rails themselves.
+
+## Where the contract is agreed
+
+The contract is always shown before it binds anyone.
+
+- **At self-lock creation**: the wearer picks the terms in the "Safety & control" section of the lock creation form. A self-lock's permissions cannot be changed after creation.
+- **When the wearer joins a shared lock**: the join screen shows the preset name and its sentence, plus everything that differs from Standard, both what a party gains and what a party loses. A "View all permissions" section lists the full contract. Joining is accepting.
+- **When the keyholder accepts a keyholding request**: the confirmation shows the same contract summary, with the notice that accepting starts a session under these permissions.
+
+![Join screen of a shared lock showing the Trusted keyholder preset, its consent sentence and the difference from Standard](/img/permissions-consent-join.png)
+
+:::caution
+A self-lock's contract is **fixed at creation**. Choosing a keyholder later through [Offer your session](/locks/offer-your-session) starts from that contract, so it deserves the same attention as any other lock setting.
+:::
+
+## Changing the contract later
+
+Either party can open the change permissions page from the lock settings and edit the contract. What happens next depends on the change:
+
+- **Granting the other party more than they had applies immediately.** Either party can always be more generous toward the other.
+- **Anything else becomes a request.** Taking a permission back, or a party granting something to itself, is sent to the other party, who accepts or rejects it. Accepting swaps the lock's permissions for the proposed ones right away; rejecting leaves the permissions unchanged.
+- A single edit can be both at once: the generous part applies immediately and the rest is sent for approval.
+
+A lock holds one pending request at a time. Sending a new one replaces the pending one, and either party can withdraw its own pending request. The party whose answer is awaited sees a notice that a permission change needs an answer, and reviews the request from the lock settings.
+
+Every change is written to the lock history: the permissions changing, a request being sent, and a request being rejected all appear there.
+
+![Change permissions review step showing the "Applies immediately" and "Sent for approval" buckets](/img/permissions-change-review.png)
+
+![Pending proposal card on the lock settings page with the Reject, Counter-offer and Accept buttons](/img/permissions-pending-proposal.png)
+
+## Trusting the keyholder
+
+Trusting the keyholder means granting the keyholder the "Manage extensions" permission. On a Standard contract, this grant turns the contract into the "Trusted keyholder" preset.
+
+It is a grant like any other. Because it hands the keyholder more control, the wearer's grant applies immediately; taking it back is a removal, so it becomes a request the keyholder accepts or rejects. Trust is given freely and taken back by agreement, and it is never permanent.

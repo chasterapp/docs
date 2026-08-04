@@ -12,6 +12,7 @@
       "locks/options",
       "locks/status",
       "locks/settings",
+      "locks/permissions",
       "locks/offer-your-session",
       "locks/findom"
     ],
@@ -39,7 +40,8 @@
       "extensions/random-events",
       "extensions/tasks",
       "extensions/hygiene-opening",
-      "extensions/verification-picture"
+      "extensions/verification-picture",
+      "extensions/ai-keyholder"
     ]
   },
   "apiSidebar": {

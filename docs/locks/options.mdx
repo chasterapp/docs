@@ -8,7 +8,7 @@ By creating a lock, you can configure its options to get the experience of your 
 
 ### Display remaining time
 
-The timer corresponding to the remaining time will be displayed when enabled. When disabled, the timer will be hidden. If the lock has a keyholder, only he will be able to see the remaining time. The keyholder can also enable or disable the timer display at any time.
+The timer corresponding to the remaining time will be displayed when enabled. When disabled, the timer will be hidden. If the lock has a keyholder, only he will be able to see the remaining time. The keyholder can also enable or disable the timer display if the lock's [permissions](/locks/permissions) allow it, which they do by default.
 
 The remaining time is displayed by default.
 
@@ -16,7 +16,7 @@ The remaining time is displayed by default.
 
 When enabled, time changes will be displayed in the lock history. If the option is disabled, all time updates will be hidden in the history.
 
-The time information is displayed by default.
+The time information is displayed by default. Once the lock has started, changing this setting is governed by the lock's [permissions](/locks/permissions); by default, the keyholder can show or hide time values in the history.
 
 ### Limit lock time
 
@@ -36,7 +36,7 @@ You can set a minimum lock time to prevent your lock from being unlocked before 
 
 This option is disabled by default. When enabled, you choose a minimum lock duration. For shared locks using date mode, you can set a minimum date instead.
 
-The keyholder can change the minimum lock time, but cannot set it above the maximum lock time defined by the **Limit lock time** option.
+The keyholder can change the minimum lock time if the lock's [permissions](/locks/permissions) allow it, which they do by default. In any case, it cannot be set above the maximum lock time defined by the **Limit lock time** option.
 
 :::info
 The minimum lock time and the **Limit lock time** option work independently. You can use one, both, or neither. Together, they define a window: you are guaranteed to stay locked for at least the minimum time, and guaranteed to be released by the maximum time.
