@@ -31,7 +31,9 @@ You can configure the minimum number of actions to be performed for a recurring 
 
 #### Regularity
 
-You can configure the frequency of a recurring action, which can be set to a specific number of hours (ranging from 1 hour to 24 hours) or days (ranging from 1 day to 30 days). By default, the frequency is set to every day, but you can customize the repeat interval to fit your needs.
+You can configure the frequency of a recurring action, which can be set to a specific number of minutes (from 5 to 55 minutes, in steps of 5), hours (ranging from 1 hour to 23 hours) or days (ranging from 1 day to 30 days). By default, the frequency is set to every day, but you can customize the repeat interval to fit your needs.
+
+Minute frequencies are useful for short locks of a few hours, where even an hourly action would be too spread out.
 
 ![Actions required. This determines how many times you need to complete the action during each regularity period.](/img/penalties-config-regularity.png)
 
@@ -43,7 +45,7 @@ Examples of actions that can trigger penalties include rolling dice, assigning t
 
 #### Penalty reset schedule
 
-You can choose how the penalty periods reset:
+For hourly and daily actions, you can choose how the penalty periods reset:
 
 - **Reset based on lock start time**: The penalty period will begin when the lock is created. This means your first period will start at the moment you create the lock, and subsequent periods will be calculated from that initial start time.
 - **Reset at a fixed time**: The penalty period will reset at a specific time you choose (default is midnight). This option allows you to align all penalty periods with a consistent time of day, making it easier to track and manage your actions.
@@ -56,6 +58,8 @@ For recurring actions **in days**, when you create a lock, the first period comb
 
 For recurring actions **in hours**, periods are aligned with fixed time slots in the day, computed from midnight. For example:
 - If you configure an action every 3 hours, the periods will be: 12 AM to 3 AM, 3 AM to 6 AM, 6 AM to 9 AM, and so on. When you create a lock, your first period will run from the creation time until the end of the current time slot. For instance, if you create a lock at 2 PM with actions required every 3 hours, your first period will be from 2 PM to 6 PM (end of the 12 PM - 3 PM slot plus next period 3 PM to 6 PM), then the next period will be from 6 PM to 9 PM, and so on.
+
+Recurring actions **in minutes** always reset based on the moment the action is configured: periods run back to back from that time (for example 2:23 PM to 2:33 PM for a 10-minute frequency). A fixed reset time is not available for minute frequencies.
 
 ### Time-limited actions
 

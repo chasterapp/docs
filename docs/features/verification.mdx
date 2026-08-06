@@ -23,9 +23,20 @@ Verification is available for the following extensions:
 
 ### Community verification (peer verification)
 
-With community verification, all members can participate in validating or rejecting submissions. Once a verification image is posted, it remains available for review for 6 hours. During this period, members can vote to approve or reject it.
+With community verification, all members can participate in validating or rejecting submissions. Once a verification image is posted, it remains available for review during a voting window. During this period, members can vote to approve or reject it, and the wearer sees a "Voting ends in..." countdown on the ongoing verification.
 
-After 6 hours, the submission is evaluated: if **at least 75% of the votes are approvals**, it is considered **validated**. If not, the submission is **rejected**, and the wearer receives a pre-configured penalty associated with the lock.
+The voting window is configured in the extension settings:
+
+- **Voting duration**: how long the vote stays open, from 15 minutes to 6 hours. The default is 6 hours. Pick one of the presets or choose "Custom…" to set your own duration.
+- **End voting early once enough votes are in**: optionally, close the vote as soon as a chosen number of votes has been cast, between 3 and 100. This is useful with short locks, where waiting for the full duration would be too long.
+
+![Voting duration and early voting completion options in the verification settings](/img/verification-voting-config.png)
+
+When voting closes, the submission is evaluated: if **at least 75% of the votes are approvals**, it is considered **validated**. If not, the submission is **rejected**, and the wearer receives a pre-configured penalty associated with the lock. If nobody voted, the submission is validated.
+
+:::info
+The voting duration is set when the verification is created: changing the configuration does not affect a verification already in progress.
+:::
 
 ### Keyholder verification
 
