@@ -91,7 +91,7 @@ A deserted lock occurs when you archive a running lock before the timer has elap
 
 #### Recovering your combination
 
-After a mandatory 7-day waiting period, a "Recover combination" option appears in the archived lock menu. Before that, the option is disabled and shows how many days remain.
+Unless you [disabled recovery](#disabling-recovery), after a mandatory 7-day waiting period, a "Recover combination" option appears in the archived lock menu. Before that, the option is disabled and shows how many days remain.
 
 To recover your combination:
 
@@ -103,6 +103,19 @@ To recover your combination:
 
 :::warning
 Recovering your combination does not erase the desertion. Your lock stays marked as deserted, and every recovery is permanently recorded. This may count against you in future stats and reputation features. If you find yourself recovering combinations regularly, consider setting shorter sessions or using the [Limit lock time](/locks/options) option instead.
+:::
+
+#### Disabling recovery
+
+You can make the combination of a deserted lock impossible to recover:
+
+- **For future locks**: in Settings > Lock defaults, set **Combination recovery after desertion** to **No recovery**. Active and past locks are not affected.
+- **For an active lock**: on the lock settings page, click **Disable recovery** in the Combination recovery section. This cannot be undone for that lock.
+
+A normal unlock still reveals the combination as usual.
+
+:::warning
+Chaster Support cannot recover the combination of a deserted lock with recovery disabled. Make sure you have an independent emergency-release method.
 :::
 
 
