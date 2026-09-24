@@ -37,11 +37,13 @@
     "Extensions": [
       "extensions/extensions",
       "extensions/dice",
+      "extensions/guess-the-timer",
       "extensions/penalties",
       "extensions/random-events",
       "extensions/tasks",
       "extensions/hygiene-opening",
       "extensions/verification-picture",
+      "extensions/wheel-of-fortune",
       "extensions/ai-keyholder"
     ]
   },
