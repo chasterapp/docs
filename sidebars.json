@@ -10,6 +10,7 @@
     ],
     "Locks": [
       "locks/options",
+      "locks/emergency-unlock",
       "locks/status",
       "locks/settings",
       "locks/permissions",

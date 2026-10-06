@@ -46,16 +46,25 @@ Activity statistics cover the selected time period:
 - **Best period**: your longest continuous lock duration within the selected period.
 - **Purity**: the percentage of days without an orgasm during the selected period. If you went 27 out of 30 days without an orgasm, your purity is 90%.
 - **Best denial**: the longest stretch of consecutive days without an orgasm during the selected period.
-- **Shortest lock duration**: the duration of your shortest completed lock in the period.
-- **Longest lock duration**: the duration of your longest completed lock in the period.
-- **Average lock duration**: the average duration across all completed locks in the period.
+- **Shortest lock duration**: the duration of your shortest unlocked lock in the period, including emergency unlocks.
+- **Longest lock duration**: the duration of your longest unlocked lock in the period, including emergency unlocks.
+- **Average lock duration**: the average duration across all unlocked locks in the period, including emergency unlocks.
 - **Completed locks**: the number of locks that ended normally during the period.
 - **Deserted locks**: the number of locks you abandoned during the period.
+- **Emergency unlocks**: the number of emergency releases during the period. These are counted separately from completed and deserted locks. Their durations still contribute to shortest, longest, and average lock durations.
 - **Orgasm count**: the total number of orgasm events you logged during the period.
 
 Purity, best denial, and orgasm count only appear if you have logged at least one orgasm event in your [calendar](/features/calendar). These statistics always start from your first orgasm event, regardless of the selected period. For example, if the period is set to 3 months but your first orgasm was logged 10 days ago, purity and best denial are calculated over those 10 days only.
 
-Lock duration statistics (shortest, longest, average) are computed from locks that ended during the selected period, not locks that were active during it.
+Lock duration statistics (shortest, longest, average) use normally unlocked and emergency-unlocked locks that ended during the selected period.
+
+### Emergency unlock history
+
+When **Emergency unlocks** is greater than zero, select it to see your emergency-unlock history. Each entry shows the release date, lock type, duration, and whether it was a self-lock or a lock with a keyholder.
+
+The count follows the selected activity period. The history lists emergency releases since your wearer statistics reset, or across your history if you have never reset; it is not limited to the activity dropdown's period. Test locks and deleted locks are excluded.
+
+You can view your own history even with public statistics off. Other signed-in members with community access can view it only when your public statistics are on.
 
 ### Global
 
@@ -98,7 +107,7 @@ Global statistics always cover your entire history:
 
 ## Privacy
 
-You can control whether other users see your statistics. Go to **Settings > Privacy** and toggle **Show my statistics publicly**. When enabled, anyone visiting your profile can see your Statistics tab, your activity heatmap, and the calendar on your overview. When disabled, only you can see your Statistics tab.
+You can control whether other users see your statistics. Go to **Settings > Privacy** and toggle **Show my statistics publicly**. When enabled, signed-in members with the required community access can see your Statistics tab, your activity heatmap, and the calendar on your overview. When disabled, only you can see your Statistics tab.
 
 ## Resetting statistics
 
@@ -109,6 +118,8 @@ To reset your statistics:
 1. Go to your **Profile > Statistics tab** and open the menu, or go to the **Calendar** statistics panel and open the menu.
 2. Select the reset option for the role you want to reset (wearer, keyholder, or both).
 3. Confirm and click **Reset** to apply.
+
+After a reset, the applicable statistics views display **Statistics since** with the reset date. Resetting wearer statistics also excludes earlier emergency releases from the count and emergency-unlock history. It does not erase the emergency-unlock entry in the lock's own history or its archived label.
 
 Resetting sets a new start date. All locks from before that date are excluded from your statistics calculations. On the calendar, verified locks from before the reset date no longer appear.
 

@@ -13,19 +13,19 @@ Every lock carries a contract that says who may do what during the session. The 
 
 ## What is never a permission
 
-Unlocking, resigning and triggering an enabled safety mechanism are not permissions. They can never be granted, and they can never be taken away.
+Using emergency unlock while it is enabled, unlocking under the normal rules, and resigning as keyholder do not require a permission grant.
 
 - The wearer can always unlock when the lock's own rules allow it.
 - The keyholder can always [resign](/locks/settings#resign-as-keyholder).
-- Triggering a safety mechanism is never a permission: no contract can stop the wearer from using an enabled emergency release or answering a check-in. Whether a mechanism is **enabled**, however, is part of the bondage safety settings, which the "Edit the bondage safety settings" permission governs.
+- The wearer can use emergency unlock while it is enabled. **Change emergency unlock** controls who can turn it on or off: a keyholder with that permission can disable it.
 
 :::info
-The contract governs actions **during** the session. It has no say over whether the session ends.
+Permissions determine who can change the emergency-unlock setting. While it is enabled, the wearer does not need keyholder approval to use it.
 :::
 
 ## The permissions
 
-The contract covers exactly ten permissions. Each one names an action and says whether the wearer, the keyholder, or both may perform it.
+The contract covers eleven permissions. Each one names an action and says whether the wearer, the keyholder, or both may perform it.
 
 - **Add time**: add time to the lock's timer.
 - **Remove time**: remove time from the lock's timer.
@@ -36,7 +36,8 @@ The contract covers exactly ten permissions. Each one names an action and says w
 - **Show or hide the timer**: control whether the wearer sees the remaining time.
 - **Show or hide time values in history**: control whether time amounts appear in the lock history.
 - **Manage extensions**: add, remove and configure the lock's [extensions](/extensions).
-- **Edit the bondage safety settings**: change the check-in and release settings of a bondage lock. This permission only exists on bondage locks.
+- **Edit the bondage safety settings**: change check-in settings, the dead man's switch, and the emergency-release countdown of a bondage lock. This permission only exists on bondage locks.
+- **Change emergency unlock**: turn emergency unlock on or off. Either party can edit the confirmation phrase while it is on.
 
 There is no "lock settings" permission. The lock settings page is a surface, not a permission: each field on it maps to one of the permissions above, such as the two visibility permissions and the minimum date.
 
@@ -54,13 +55,13 @@ Even a wearer holding the "Change the maximum date" permission cannot shorten th
 The contract usually takes the form of a preset. Each preset is shown on the consent screens with the sentence below.
 
 - **Standard**: the safe default. The keyholder runs the session and the wearer keeps their safety rails. Consent sentence: "The keyholder runs the session with the usual controls; extensions stay as configured."
-- **Trusted keyholder**: Standard, plus extension management for the keyholder. Consent sentence: "The keyholder controls everything about the session, including extensions."
+- **Trusted keyholder**: Standard, plus extension management and emergency-unlock setting changes for the keyholder. The keyholder can turn emergency unlock off. Review both grants before accepting this preset.
 - **Full trust**: every permission each party can hold. Consent sentence: "Wearer and keyholder can both change anything at any time."
 - **Custom**: any other mix of permissions, picked by hand. If a custom contract is edited back to a preset's exact settings, it snaps to that preset.
 
-## Bondage safety belongs to the wearer
+## Safety settings
 
-Under Standard, the keyholder cannot change the check-in interval, the dead man's switch or the emergency release of a bondage lock. These settings exist to protect the wearer's physical safety, so they stay in the wearer's hands unless the wearer explicitly grants them away. A party holding this permission can turn the mechanisms on or off, so granting it means trusting the keyholder with the safety rails themselves.
+Under Standard, neither party can turn emergency unlock on or off after starting. Trusted keyholder grants this control to the keyholder; Full trust grants it to both parties; Custom follows the selected grants. Either party can edit the confirmation phrase while emergency unlock is on. A keyholder who can change this setting can disable [emergency unlock](/locks/emergency-unlock).
 
 ## Where the contract is agreed
 
@@ -69,8 +70,6 @@ The contract is always shown before it binds anyone.
 - **At self-lock creation**: the wearer picks the terms in the "Safety & control" section of the lock creation form. A self-lock's permissions cannot be changed after creation.
 - **When the wearer joins a shared lock**: the join screen shows the preset name and its sentence, plus everything that differs from Standard, both what a party gains and what a party loses. A "View all permissions" section lists the full contract. Joining is accepting.
 - **When the keyholder accepts a keyholding request**: the confirmation shows the same contract summary, with the notice that accepting starts a session under these permissions.
-
-![Join screen of a shared lock showing the Trusted keyholder preset, its consent sentence and the difference from Standard](/img/permissions-consent-join.png)
 
 :::caution
 A self-lock's contract is **fixed at creation**. Choosing a keyholder later through [Offer your session](/locks/offer-your-session) starts from that contract, so it deserves the same attention as any other lock setting.
@@ -94,6 +93,6 @@ Every change is written to the lock history: the permissions changing, a request
 
 ## Trusting the keyholder
 
-Trusting the keyholder means granting the keyholder the "Manage extensions" permission. On a Standard contract, this grant turns the contract into the "Trusted keyholder" preset.
+A keyholder is shown as trusted when they have "Manage extensions". The **Trusted keyholder** preset includes both that grant and **Change emergency unlock**. Granting extension management alone does not also grant control over emergency unlock; review the actual permissions in your contract.
 
 It is a grant like any other. Because it hands the keyholder more control, the wearer's grant applies immediately; taking it back is a removal, so it becomes a request the keyholder accepts or rejects. Trust is given freely and taken back by agreement, and it is never permanent.
