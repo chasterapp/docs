@@ -49,3 +49,24 @@ Implementation checks and the build/navigation evidence are recorded below as co
 - `git diff --check`: passed.
 
 - History paging examples use `limit: 1`, matching the single-row page with `hasMore: true`.
+
+### Build and built-page checks
+
+- Final tested commit: `2001caa6021696595958387c22ffde3357910ef1`. Command: `NODE_OPTIONS=--max-old-space-size=3072 flock --verbose /tmp/chaster-recovery-heavy-check.lock timeout --kill-after=30s 10m npm run build`. Passed, generated 66 indexed documents and static pages. No broken-link/Markdown-link warnings or rendering errors; only existing Docusaurus/Browserslist maintenance notices. Lock acquired immediately. The final run started after the paging correction was pushed.
+- The initial borrowed dependency-directory run compiled MDX but failed site-wide static rendering with `TypeError: Cannot read properties of undefined (reading 'id')` in `DocItem`, including untouched/home pages. The single repair, local `npm ci` followed by `npm run clear`, resolved it. Both local builds passed; the last one verifies the stable corrected source. No service infrastructure was changed.
+- Served the final `build` with `npm run serve -- --host 127.0.0.1 --port 4020`. Playwright loaded all seven touched public routes and checked every article link under `/api/extensions-api/` via local HTTP and generated fragment IDs. All returned 200, all fragments existed, and no browser page errors occurred. Expanded sidebar groups showed both author pages and the native interaction page.
+- Browser clicks passed: private files → standalone peer reviews → native Verification Picture request → standalone peer reviews. Native introductory copy explicitly describes the request-only flow. The rendered history examples contain `limit: 1`, not stale `limit: 20` snippets.
+- Rendered code-block counts: files 6, peer reviews 9, webhooks 1, native request 1, authentication 2, sessions 1, lock actions 8. All are nonempty. At 1280 × 720, the review page has no horizontal page overflow; code blocks are 703 pixels wide with automatic horizontal scrolling. The file-page accessibility snapshot includes intact multipart commands, bearer/attachment placeholders and response fields, with code-copy/word-wrap controls.
+- Closed the browser and stopped the temporary preview with Ctrl-C. Ports 3000/3001 were not used.
+
+| Built route under `/api/extensions-api/`        | Result                                                                     |
+| ----------------------------------------------- | -------------------------------------------------------------------------- |
+| `create-your-extension/files`                   | 200; upload/read/delete examples and error fragment link render            |
+| `create-your-extension/peer-verifications`      | 200; declarations, create response, cursor history and verdict link render |
+| `create-your-extension/webhooks`                | 200; typed event and delivery-limits anchors resolve                       |
+| `interact-with-extensions/verification-picture` | 200; reciprocal standalone links and native-only distinction render        |
+| `authentication`                                | 200; backend credentials and new guide links render                        |
+| `sessions`                                      | 200; new guide/history links render                                        |
+| `create-your-extension/lock-actions`            | 200; rejection-action and callback-limits links render                     |
+
+The final evidence/task-only commit preserves the tested public input trees. A public MDX/sidebar/package/config edit or relevant upstream contract change invalidates this evidence. Live publication was not performed; QA remains none. Normal Simplifier and Reviewer stages, including fresh exact-head CI, remain required.
