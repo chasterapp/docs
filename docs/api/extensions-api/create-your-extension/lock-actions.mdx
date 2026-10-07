@@ -5,7 +5,6 @@ sidebar_label: Lock actions
 
 Lock actions allow you to make changes to a running lock. These actions can include adding or removing time, changing the frozen status, or putting the user in pillory. By implementing lock actions in your extension, you can provide additional functionality and interactions for the wearer or keyholder.
 
-
 ## Run lock actions
 
 To perform lock actions, you can use the following API endpoint:
@@ -103,11 +102,15 @@ To check if a user is currently in the pillory and retrieve information about ac
 
 The `set_display_remaining_time` action sets the timer visibility to the specified value. If the value is `true`, the remaining time will be displayed to the wearer, otherwise it will be hidden.
 
+## Review rejection actions
+
+You can provide these actions as the `punishments` array when [creating a standalone peer review](/api/extensions-api/create-your-extension/peer-verifications). Chaster stores that list and runs it sequentially on rejection, without requiring the Penalties extension. Your verdict webhook handler must not repeat the actions. See the [partial-action and callback limits](/api/extensions-api/create-your-extension/webhooks#actions-and-delivery-limits) before relying on the result.
+
 ## Lock history
 
 When a lock action is run using this endpoint, a corresponding log entry is automatically created in the lock history. This log entry serves as a record of the action performed by your extension and is visible to the wearer and keyholder within Chaster.
 
-By including this log entry, Chaster users can easily track and review the changes made to the lock session. For example, if you add time to a lock, the log entry will display: "*Extension name* added time".
+By including this log entry, Chaster users can easily track and review the changes made to the lock session. For example, if you add time to a lock, the log entry will display: "_Extension name_ added time".
 
 ![Custom Dice added time, 10 minutes](/img/extensions-api-lock-actions.png)
 

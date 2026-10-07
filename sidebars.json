@@ -32,9 +32,7 @@
       "features/calendar",
       "features/statistics"
     ],
-    "Activity": [
-      "activity/activity"
-    ],
+    "Activity": ["activity/activity"],
     "Extensions": [
       "extensions/extensions",
       "extensions/dice",
@@ -75,6 +73,8 @@
           "api/extensions-api/create-your-extension/custom-logs",
           "api/extensions-api/create-your-extension/session-metadata",
           "api/extensions-api/create-your-extension/custom-data",
+          "api/extensions-api/create-your-extension/files",
+          "api/extensions-api/create-your-extension/peer-verifications",
           "api/extensions-api/create-your-extension/webhooks"
         ]
       },
@@ -84,15 +84,13 @@
           "api/extensions-api/interact-with-extensions/tasks",
           "api/extensions-api/interact-with-extensions/hygiene-opening",
           "api/extensions-api/interact-with-extensions/pillory",
-          "api/extensions-api/interact-with-extensions/penalties"
+          "api/extensions-api/interact-with-extensions/penalties",
+          "api/extensions-api/interact-with-extensions/verification-picture"
         ]
       },
       "api/extensions-api/configuration",
       "api/extensions-api/changelog"
     ],
-    "Reference": [
-      "api/reference/scopes",
-      "api/reference/action-logs"
-    ]
+    "Reference": ["api/reference/scopes", "api/reference/action-logs"]
   }
 }

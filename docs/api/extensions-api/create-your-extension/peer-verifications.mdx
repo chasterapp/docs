@@ -1,0 +1,379 @@
+---
+title: Standalone peer reviews
+sidebar_label: Standalone peer reviews
+---
+
+Create a standalone review of a privately uploaded image from your extension backend. Chaster presents the checks to the community or an eligible keyholder, stores the verdict and runs your configured rejection actions. Neither the native Verification Picture extension nor the Penalties extension is required.
+
+This differs from [requesting a native verification picture](/api/extensions-api/interact-with-extensions/verification-picture), which asks the wearer to submit a photo through that extension. Here, your backend already has the image and creates its own review.
+
+## Declare verification kinds
+
+In the Developer interface, open your application and extension, then add verification kinds in its settings. Each kind describes a review purpose. Declare the kind before using its key in a creation request.
+
+The extension settings field has this shape:
+
+```json
+{
+  "verificationTypes": [
+    {
+      "key": "photo",
+      "label": "Photo review",
+      "description": "Review a submitted synthetic photo."
+    }
+  ]
+}
+```
+
+If you use the extensions SDK, add the same declaration to your existing `defineManifest` input, then use your normal `cx sync` workflow:
+
+```typescript
+import { defineManifest } from "@chasterapp/extension-server";
+import { extension } from "./extension";
+
+export default defineManifest(extension, {
+  displayName: "Synthetic extension",
+  subtitle: "A synthetic review example",
+  summary: "Review submitted photos",
+  availableModes: ["unlimited"],
+  defaultRegularity: 3600,
+  verificationTypes: [
+    {
+      key: "photo",
+      label: "Photo review",
+      description: "Review a submitted synthetic photo.",
+    },
+  ],
+});
+```
+
+Use the export and path of your own extension definition in place of `./extension`.
+
+Keys are unique within an extension and match `^[a-z0-9-_]{1,40}$`. Labels contain 1 to 60 characters. Optional descriptions contain at most 300 characters. Labels and descriptions are plain text.
+
+When updating extension settings or syncing a manifest, omitting `verificationTypes` preserves the remote declaration, `[]` clears it, and `null` is invalid. Removing or renaming a key affects future creation. Existing reviews retain the kind and check labels stored when they were created. The declaration array `verificationTypes` is separate from the singular `verificationType` in a review response.
+
+## Upload and create a review
+
+First [upload a private image](/api/extensions-api/create-your-extension/files) and keep the returned `attachmentToken` on your backend. Then send `POST /api/extensions/sessions/:sessionId/peer-verifications` using the same application's [developer bearer token](/api/extensions-api/authentication) and the same session. The lock must be active.
+
+Save the following synthetic request as `review.json`, replacing the attachment placeholder with the returned token:
+
+```json
+{
+  "verificationTypeKey": "photo",
+  "attachmentToken": "<ATTACHMENT_TOKEN>",
+  "visibility": "all_members",
+  "delay": 900,
+  "maxVotes": 3,
+  "checks": [
+    {
+      "name": "generic",
+      "id": "seal-intact",
+      "title": "Seal intact",
+      "description": "Inspect the synthetic seal.",
+      "rejectionReasons": [
+        {
+          "slug": "unclear",
+          "text": "The seal is unclear."
+        }
+      ]
+    },
+    {
+      "name": "generic",
+      "id": "date-visible",
+      "title": "Date visible",
+      "description": "Check the synthetic date card.",
+      "rejectionReasons": [
+        {
+          "slug": "unclear",
+          "text": "The date is unclear."
+        }
+      ]
+    }
+  ],
+  "punishments": [
+    {
+      "name": "add_time",
+      "params": 3600
+    }
+  ]
+}
+```
+
+```bash
+curl --request POST \
+  'https://api.chaster.app/api/extensions/sessions/synthetic-session-01/peer-verifications' \
+  --header 'Authorization: Bearer <DEVELOPER_TOKEN>' \
+  --header 'Content-Type: application/json' \
+  --data-binary @review.json
+```
+
+Each generic check requires a nonempty, review-wide unique `id`, a plain-text `title` (1 to 60 characters), a required plain-text `description` (0 to 300 characters), and a nonempty `rejectionReasons` array. Each reason requires nonempty `slug` and `text` strings. Slugs must be unique within a check. Different checks can reuse `unclear`, as above: the seal and date have different stored reason text and separate counts.
+
+Built-in `task`, `chastity_device` and `bondage` check families remain supported. A single built-in entry can omit `id`; repeated entries of the same family need explicit, distinct IDs. Built-ins expand into subchecks. Use the returned criterion IDs; do not reconstruct or parse them.
+
+The `punishments` array uses the seven existing [lock actions](/api/extensions-api/create-your-extension/lock-actions): `add_time`, `remove_time`, `freeze`, `unfreeze`, `toggle_freeze`, `pillory`, and `set_display_remaining_time`. Time values are in seconds. It defaults to `[]`. Chaster snapshots this list and executes it on rejection; your verdict handler must not run it again.
+
+### Creation response
+
+A successful response is **201 Created**:
+
+```json
+{
+  "_id": "000000000000000000000301",
+  "status": "ongoing",
+  "source": {
+    "extensionId": "000000000000000000000201",
+    "slug": "synthetic-extension",
+    "displayName": "Synthetic extension",
+    "sourceSessionId": "synthetic-session-01",
+    "isDevelopedByCommunity": true
+  },
+  "verificationType": {
+    "key": "photo",
+    "label": "Photo review"
+  },
+  "checks": [
+    {
+      "name": "generic",
+      "id": "seal-intact",
+      "title": "Seal intact",
+      "description": "Inspect the synthetic seal.",
+      "rejectionReasons": [
+        {
+          "slug": "unclear",
+          "text": "The seal is unclear."
+        }
+      ]
+    },
+    {
+      "name": "generic",
+      "id": "date-visible",
+      "title": "Date visible",
+      "description": "Check the synthetic date card.",
+      "rejectionReasons": [
+        {
+          "slug": "unclear",
+          "text": "The date is unclear."
+        }
+      ]
+    }
+  ],
+  "punishments": [
+    {
+      "name": "add_time",
+      "params": 3600
+    }
+  ],
+  "createdAt": "2030-01-01T12:00:00.000Z",
+  "endsAt": "2030-01-01T12:15:00.000Z",
+  "endedAt": null,
+  "nbVerifiedVotes": 0,
+  "nbRejectedVotes": 0,
+  "rejectionReasons": [],
+  "checkResults": [
+    {
+      "checkId": "seal-intact",
+      "name": "generic",
+      "checkIndex": 0,
+      "subcheckName": "generic",
+      "nbVerifiedVotes": 0,
+      "nbRejectedVotes": 0,
+      "rejectionReasons": []
+    },
+    {
+      "checkId": "date-visible",
+      "name": "generic",
+      "checkIndex": 1,
+      "subcheckName": "generic",
+      "nbVerifiedVotes": 0,
+      "nbRejectedVotes": 0,
+      "rejectionReasons": []
+    }
+  ]
+}
+```
+
+Save `_id` as the review's identifier for your extension state and later callbacks. The creation response uses `_id`; the webhook calls that same identifier `peerVerificationId`. Chaster owns the `source` presentation, including community classification. Do not submit source or ownership fields yourself.
+
+Successful creation retains the image by clearing its expiry. The response contains no private URL, attachment token or voter identity. Creation returns aggregate counts and criterion counts, rather than per-check verdicts.
+
+:::caution Ambiguous creation
+Creation, notification and media retention are sequential. A disconnected or failed POST may already have created a review. There is no creation idempotency key or exact request-correlation field. Save a successful response's `_id`; if the outcome is uncertain, inspect session history before considering a retry. History cannot identify your original request exactly, and retrying can create a duplicate.
+:::
+
+## Audience and completion rules
+
+For `visibility: "all_members"`, community voting lasts `delay` seconds: an integer from 900 to 21600, default 21600 (six hours). Optional `maxVotes` is an integer from 3 to 100; omit it for no vote cap. Completion occurs when the window expires or the vote cap is reached. At least 75% approving votes produces `verified`; otherwise the verdict is `rejected`.
+
+A community timeout with zero votes produces `verified`. It does not invent approvals for unanswered criteria: their counts stay zero.
+
+For `visibility: "keyholder"`, the eligible keyholder reviews the image. There is no timeout. Valid community `delay` and `maxVotes` values are ignored for that audience, and history shows `endsAt: null` and `maxVotes: null`. A missing or ineligible keyholder returns 409, with no community fallback or automatic success.
+
+## Search all session history
+
+`POST /api/extensions/sessions/:sessionId/peer-verifications/search` returns **200 OK**, scoped to both the creating partner and session. History remains readable after lock end while that session exists; a deleted session returns 404.
+
+For all statuses and kinds, including retired kinds, send `{}`. Omitted or empty filters do not narrow results. To filter, save this as `search.json`:
+
+```json
+{
+  "criteria": {
+    "statuses": ["ongoing", "verified", "rejected"],
+    "verificationTypeKeys": ["photo"]
+  },
+  "limit": 20
+}
+```
+
+```bash
+curl --request POST \
+  'https://api.chaster.app/api/extensions/sessions/synthetic-session-01/peer-verifications/search' \
+  --header 'Authorization: Bearer <DEVELOPER_TOKEN>' \
+  --header 'Content-Type: application/json' \
+  --data-binary @search.json
+```
+
+`limit` defaults to 20 and accepts integers from 1 to 100. Results are sorted by descending `_id`. The following example shows a page with one completed review and another page available:
+
+```json
+{
+  "results": [
+    {
+      "_id": "000000000000000000000301",
+      "status": "rejected",
+      "source": {
+        "extensionId": "000000000000000000000201",
+        "slug": "synthetic-extension",
+        "displayName": "Synthetic extension",
+        "sourceSessionId": "synthetic-session-01",
+        "isDevelopedByCommunity": true
+      },
+      "verificationType": {
+        "key": "photo",
+        "label": "Photo review"
+      },
+      "checks": [
+        {
+          "name": "generic",
+          "id": "seal-intact",
+          "title": "Seal intact",
+          "description": "Inspect the synthetic seal.",
+          "rejectionReasons": [
+            {
+              "slug": "unclear",
+              "text": "The seal is unclear."
+            }
+          ]
+        },
+        {
+          "name": "generic",
+          "id": "date-visible",
+          "title": "Date visible",
+          "description": "Check the synthetic date card.",
+          "rejectionReasons": [
+            {
+              "slug": "unclear",
+              "text": "The date is unclear."
+            }
+          ]
+        }
+      ],
+      "punishments": [
+        {
+          "name": "add_time",
+          "params": 3600
+        }
+      ],
+      "createdAt": "2030-01-01T12:00:00.000Z",
+      "endsAt": "2030-01-01T12:15:00.000Z",
+      "endedAt": "2030-01-01T12:15:00.000Z",
+      "nbVerifiedVotes": 2,
+      "nbRejectedVotes": 1,
+      "rejectionReasons": [
+        {
+          "checkId": "date-visible",
+          "slug": "unclear",
+          "text": "The date is unclear.",
+          "nbVotes": 1
+        }
+      ],
+      "checkResults": [
+        {
+          "checkId": "seal-intact",
+          "name": "generic",
+          "checkIndex": 0,
+          "subcheckName": "generic",
+          "approved": 3,
+          "rejected": 0,
+          "rejectionReasons": []
+        },
+        {
+          "checkId": "date-visible",
+          "name": "generic",
+          "checkIndex": 1,
+          "subcheckName": "generic",
+          "approved": 2,
+          "rejected": 1,
+          "rejectionReasons": [
+            {
+              "slug": "unclear",
+              "text": "The date is unclear.",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "maxVotes": 3,
+      "voteCounts": {
+        "verified": 2,
+        "rejected": 1
+      }
+    }
+  ],
+  "hasMore": true,
+  "nextCursor": "000000000000000000000301"
+}
+```
+
+Only if `hasMore` is true, send the returned `nextCursor` as `cursor` in the next request, preserving the filters and limit:
+
+```json
+{
+  "criteria": {
+    "statuses": ["ongoing", "verified", "rejected"],
+    "verificationTypeKeys": ["photo"]
+  },
+  "limit": 20,
+  "cursor": "000000000000000000000301"
+}
+```
+
+Stop when `hasMore` is false; the final page omits `nextCursor`. This cursor must be a 24-character ObjectId string. Review-history pages do not return a total `count` or use the session-search `paginationLastId` convention.
+
+History rows include timestamps, source, stored kind/check labels, snapshotted punishments, nullable `maxVotes` and vote totals. They exclude media credentials and voter identities. Top-level `nbVerifiedVotes`, `nbRejectedVotes` and `rejectionReasons[].nbVotes` remain present alongside `voteCounts`.
+
+The criterion result shapes differ by surface:
+
+| Surface                      | Criterion totals                     | Criterion reason totals      |
+| ---------------------------- | ------------------------------------ | ---------------------------- |
+| Creation and verdict webhook | `nbVerifiedVotes`, `nbRejectedVotes` | `rejectionReasons[].nbVotes` |
+| History                      | `approved`, `rejected`               | `rejectionReasons[].count`   |
+
+Preserve `checkId`, `checkIndex` and `subcheckName`. Creation/webhook `name` is the family; history `name` is the subcheck name. For generic checks, both names are `generic`. Counts belong to each criterion, including when reason slugs repeat. The example's seal has three approvals while the date has two: the overall review is rejected with only two approving votes out of three.
+
+## Errors
+
+| Status | Situation                                                                                                                                                                                   |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 400    | Invalid request, undeclared kind, invalid checks/actions, or inactive lock on creation (`You cannot modify an unlocked lock.`). Invalid history filters, limits or cursors also return 400. |
+| 403    | Wearer suspended from peer verifications, or invalid/expired attachment credential (including native upload tokens).                                                                        |
+| 404    | Foreign, expired, missing or deleted attachment resource; missing/deleted or unauthorized session.                                                                                          |
+| 409    | Requested keyholder reviewer is missing or ineligible.                                                                                                                                      |
+
+Normal authentication and rate-limit checks also apply. Failed validation does not retain the uploaded image; its original expiry remains.
+
+## Handle the verdict
+
+Configure your extension's callback and handle [`peer_verification.ended`](/api/extensions-api/create-your-extension/webhooks#peer-review-verdicts). It targets only the creating extension/session. Deduplicate your own work using the review ID and event name, tolerate callbacks after lock/session termination, and leave rejection actions to Chaster. History helps inspect the stored outcome; it is not a callback-repair API.
