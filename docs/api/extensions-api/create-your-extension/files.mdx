@@ -1,0 +1,94 @@
+---
+title: Private session files
+sidebar_label: Private session files
+---
+
+Upload an image from your extension backend, then attach it to a [standalone peer review](/api/extensions-api/create-your-extension/peer-verifications). This flow does not require the native Verification Picture extension.
+
+Use your application's [developer bearer token](/api/extensions-api/authentication) and a [session](/api/extensions-api/sessions) owned by that application. Chaster derives the partner, session, lock and wearer from the authenticated request. You cannot select a different owner in the upload body.
+
+:::danger Keep credentials on your backend
+Never place developer credentials or attachment tokens in browser code, iframe arguments or logs. Treat temporary private URLs and image bytes as private data too. An attachment token authorizes attachment to a review, not public downloads, and cannot replace a native upload token.
+:::
+
+All IDs, tokens, dates and private URLs below are synthetic examples. Replace them with your own session and returned values. Do not send these examples unchanged.
+
+## Upload an image
+
+`POST /api/extensions/sessions/:sessionId/files` requires an active lock and accepts one multipart field named `file`. Supported images are JPEG, PNG and GIF, with a matching `.jpg`, `.jpeg`, `.png` or `.gif` filename and decodable image content. The current upload limit is 15 MiB (15 × 1024 × 1024 bytes), and the upload uses the wearer's storage quota. Chaster processes the image before storing it privately.
+
+```bash
+curl --request POST \
+  'https://api.chaster.app/api/extensions/sessions/synthetic-session-01/files' \
+  --header 'Authorization: Bearer <DEVELOPER_TOKEN>' \
+  --form 'file=@./synthetic.png'
+```
+
+Let cURL set the multipart boundary. Do not add a JSON `Content-Type` header. The successful response is **201 Created**:
+
+```json
+{
+  "fileId": "000000000000000000000101",
+  "attachmentToken": "<ATTACHMENT_TOKEN>",
+  "expiresAt": "2030-01-01T13:00:00.000Z"
+}
+```
+
+Save `fileId` for reads or deletion, and use `attachmentToken` when creating the review. Unattached uploads expire after one hour by default. To choose an expiry, add a multipart `expiresAt` field containing a future ISO timestamp:
+
+```bash
+curl --request POST \
+  'https://api.chaster.app/api/extensions/sessions/synthetic-session-01/files' \
+  --header 'Authorization: Bearer <DEVELOPER_TOKEN>' \
+  --form 'file=@./synthetic.png' \
+  --form 'expiresAt=2030-01-01T14:00:00.000Z'
+```
+
+Choose a date that is still in the future when you send the request. This API adds no separate maximum retention period.
+
+## Read file metadata
+
+`GET /api/extensions/sessions/:sessionId/files/:fileId` returns **200 OK** with metadata and a temporary download URL:
+
+```bash
+curl \
+  'https://api.chaster.app/api/extensions/sessions/synthetic-session-01/files/000000000000000000000101' \
+  --header 'Authorization: Bearer <DEVELOPER_TOKEN>'
+```
+
+```json
+{
+  "fileId": "000000000000000000000101",
+  "originalName": "synthetic.png",
+  "size": 2048,
+  "expiresAt": "2030-01-01T13:00:00.000Z",
+  "url": "https://private-media.example.invalid/synthetic.png?token=PLACEHOLDER"
+}
+```
+
+`size` is the processed image size in bytes. `expiresAt` is nullable. The URL lasts at most 120 seconds and cannot outlast the file's expiry. Fetch a new URL when needed; it is not a permanent public media address. Uploading an arbitrary image URL is not supported.
+
+Successful review creation clears the file's expiry, so subsequent reads return `expiresAt: null`. Referenced media remains available for the ongoing review and its history after the verdict or lock end, subject to existing deletion and moderation cleanup. GET remains authorized after lock end while the session still exists and the file is available.
+
+## Delete an unattached file
+
+`DELETE /api/extensions/sessions/:sessionId/files/:fileId` returns **204 No Content**, with no response body:
+
+```bash
+curl --request DELETE \
+  'https://api.chaster.app/api/extensions/sessions/synthetic-session-01/files/000000000000000000000101' \
+  --header 'Authorization: Bearer <DEVELOPER_TOKEN>'
+```
+
+Use this for an unused upload. If any review references the file, deletion returns **409 Conflict**, including after a verdict. This endpoint does not delete review history.
+
+## Errors and ownership
+
+| Status | Situation                                                                                                                                                                                               |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 400    | Missing or empty image, unsupported filename/content, invalid or past expiry, exceeded wearer quota, or an inactive lock on upload. The active-lock guard reports `You cannot modify an unlocked lock.` |
+| 413    | Multipart upload exceeds the file-size limit.                                                                                                                                                           |
+| 404    | Unknown, expired, deleted or foreign file. Another session, even for the same partner, cannot read or delete it. A missing/deleted session also returns 404.                                            |
+| 409    | Deletion attempted while a review references the image.                                                                                                                                                 |
+
+Requests also pass the normal developer authentication, session authorization and rate-limit checks. An expired or invalid attachment token returns 403 when used for [review creation](/api/extensions-api/create-your-extension/peer-verifications#errors); a foreign attachment resource returns 404.

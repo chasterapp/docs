@@ -5,6 +5,8 @@ sidebar_label: Verification picture
 
 The Extensions API allows your extension to integrate with the Verification Picture extension, enabling you to programmatically request verification pictures from wearers. This endpoint uses the actor system to track who initiated the request.
 
+For an image your backend already has, use [private session files](/api/extensions-api/create-your-extension/files) and [standalone peer reviews](/api/extensions-api/create-your-extension/peer-verifications). Those endpoints create an independent review without requiring the native Verification Picture extension. This page covers only requesting a photo through that native extension.
+
 ## Overview
 
 The Verification Picture extension allows keyholders and extensions to request photo proof that the wearer is still properly locked. Your extension can use this API to:
@@ -37,7 +39,7 @@ Here are some ways you might use the Extensions API to interact with Verificatio
 Request a verification picture from the wearer. This creates a pending verification request that the wearer must fulfill.
 
 - `POST /api/extensions/sessions/:sessionId/verification-picture/request`:
-Request a verification picture from the wearer (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerVerificationPictureActionsController_requestVerificationPicture)).
+  Request a verification picture from the wearer (read the [API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerVerificationPictureActionsController_requestVerificationPicture)).
 
 #### Request body
 

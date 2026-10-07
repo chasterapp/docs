@@ -43,11 +43,11 @@ To configure webhooks for your Chaster extension, follow these steps:
 
 ### Responding to a request
 
-When an event occurs, Chaster will send an HTTP POST request to the specified webhook URL. Upon receiving a webhook, your extension should promptly respond with an HTTP status code in the 2xx range (e.g., 200 OK) to acknowledge the receipt of the notification. This response serves as confirmation that your extension has successfully received the event data. Responding promptly ensures the delivery of subsequent webhooks.
+When an event occurs, Chaster will send an HTTP POST request to the specified webhook URL. Upon receiving a webhook, your extension should promptly respond with an HTTP status code in the 2xx range (e.g., 200 OK) to acknowledge the receipt of the notification. This response serves as confirmation that your extension has successfully received the event data. Acknowledge only after accepting the event into your durable processing workflow. A 2xx response does not guarantee delivery of later events.
 
 ### Retries
 
-Chaster employs a retry mechanism for webhook notifications to improve reliability. If the initial HTTP POST request to your webhook URL fails to receive a response within 10 seconds or encounters an error, Chaster will make up to four additional attempts. These retries use an exponential backoff strategy, with each attempt delayed by 60 seconds longer than the previous one. This means that the first retry occurs after 1 minute, the second after 2 minutes, and so on.
+Chaster employs a retry mechanism for webhook notifications to improve reliability. If the initial HTTP POST request to your webhook URL fails to receive a response within 10 seconds or encounters an error, Chaster will make up to four additional attempts. These retries use exponential backoff starting at 60 seconds (approximately 1, 2, 4 and 8 minutes). Each attempt has a new `requestId` and `sentAt`. Retries apply to queued notifications; they do not guarantee that every event is enqueued or delivered.
 
 ### Debugging
 
@@ -66,8 +66,80 @@ To determine which event types to monitor and configure webhooks for, consider t
 - `extension_session.created`: Monitor this event to receive notifications when a new session is created. This can happen when a new lock is created with your extension enabled, or when your extension is enabled on a running lock.
 - `extension_session.updated`: Monitor this event to receive notifications when an existing session is updated.
 - `extension_session.deleted`: Monitor this event to receive notifications when a session is deleted.
+- `peer_verification.ended`: Receive the terminal verdict for a standalone review created by your extension/session, with vote totals and criterion results.
 - `action_log.created`: Monitor this event to receive notifications when a new action log entry is created, such as when a lock is unlocked, time is added, etc.
 
 Choose the event types that are relevant to your extension functionality and use cases.
 
 To know exactly the data that is sent with each event type, please refer to the [API documentation](https://api.chaster.app/api) and the model `WebhookEventForPublic`.
+
+## Peer review verdicts
+
+After a [standalone peer review](/api/extensions-api/create-your-extension/peer-verifications) completes through normal verdict processing, Chaster sends `peer_verification.ended` to the creating partner's configured callback URL. The payload identifies the creating session. Other extensions on the same lock do not receive it. Configure HTTPS and the existing basic authentication settings, and validate those credentials in your handler.
+
+This complete synthetic envelope shows a rejected review:
+
+```json
+{
+  "event": "peer_verification.ended",
+  "sentAt": "2030-01-01T12:15:01.000Z",
+  "requestId": "synthetic-attempt-01",
+  "data": {
+    "sessionId": "synthetic-session-01",
+    "extension": {
+      "slug": "synthetic-extension"
+    },
+    "lockId": "000000000000000000000401",
+    "peerVerificationId": "000000000000000000000301",
+    "verificationTypeKey": "photo",
+    "status": "rejected",
+    "endedAt": "2030-01-01T12:15:00.000Z",
+    "voteCounts": {
+      "verified": 2,
+      "rejected": 1
+    },
+    "checkResults": [
+      {
+        "checkId": "seal-intact",
+        "name": "generic",
+        "checkIndex": 0,
+        "subcheckName": "generic",
+        "nbVerifiedVotes": 3,
+        "nbRejectedVotes": 0,
+        "rejectionReasons": []
+      },
+      {
+        "checkId": "date-visible",
+        "name": "generic",
+        "checkIndex": 1,
+        "subcheckName": "generic",
+        "nbVerifiedVotes": 2,
+        "nbRejectedVotes": 1,
+        "rejectionReasons": [
+          {
+            "slug": "unclear",
+            "text": "The date is unclear.",
+            "nbVotes": 1
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+`status` is `verified` or `rejected`. `endedAt` is the stored verdict time; `sentAt` is the time of this delivery attempt. `requestId` also changes on retry, so use it for attempt diagnostics, not business deduplication. The payload contains no image bytes, private URLs, attachment tokens or voter identities.
+
+Deduplicate your durable partner work by `(data.peerVerificationId, event)`, for example `000000000000000000000301:peer_verification.ended`. After authenticating and validating the envelope, atomically accept that key and payload into your own durable inbox, then return a prompt 2xx acknowledgment. Process accepted work once according to your own storage/worker guarantees. Duplicate deliveries should receive a successful acknowledgment without repeating your business work. Do not mark work complete before it is durably accepted.
+
+`checkResults` preserves `checkId`, family `name`, `checkIndex` and `subcheckName`, plus `nbVerifiedVotes`, `nbRejectedVotes` and reason `nbVotes`. This differs from history's criterion `approved`, `rejected` and reason `count` fields. Identical reason slugs in different criteria remain separate through `checkId` and stored reason text. No per-check verdict is supplied. A zero-vote timeout can report `status: "verified"` with zero vote and criterion totals.
+
+### Actions and delivery limits
+
+Chaster stores the terminal verdict first. On rejection, it then runs the snapshotted `punishments` sequentially before emitting the verdict event. Your handler must not replay those lock actions. No native Penalties extension is required.
+
+An action failure or interruption can leave only part of the action list applied and prevent the callback from being enqueued. There is no added action recovery or exactly-once delivery guarantee. Do not infer that all actions ran merely because history contains a terminal verdict.
+
+Lock-end bulk closure runs no rejection actions and emits no verdict callback. A callback already queued, or one being retried, may still arrive after the lock ends or its session is deleted. Tolerate this race: process from the saved review ID and payload without blindly fetching or modifying a deleted session. If session access is needed, handle a missing session explicitly.
+
+[Session review history](/api/extensions-api/create-your-extension/peer-verifications#search-all-session-history) is an inspection fallback while the session exists. It does not repair delivery or prove exactly which actions completed.
