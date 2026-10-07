@@ -44,6 +44,8 @@ Implementation checks and the build/navigation evidence are recorded below as co
 
 - `npm run lint:docs`: passed. Existing title-case warnings remain in untouched Findom, reference, changelog, pillory, guidelines, OAuth and install pages. Targeted lint on the two new pages and webhook page passed without warnings.
 - `node "$PAPERCLIP_RUN_SCRATCH_DIR/verify-examples.cjs"`: passed. Parsed all nine JSON fences, compiled literal `satisfies` checks against the exact generated SDK API/webhook interface dependency closure using TypeScript strict/noEmit, and checked six cURL snippets with `bash -n`. The scratch harness also confirmed the three new sidebar IDs resolve to MDX files. The manifest declaration was checked against `defineManifest` and generated extension-mode values.
-- Formatter: this repository has no formatter script/config; ran the host's Prettier binary with `--write --prose-wrap preserve` on all touched MDX, sidebar JSON and this evidence file. No new dependency was added. The ignored `node_modules` link uses the registered docs clone's existing dependencies.
+- Formatter: this repository has no formatter script/config; ran the host's Prettier binary with `--write --prose-wrap preserve` on all touched MDX, sidebar JSON and this evidence file. No new dependency was added. A borrowed dependency-directory symlink caused a site-wide `DocItem` context error during static rendering; it was removed and replaced by local `npm ci` dependencies, followed by `npm run clear`. No tracked dependency inputs changed.
 - `openspec validate extension-file-and-review-guides --strict`: passed (`skip_specs: true`, no runtime behavior changes).
 - `git diff --check`: passed.
+
+- History paging examples use `limit: 1`, matching the single-row page with `hasMore: true`.
