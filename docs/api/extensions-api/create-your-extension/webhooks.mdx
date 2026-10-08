@@ -128,11 +128,93 @@ This complete synthetic envelope shows a rejected review:
 }
 ```
 
-`status` is `verified` or `rejected`. `endedAt` is the stored verdict time; `sentAt` is the time of this delivery attempt. `requestId` also changes on retry, so use it for attempt diagnostics, not business deduplication. The payload contains no image bytes, private URLs, attachment tokens or voter identities.
+`status` is `verified`, `rejected` or `unavailable`. The optional `data.unavailableReason` is emitted only for `unavailable`. `endedAt` is the stored verdict time; `sentAt` is the time of this delivery attempt. `requestId` also changes on retry, so use it for attempt diagnostics, not business deduplication. The payload contains no image bytes, private URLs, attachment tokens or voter identities.
 
 Deduplicate your durable partner work by `(data.peerVerificationId, event)`, for example `000000000000000000000301:peer_verification.ended`. After authenticating and validating the envelope, atomically accept that key and payload into your own durable inbox, then return a prompt 2xx acknowledgment. Process accepted work once according to your own storage/worker guarantees. Duplicate deliveries should receive a successful acknowledgment without repeating your business work. Do not mark work complete before it is durably accepted.
 
 `checkResults` preserves `checkId`, family `name`, `checkIndex` and `subcheckName`, plus `nbVerifiedVotes`, `nbRejectedVotes` and reason `nbVotes`. This differs from history's criterion `approved`, `rejected` and reason `count` fields. Identical reason slugs in different criteria remain separate through `checkId` and stored reason text. No per-check verdict is supplied. A zero-vote timeout can report `status: "verified"` with zero vote and criterion totals.
+
+### Unavailable AI callbacks
+
+AI uses the same terminal event. A real AI `verified` or `rejected` result retains the human verdict shape and configured rejection behavior. Unavailable means no decision could be completed: it has zero votes and criterion totals, empty counted reasons and no rejection punishment. Do not treat it as approval or rejection, replay actions, or automatically switch to community or keyholder review. No private feedback or machine-voter, provider, model or prompt provenance is exposed.
+
+These complete synthetic envelopes are **independent alternatives**, not two events for one real review. The reason is inside `data`, not at the envelope root.
+
+After failed or exhausted bounded AI processing retries (`provider_error`):
+
+```json
+{
+  "event": "peer_verification.ended",
+  "sentAt": "2026-10-08T12:02:00.000Z",
+  "requestId": "synthetic-request-provider_error",
+  "data": {
+    "sessionId": "synthetic-origin",
+    "extension": {
+      "slug": "synthetic-partner"
+    },
+    "lockId": "000000000000000000000001",
+    "peerVerificationId": "000000000000000000000002",
+    "verificationTypeKey": "photo",
+    "endedAt": "2026-10-08T12:01:00.000Z",
+    "status": "unavailable",
+    "voteCounts": {
+      "verified": 0,
+      "rejected": 0
+    },
+    "checkResults": [
+      {
+        "checkId": "seal",
+        "name": "generic",
+        "checkIndex": 0,
+        "subcheckName": "generic",
+        "nbVerifiedVotes": 0,
+        "nbRejectedVotes": 0,
+        "rejectionReasons": []
+      }
+    ],
+    "unavailableReason": "provider_error"
+  }
+}
+```
+
+After cohort eligibility is lost before completion (`eligibility_revoked`):
+
+```json
+{
+  "event": "peer_verification.ended",
+  "sentAt": "2026-10-08T12:02:00.000Z",
+  "requestId": "synthetic-request-eligibility_revoked",
+  "data": {
+    "sessionId": "synthetic-origin",
+    "extension": {
+      "slug": "synthetic-partner"
+    },
+    "lockId": "000000000000000000000001",
+    "peerVerificationId": "000000000000000000000002",
+    "verificationTypeKey": "photo",
+    "endedAt": "2026-10-08T12:01:00.000Z",
+    "status": "unavailable",
+    "voteCounts": {
+      "verified": 0,
+      "rejected": 0
+    },
+    "checkResults": [
+      {
+        "checkId": "seal",
+        "name": "generic",
+        "checkIndex": 0,
+        "subcheckName": "generic",
+        "nbVerifiedVotes": 0,
+        "nbRejectedVotes": 0,
+        "rejectionReasons": []
+      }
+    ],
+    "unavailableReason": "eligibility_revoked"
+  }
+}
+```
+
+Chaster's bounded AI processing retries are distinct from the delivery retries above. Neither gives you a safe automatic retry of a creation POST; retain the [ambiguous creation precautions](/api/extensions-api/create-your-extension/peer-verifications#creation-response).
 
 ### Actions and delivery limits
 
