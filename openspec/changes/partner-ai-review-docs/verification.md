@@ -12,6 +12,6 @@
 - Read SDK origin/main `2cecc6b40c22bee1d6570fc356d1ef3f2e66d594` via git show, rather than its stale working tree. Verified existing verifications.create/search and package-root defineManifest export. Final AI/unavailable SDK compatibility remains a task for CHA-1098 coordination.
 - Python normalized-JSON comparison passed for all seven `manifest.schemaPaths` entries against `partner-schemas.json` and full `api.json` components.
 - `openspec status --change partner-ai-review-docs`: all three planning artifacts complete, specs explicitly skipped. `openspec validate partner-ai-review-docs --strict`: PASS.
-- `npm run lint:docs -- <path>` passed separately for proposal.md, design.md, tasks.md and this verification.md. `git diff --check`: PASS.
+- `npm run lint:docs -- <path>` exited 0 separately for proposal.md, design.md, tasks.md and this verification.md. The heading heuristic emitted two design warnings for numbered headings containing AI/SDK; these are sentence-case headings with acronyms, not title-case prose. `git diff --check`: PASS.
 
 Only OpenSpec proposal artifacts change at this stage. No MDX implementation, docs build, rendering, runtime tests, deployment or feature activation has been performed. Implementation checks and exact command results will be added by Applier under tasks.md.
