@@ -15,3 +15,41 @@
 - `npm run lint:docs -- <path>` exited 0 separately for proposal.md, design.md, tasks.md and this verification.md. The heading heuristic emitted two design warnings for numbered headings containing AI/SDK; these are sentence-case headings with acronyms, not title-case prose. `git diff --check`: PASS.
 
 Only OpenSpec proposal artifacts change at this stage. No MDX implementation, docs build, rendering, runtime tests, deployment or feature activation has been performed. Implementation checks and exact command results will be added by Applier under tasks.md.
+
+## Apply evidence (2026-10-08)
+
+Workspace preflight passed for this issue, Docs project and isolated execution workspace. The branch remains unchanged. `git pull --ff-only`, `git fetch origin main` and `git ls-remote --symref origin HEAD` confirm default main at `4497e7fe9102bae096b248efc67aa2657776ce6f`. No AGENTS.md, CLAUDE.md or local apply skill exists; read repository guidance and ran `openspec instructions apply --change partner-ai-review-docs --json`.
+
+Downloaded the fresh contract attachment using run authentication. ZIP and all three file hashes match design.md. The seven manifest schema paths equal the full OpenAPI components. An initial comparison used manifest aliases as excerpt keys; corrected the lookup to the component names and all seven comparisons passed.
+
+Implemented only the five named guides and narrow verification support. AI request examples use the tested built-in and generic requests. History alternatives wrap one unchanged fixture row in an independent final page, so the reused synthetic ID is not presented as two real transitions. The original human payloads, generic IDs, custom reasons and source identity remain unchanged; only search filters gain unavailable.
+
+### Mechanical example map
+
+Run `python3 openspec/changes/partner-ai-review-docs/verify_examples.py <downloaded-bundle-directory>` on the managed host (requires its jsonschema package). The script checks hashes, all seven schema excerpts, nullable OpenAPI shapes, all JSON fences, original human payload preservation and absence of private/provenance fields. It requires nine exact fixture mappings:
+
+| Page / JSON fence | Bundle fixture |
+| --- | --- |
+| peer-verifications / 4 | requests.builtin |
+| peer-verifications / 5 | requests.generic |
+| peer-verifications / 6 | created.body |
+| peer-verifications / 7 | denied.body |
+| peer-verifications / 8 | missingKeyholder.body |
+| peer-verifications / 12 | history.results[0], provider_error, in a one-row final page |
+| peer-verifications / 13 | history.results[1], eligibility_revoked, in a one-row final page |
+| webhooks / 2 | callbacks.provider_error |
+| webhooks / 3 | callbacks.eligibility_revoked |
+
+Result: PASS, 17 parsed JSON fences, nine exact fixture mappings, six schema-valid callback variants. Human and AI verified/rejected callback data are equal in the bundle. Remaining examples validate against CreatePartnerPeerVerificationDto, PartnerPeerVerificationResponseDto, PartnerPeerVerificationHistoryPageDto, SearchPartnerPeerVerificationsDto, PeerVerificationEnded and PartnerVerificationPictureRequestDto. The settings declaration is an intentionally partial settings fragment, checked for exact unchanged content. The actor-only native body is unchanged. The error effects assert pre-media 403 and retained keyholder 409; effects are described as behavior rather than response fields.
+
+Unavailable history has row-level reason, terminal endedAt, zero overall/criterion counts and empty counted reasons, while declared generic reasons remain. Callback reason is inside data and count aliases remain surface-specific. No new SDK snippet was added; the existing package-root defineManifest import and local extension import are preserved. Final SDK AI serialization/parser evidence from CHA-1098 is still pending; its issue was in proposal at the initial read. No npm publication or AI activation is claimed.
+
+### Source checks
+
+- `npm run lint:docs -- <path>`: PASS separately for each of the five changed MDX guides, no warnings.
+- No formatter is configured in package.json or repository files. Ran `npx --yes prettier --write <five named MDX paths>` with no dependency/lockfile changes.
+- `git diff --check`: PASS.
+- `openspec validate partner-ai-review-docs --strict`: PASS.
+- Capture warnings contain all four facts: experimental AI, image sent to an external AI service, possible mistakes and configured punishment risk. Partner guidance requires an equivalent warning before partner-owned capture/submission. Native warning placement is beside mode guidance. Unavailable is explicitly separate from rejection and does not trigger rejection punishments or fallback.
+
+Build and rendered HTML inspection follow this pushed checkpoint. These results apply to the current five MDX inputs and bundle hashes; edits to payloads, disclosure or links invalidate the respective checks.

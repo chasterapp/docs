@@ -22,6 +22,16 @@ To learn how Verification Picture works from a user perspective, see the [Verifi
 Your extension must work with locks that have the Verification Picture extension configured. If the Verification Picture extension is not enabled on a lock, this endpoint will return an error.
 :::
 
+## Review mode and image disclosure
+
+This endpoint requests a photo through the native extension's configured review mode. The request body remains `{ "actor": "extension" }`; it does not select AI with a `visibility`, model or provider field. For an image your backend already owns, use the separate [standalone AI review contract](/api/extensions-api/create-your-extension/peer-verifications#experimental-ai-reviews).
+
+:::caution Experimental AI review
+AI review is experimental. Your image is sent to an external AI service for processing. AI can make mistakes, and a rejected review can trigger configured punishments.
+:::
+
+If your integration captures or submits photos in its own interface for AI review, display an equivalent warning before capture or submission. Native AI availability requires the current wearer or keyholder to be eligible on each request, regardless of saved settings. Loss of availability does not grant automatic validation or a human fallback. See [native verification guidance](/extensions/verification-picture#experimental-ai-review).
+
 ## Use cases
 
 Here are some ways you might use the Extensions API to interact with Verification Picture in your extension:
