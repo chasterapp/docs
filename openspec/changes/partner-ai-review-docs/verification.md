@@ -28,17 +28,17 @@ Implemented only the five named guides and narrow verification support. AI reque
 
 Run `python3 openspec/changes/partner-ai-review-docs/verify_examples.py <downloaded-bundle-directory>` on the managed host (requires its jsonschema package). The script checks hashes, all seven schema excerpts, nullable OpenAPI shapes, all JSON fences, original human payload preservation and absence of private/provenance fields. It requires nine exact fixture mappings:
 
-| Page / JSON fence | Bundle fixture |
-| --- | --- |
-| peer-verifications / 4 | requests.builtin |
-| peer-verifications / 5 | requests.generic |
-| peer-verifications / 6 | created.body |
-| peer-verifications / 7 | denied.body |
-| peer-verifications / 8 | missingKeyholder.body |
-| peer-verifications / 12 | history.results[0], provider_error, in a one-row final page |
+| Page / JSON fence       | Bundle fixture                                                   |
+| ----------------------- | ---------------------------------------------------------------- |
+| peer-verifications / 4  | requests.builtin                                                 |
+| peer-verifications / 5  | requests.generic                                                 |
+| peer-verifications / 6  | created.body                                                     |
+| peer-verifications / 7  | denied.body                                                      |
+| peer-verifications / 8  | missingKeyholder.body                                            |
+| peer-verifications / 12 | history.results[0], provider_error, in a one-row final page      |
 | peer-verifications / 13 | history.results[1], eligibility_revoked, in a one-row final page |
-| webhooks / 2 | callbacks.provider_error |
-| webhooks / 3 | callbacks.eligibility_revoked |
+| webhooks / 2            | callbacks.provider_error                                         |
+| webhooks / 3            | callbacks.eligibility_revoked                                    |
 
 Result: PASS, 17 parsed JSON fences, nine exact fixture mappings, six schema-valid callback variants. Human and AI verified/rejected callback data are equal in the bundle. Remaining examples validate against CreatePartnerPeerVerificationDto, PartnerPeerVerificationResponseDto, PartnerPeerVerificationHistoryPageDto, SearchPartnerPeerVerificationsDto, PeerVerificationEnded and PartnerVerificationPictureRequestDto. The settings declaration is an intentionally partial settings fragment, checked for exact unchanged content. The actor-only native body is unchanged. The error effects assert pre-media 403 and retained keyholder 409; effects are described as behavior rather than response fields.
 
@@ -53,3 +53,26 @@ Unavailable history has row-level reason, terminal endedAt, zero overall/criteri
 - Capture warnings contain all four facts: experimental AI, image sent to an external AI service, possible mistakes and configured punishment risk. Partner guidance requires an equivalent warning before partner-owned capture/submission. Native warning placement is beside mode guidance. Unavailable is explicitly separate from rejection and does not trigger rejection punishments or fallback.
 
 Build and rendered HTML inspection follow this pushed checkpoint. These results apply to the current five MDX inputs and bundle hashes; edits to payloads, disclosure or links invalidate the respective checks.
+
+### Build, links and rendered disclosure
+
+- Tested public source commit: `af3679338a504fa9f3ffdf805daa57c6f4333a3d`. Command: `NODE_OPTIONS=--max-old-space-size=3072 flock --verbose /tmp/chaster-recovery-heavy-check.lock timeout --kill-after=30s 10m npm run build`. Final result: exit 0, generated static output and indexed all 66 documents. Lock acquired immediately. No broken route/fragment/Markdown-link warnings. Existing Docusaurus upgrade and Browserslist maintenance notices only.
+- Initial symlinked shared dependencies compiled but failed rendering 63 existing routes with `TypeError: Cannot read properties of undefined (reading 'id')` in DocItem. One local repair removed the symlink, ran locked `npm ci --no-audit --no-fund` (exit 0, 1384 packages), then `npm run clear`. The subsequent locked build passed. Tracked dependency/configuration inputs are unchanged; shared services and shared dependencies were not modified.
+- Parsed final HTML article content, code blocks, caution styling, current-page sidebar links and all local article route/fragment targets. All five routes below passed. Partner and native capture guidance contains all four disclosure facts inside a caution admonition; the webhook page renders both unavailable envelopes and data-level reason. No service was started and ports 3000/3001 were not used.
+- Portable report uploaded and registered as an artifact work product: [rendered HTML checks](/api/attachments/f726c47d-8a5d-45a1-a911-1da1eba39c34/content). Static inspection verifies generated content and structure, not browser layout.
+
+| Built route                                                       | Nonempty code blocks | Checked local article links | Result |
+| ----------------------------------------------------------------- | -------------------- | --------------------------- | ------ |
+| /api/extensions-api/create-your-extension/peer-verifications      | 16                   | 15                          | PASS   |
+| /api/extensions-api/create-your-extension/webhooks                | 3                    | 15                          | PASS   |
+| /api/extensions-api/interact-with-extensions/verification-picture | 1                    | 13                          | PASS   |
+| /extensions/verification-picture                                  | 0                    | 15                          | PASS   |
+| /extensions/tasks                                                 | 0                    | 17                          | PASS   |
+
+These results remain valid through evidence-only edits. Changes to the five public pages, package/configuration, linked targets or the upstream contract require corresponding rechecks.
+
+### Pending SDK compatibility
+
+[CHA-1098](/CHA/issues/CHA-1098) has [draft Extensions PR #55](https://github.com/chasterapp/extensions/pull/55). Observed head `cb6438e75834c95d3b3a44b49d2d133279bfd579` still lacks a posted completed AI serialization/unavailable parser verification. Its latest stage handoff is propose to apply. Requested the concrete PR/head, scoped results and shared OpenAPI hash there in comment `2ac56bce-3432-4e98-9772-4da5c8a99ce5`; independent Docs implementation/build/render checks are complete.
+
+Task 4.2 and final Simplifier handoff 5.1 remain open until that compatibility evidence is available. This is an existing repository dependency, not a request for new permission. Docs remains on its one draft PR. Partner AI activation, publication and deployment are separate from these source changes.
