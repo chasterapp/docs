@@ -26,6 +26,7 @@
     ],
     "Features": [
       "features/features",
+      "features/notifications",
       "features/shared-links",
       "features/pillory",
       "features/verification",

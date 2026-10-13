@@ -1,0 +1,76 @@
+---
+title: Notifications
+sidebar_label: Notifications
+---
+
+Chaster keeps requests, messages, and important lock updates together in the notification center. Select the bell in the top navigation to open it.
+
+On desktop, the bell opens a popover. Select **See all notifications** to open the full page. On mobile, the bell opens the full page directly.
+
+<img src="/img/notification-center.png" alt="Chaster notification center showing the All and Requests tabs, an accepted receipt, and a keyholding request with Accept and Decline actions" />
+
+## Using the notification center
+
+The notification center has two tabs:
+
+- **All** shows every notification, including completed requests.
+- **Requests** shows only open items that still need your answer. The number beside the tab is the number of open requests.
+
+Select **Mark all read** to clear unread indicators. This does not accept, decline, or otherwise complete a request.
+
+Some requests can be handled without leaving the notification center:
+
+- A keyholding offer has **Accept** and **Decline** actions. **Accept** opens the **Accept keyholding offer?** confirmation before you select **Accept offer**.
+- A permission change has **Review** and **Decline** actions. **Review** opens the permission changes before you decide.
+
+After a request is completed, it leaves **Requests** and remains in **All** as a receipt. Depending on the action, the receipt says **You accepted**, **You approved**, **You declined**, **You rejected**, or **Resolved**.
+
+## Choosing how notifications reach you
+
+Open **Notification settings** from a notification's options, or go to **Settings** and select **Notifications**.
+
+The **Notification preferences** matrix groups notifications into five categories and four delivery channels.
+
+| Category | In-app | Push | Discord | Email |
+|---|---|---|---|---|
+| **Requests** | On, required | On | On | Off |
+| **Messages** | On, required | On | On | Off |
+| **Lock activity** | Off | Off, except the important events listed below | Off | Off |
+| **Community** | On | Off | Off | Off |
+| **Account** | On | On | On | On |
+
+Account notifications are transactional. They stay enabled on every channel that is available to your account.
+
+The lock activity events that keep push on by default are **Lock unlocked**, **Emergency unlock used**, **Lock deserted**, **Combination image rejected**, **Keyholder resigned**, **Lock entered the pillory**, and **Session resumed late**. Other lock activity push notifications are off until you enable them.
+
+Use a category switch to change one channel for that category. Expand a category on desktop, or select **Choose which events** on mobile, to adjust individual events. **Reset category to default** returns the individual event switches in that category to their defaults.
+
+<img src="/img/notification-preferences.png" alt="Notification preferences showing the category and channel matrix, a Discord delivery warning, Link Discord actions, and the Send a test DM button" />
+
+## When a channel needs setup
+
+The matrix replaces a switch with the next useful action when a channel cannot deliver:
+
+- **Enable notifications** asks the browser for push permission and registers the current device.
+- **Add to Home Screen** appears on an iPhone or iPad when Chaster must be installed before push can work. Follow the [iOS installation steps](/install-on-your-phone#ios), then open Chaster from its Home Screen icon.
+- **Link Discord** opens the Discord connection settings.
+- **Allow notifications in your browser settings** means push permission was previously blocked. Change the permission in your browser or device settings, then return to Chaster.
+- **Push notifications are unavailable in this browser** means the current browser cannot receive web push.
+
+In-app notifications are always available. Email delivery requires a verified email address.
+
+## Fixing Discord notifications
+
+If the Chaster bot cannot deliver a direct message, **Notification preferences** shows a warning with the relevant recovery steps. The warning may ask you to rejoin the Chaster Discord server, allow direct messages from server members, unblock the Chaster bot, or review your Discord connection.
+
+After fixing the problem, select **Send a test DM**. A successful check displays **Test DM sent. Discord delivery is working.** In-app notifications remain available while Discord delivery is unavailable.
+
+## Frequently asked questions
+
+### Why did my push notifications stop?
+
+Push is off by default for most **Lock activity** events. Important events such as an unlock, emergency unlock, desertion, rejected combination image, keyholder resignation, entry into the pillory, or late session resumption remain on by default.
+
+To receive more lock activity pushes, open **Settings**, select **Notifications**, and turn on **Push** for **Lock activity**. Then expand **Lock activity**, or select **Choose which events** on mobile, and turn off any events you do not want.
+
+If the Push column shows **Enable notifications**, select it to register this device. On an iPhone or iPad, install Chaster first when you see **Add to Home Screen**. If the column says **Allow notifications in your browser settings**, restore the permission there before trying again.
