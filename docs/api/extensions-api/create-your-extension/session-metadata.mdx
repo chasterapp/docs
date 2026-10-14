@@ -49,11 +49,13 @@ If an item is added to the array and not subsequently updated or removed, the lo
 
 Home actions provide a list of customizable actions that are displayed on the wearer's lock page. When a wearer clicks on an action, they will be redirected to the extension page. You can configure the displayed action with the following properties:
 
-- **slug**: An identifier that is returned to the extension when the user navigates to the extension page.
+- **slug**: An identifier passed to your main page as `homeActionSlug` in the URL hash when the wearer clicks this action.
 - **title**: The title displayed on the list item for the action.
 - **description**: The description displayed on the list item for the action.
 - **icon**: The icon associated with the action, which must be one of the valid FontAwesome 5 icons.
 - **badge**: (Optional) Displays a small badge on the list item, useful for indicating notifications or counts associated with the action (e.g., the number of tasks to do or remaining actions in the extension).
+
+One main page can read `homeActionSlug` to display the view for the clicked action. Chaster forwards the slug only if it exactly matches one of the session's currently declared `homeActions`. When the extension opens without a clicked action, or the supplied slug is not declared, the field is absent, not `null`. See [Parse the main page token](/api/extensions-api/create-your-extension/main-page#parse-the-main-page-token) for a parsing example with a default-view fallback.
 
 ![Actions, List item, Pick cards, Find your card among the deck. Spade icon, 2 actions remaining](/img/extensions-api-metadata-home-action.png)
 
