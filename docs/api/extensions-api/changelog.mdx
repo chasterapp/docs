@@ -3,6 +3,12 @@ title: Changelog
 sidebar_label: Changelog
 ---
 
+## 2026-10-14
+
+**New features**
+
+- Added optional `homeActionSlug` to the [main page hash](/api/extensions-api/create-your-extension/main-page#parse-the-main-page-token). It contains the clicked [home action](/api/extensions-api/create-your-extension/session-metadata#home-actions)'s slug when it exactly matches a declared action for the session. The field is absent when no action was clicked or the supplied slug is not declared, so your main page can fall back to its default view.
+
 ## 2026-02-03
 
 **New features**

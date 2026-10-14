@@ -27,17 +27,63 @@ For development purposes, you can set a privately-accessible URL (in your local 
 
 ## Parse the main page token
 
-We provide in hash params a main page token (`mainToken`). To get information about the current session and make action, you need to retrieve this parameter from the hash params, and then pass it to your backend to make requests. Note that this parameter can only be retrieved by your web application.
+Chaster passes hash parameters as a URI-encoded JSON string, using `encodeURIComponent(JSON.stringify(params))`. Decode and parse the hash in your web application to read these fields:
 
-> Example: If my main page URL is `https://lock-opener.example.com/`, the iframe will redirect to `https://lock-opener.example.com/#%7B%22mainToken%22%3A%22arandomtoken%22%7D`.
+| Field            | Presence and meaning                                                                                                                               |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mainToken`      | Always included. The main page token identifies the current authorization. Pass it to your backend to fetch session information and make requests. |
+| `extensionSlug`  | Always included. The slug of your partner extension.                                                                                               |
+| `homeActionSlug` | Optional. The clicked home action's `slug`, included only when it exactly matches one of the session's currently declared `homeActions`.           |
 
-The hash params passed in the URL is a URI-encoded JSON string. You will need to parse it to retrieve the main token. You can use this code snippet to decode the hash parameter and get the main token.
+When the extension opens without a clicked home action, or the supplied slug is not declared, `homeActionSlug` is absent, not `null`. The extension still opens normally. Reading the missing field in JavaScript returns `undefined`.
 
-```jsx
+For example, if your main page URL is `https://lock-opener.example.com/` and the wearer clicks a declared home action with slug `action_slug`, the iframe opens this URL:
+
+```text
+https://lock-opener.example.com/#%7B%22mainToken%22%3A%22arandomtoken%22%2C%22extensionSlug%22%3A%22smart-lock-opener%22%2C%22homeActionSlug%22%3A%22action_slug%22%7D
+```
+
+The decoded JSON is:
+
+```json
+{
+  "mainToken": "arandomtoken",
+  "extensionSlug": "smart-lock-opener",
+  "homeActionSlug": "action_slug"
+}
+```
+
+An ordinary open without a home action has only the first two fields:
+
+```json
+{
+  "mainToken": "arandomtoken",
+  "extensionSlug": "smart-lock-opener"
+}
+```
+
+Read all three fields and choose the view in your application. This example selects the action view for `action_slug` and a default view when the field is missing or your application does not recognize it:
+
+```js
 const hash = window.location.hash.substring(1);
 const params = JSON.parse(decodeURIComponent(hash));
 const mainToken = params.mainToken;
+const extensionSlug = params.extensionSlug;
+const homeActionSlug = params.homeActionSlug;
+
+let view;
+switch (homeActionSlug) {
+  case "action_slug":
+    view = "action";
+    break;
+  default:
+    view = "default";
+}
+// Use view to display the matching screen in your application.
+// Pass mainToken to your backend for Extensions API requests.
 ```
+
+Declare your action slugs in the session's [home actions](/api/extensions-api/create-your-extension/session-metadata#home-actions). The slug selects a view; it is not an authorization credential. Continue to use `mainToken` and your backend to authenticate requests.
 
 ## Fetch session information
 
