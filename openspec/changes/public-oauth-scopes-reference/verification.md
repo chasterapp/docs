@@ -84,4 +84,23 @@ Passed before the build checkpoint:
 - Source comparison script: all 24 enum values occur as code spans; email/phone code spans occur only in the no-such-scope sentence; all code spans from approved changelog lines 1 to 134 remain on the changes page; no dates; only the intended sidebar item added. The approved changelog slice fetched at `40320a552` is byte-identical to the slice on the checked Core main ref.
 - Workspace safety disclosure scan of every touched file, branch commit message and proposed PR title/body: zero findings. Neutral wording replaced a few proposal phrases to satisfy the issue's content rules.
 
-Pending: docs build and browser inspection. Build and browser evidence must be rerun if the documentation, sidebar, dependencies or Docusaurus configuration changes. Source checks must be repeated if the Core reference changes.
+Build passed at `b4bae48` with:
+
+```sh
+flock --verbose /tmp/chaster-recovery-heavy-check.lock timeout --kill-after=30s 10m env NODE_OPTIONS=--max-old-space-size=3072 npm run build
+```
+
+The lock was acquired immediately. Client and server compiled successfully, all 67 documents were indexed, and Docusaurus generated the static site. No broken-link or anchor warnings. Only dependency update and Browserslist notices appeared.
+
+Served that build with `npm run serve -- --host 127.0.0.1 --port 4021` and inspected it with Playwright:
+
+| Route                                | Result                                                                                                                                                                                              |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/api/reference/scopes`              | HTTP 200, correct title, all seven section headings plus intro, catalog has 11 data rows, legacy table has four data rows, 24 unique scope values across the tables; no email/phone scope in tables |
+| `/api/reference/oauth-scopes-update` | HTTP 200, correct title, both parts and Action needed render; three tables have 11, 16 and four data rows                                                                                           |
+| `/api/basics/getting-started`        | HTTP 200; new scopes reference link resolves                                                                                                                                                        |
+| `/api/public-api/developer-token`    | HTTP 200; scopes link reaches `/api/reference/scopes#developer-token` and exactly one target heading exists                                                                                         |
+
+Reference sidebar order: Scopes, Scopes update, Action Logs. Clicked the reciprocal scopes/update links and the developer-token links. No browser page errors and no horizontal page overflow on any of the four changed pages. Rendered scopes and update articles pass the issue's content check. Closed the browser and stopped the owned server with Ctrl-C; ports 3000/3001 were not used.
+
+This final evidence/task-only commit preserves all build inputs from `b4bae48`. QA remains required after review; publication remains the founder's step. Build and browser evidence must be rerun if the documentation, sidebar, dependencies or Docusaurus configuration changes. Source checks must be repeated if the Core reference changes.
