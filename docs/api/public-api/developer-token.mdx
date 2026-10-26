@@ -20,4 +20,4 @@ You now have a developer token, which you can use for Public API requests.
 
 ## Application scopes
 
-A developer token is granted all scopes available and can use all endpoints.
+A developer token acts as your account and holds every scope, including `developer` and the legacy scopes. Email and phone are never shared, edits to them return `400`, and endpoints reserved for the Chaster app stay closed. See [Developer token scopes](/api/reference/scopes#developer-token) for details.

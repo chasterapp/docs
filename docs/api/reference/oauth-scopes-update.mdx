@@ -1,0 +1,137 @@
+---
+title: OAuth scopes update
+sidebar_label: Scopes update
+---
+
+This update makes OAuth scopes more precise and makes the public API reference match what
+your app can call. The two parts below describe the security changes and granular scopes.
+
+**Tokens with `locks`, `shared_locks`, `keyholder` or `messaging` keep working.** A few
+endpoints change scope or close to OAuth apps: see "Action needed" at the end.
+
+## Part 1: security changes
+
+### Email addresses and phone numbers are no longer shared
+
+`GET /auth/profile` returns `email`, `billingEmail` and `phoneNumber` as `null` for every
+OAuth app. The `email` and `phone` scopes are removed, so ID tokens and userinfo no longer
+carry them either. Identify users by their user id. `profile` gives the user's id, username
+and avatar.
+
+### Account security endpoints are reserved for the Chaster app
+
+These endpoints return `403` to OAuth apps and are removed from the reference:
+
+- `GET /auth/totp/status`, `POST /auth/totp/disable`
+- `GET /auth/profile/update`
+
+`GET /users/search/by-discord-id/:discordId` is reserved for the Chaster Discord bot and
+returns `401` to OAuth apps.
+
+### Scopes are checked on endpoints that also accept anonymous calls
+
+Some endpoints work with or without a token, such as public lock search or task votes.
+Anonymous calls behave as before. When a token is sent, it must hold the endpoint's scope:
+
+- `GET /locks/:lockId/extensions/:extensionId` and
+  `POST /locks/:lockId/extensions/:extensionId/action` need `locks`.
+- Task and pillory votes need `locks` when called with a token.
+- Public reads (public locks, pillory search, shared links, explore categories, extensions
+  list, community event categories) accept any valid token.
+
+### Developer tokens
+
+New developer tokens use a stronger random generator. Existing tokens keep working.
+
+## Part 2: granular scopes
+
+### New scopes
+
+Each area has a read scope and a write scope. A read scope only allows endpoints that change
+nothing. A write scope does not include the read scope: request both if you need both.
+
+| Scope                                        | Allows                                                |
+| -------------------------------------------- | ----------------------------------------------------- |
+| `profile`                                    | The user's id, username and avatar                    |
+| `profile:read` / `profile:write`             | The user's own profile, settings, kink profile, stats |
+| `users:read` / `users:write`                 | Member search, blocks, reports                        |
+| `locks:read` / `locks:write`                 | The user's locks and their extensions                 |
+| `shared_locks:read` / `shared_locks:write`   | The user's shared locks                               |
+| `keyholder:read` / `keyholder:write`         | Locks the user keyholds                               |
+| `messaging:read` / `messaging:write`         | Private conversations and attachments                 |
+| `notifications:read` / `notifications:write` | Notifications                                         |
+| `calendar:read` / `calendar:write`           | Calendar events                                       |
+| `posts:read` / `posts:write`                 | Activity feed and keyholding request posts            |
+| `developer`                                  | Extensions API and developer extension management     |
+
+See [OAuth scopes](/api/reference/scopes) for the full catalog and developer token rules. Every endpoint in the [API reference](https://api.chaster.app/api) lists the scopes it needs in its `security` block.
+
+### Existing scopes keep working
+
+`locks`, `shared_locks`, `keyholder` and `messaging` stay valid with no end date. Each
+counts as its read and write pair: a token with `locks` can call everything that needs
+`locks:read` or `locks:write`. Apps created after this update are offered the granular
+scopes only. Existing apps receive the granular scopes alongside their current ones.
+
+### Newly available endpoints
+
+These endpoints were listed but returned `403`, or were not listed:
+
+| Endpoints                                                                                  | Scope                                        |
+| ------------------------------------------------------------------------------------------ | -------------------------------------------- |
+| Calendar events: `GET`, `POST /calendar/events`, `PATCH`, `DELETE /calendar/events/:id`    | `calendar:read` / `calendar:write`           |
+| Notifications: counts, search, channel health, read, act, read all, seen, Discord channel  | `notifications:read` / `notifications:write` |
+| Kink profile: `GET`, `PUT /current-user/kink-profile`, predefined list                     | `profile:read` / `profile:write`             |
+| `GET /lock-stats/reset-config`, `POST /community-event/details`                            | `profile:read`                               |
+| Profile edits: `PATCH /current-user`, `POST /auth/profile`                                 | `profile:write`                              |
+| `POST /lock-stats/reset`                                                                   | `profile:write`                              |
+| Academy enrollment and lesson progress                                                     | `profile:write`                              |
+| Member search: `POST /users/search`, `/users/search/by-username`                           | `users:read`                                 |
+| Activity feed and posts: `POST /posts`, `GET /posts/:postId`, subjects, cancel             | `posts:read` / `posts:write`                 |
+| Keyholder applications: apply, withdraw                                                    | `keyholder:write`                            |
+| Keyholder applications on a lock: list / answer                                            | `locks:read` / `locks:write`                 |
+| Combination image verification and combination upload                                      | `locks:write`                                |
+| Extension schedules: `GET`, `PATCH /locks/:lockId/extensions/:extensionPartyId/schedule`   | `locks:read` / `locks:write`                 |
+| `PUT /shared-locks/:sharedLockId/extensions`, `POST /shared-locks/:sharedLockId/unarchive` | `shared_locks:write`                         |
+| `GET /extensions/tasks/votes/:taskVoteId`                                                  | `locks:read`, or anonymous                   |
+| `GET /data/countries`, `GET /data/countries/:code`                                         | none                                         |
+
+Profile edits from OAuth apps cannot change the email or phone number: those requests return
+`400`.
+
+### Endpoints that changed scope
+
+| Endpoints                                                                               | Before          | Now                  |
+| --------------------------------------------------------------------------------------- | --------------- | -------------------- |
+| `GET /blocks`, `GET /blocks/block-interaction/:targetUserId`, `GET /locks/user/:userId` | any valid token | `users:read`         |
+| `POST /blocks`, `POST /blocks/unblock`, `POST /reports`                                 | any valid token | `users:write`        |
+| `GET /users/badge/count`                                                                | any valid token | `notifications:read` |
+| `GET /user-profile/calendar-statistics`                                                 | `profile`       | `profile:read`       |
+
+Public member profiles (`GET /users/profile/:username`, `/user-profile/:username/*`,
+`GET /achievements/user/:userId`) keep accepting any valid token, with no scope.
+
+### Deprecated
+
+`PUT /locks/shared-locks/:sharedLockId/extensions` keeps working and is marked deprecated.
+Use `PUT /shared-locks/:sharedLockId/extensions`.
+
+### Removed from the reference
+
+These endpoints were listed but never callable by OAuth apps: partner configuration
+creation, extension tester join, `GET /users/profile-completeness`, `/user-pictures/*`, and
+the `/health`, `/live`, `/ready` probes.
+
+### Consent screen
+
+Users see one line per scope your app requests. Asking only for what you use keeps the
+screen short.
+
+## Action needed
+
+1. **You call extension actions with a token:** make sure it has `locks` (Part 1).
+2. **You call blocks, reports, the badge count or calendar statistics:** request
+   the scope in "Endpoints that changed scope"; users authorize your app again (Part 2).
+3. **You call `PUT /locks/shared-locks/:sharedLockId/extensions`:** switch to
+   `PUT /shared-locks/:sharedLockId/extensions` when you can.
+4. **New apps:** request granular scopes. Existing apps can move to them at any time.
