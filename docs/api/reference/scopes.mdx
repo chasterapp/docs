@@ -3,12 +3,74 @@ title: OAuth scopes
 sidebar_label: Scopes
 ---
 
-Each generated access token has the right to access certain scopes. When authenticating the user, you will have to indicate the scopes you need, while choosing what is strictly necessary.
+Each access token holds scopes that determine what your app can do. Request only the scopes your app uses: users see one consent line per scope. If you already use the API, see the [OAuth scopes update](/api/reference/oauth-scopes-update) for changes and actions for existing apps.
 
-| Scope          | Description                    |
-| -------------- | ------------------------------ |
-| `profile`      | Access the username and email  |
-| `locks`        | View and edit locks            |
-| `shared_locks` | View and manage shared locks   |
-| `keyholder`    | View and manage locked users   |
-| `messaging`    | View and send private messages |
+## How scopes work
+
+Each area has a read scope and a write scope. A read scope only allows endpoints that change nothing. This depends on what the endpoint does, not its HTTP method: a search can use `POST`, and an action can use `GET`.
+
+A write scope does not include the read scope. Request both if your app needs both. An endpoint requires every scope it lists. Each endpoint's scopes appear in its `security` block in the [API reference](https://api.chaster.app/api).
+
+## Scope catalog
+
+| Scope                                        | Allows                                                |
+| -------------------------------------------- | ----------------------------------------------------- |
+| `profile`                                    | The user's id, username and avatar                    |
+| `profile:read` / `profile:write`             | The user's own profile, settings, kink profile, stats |
+| `users:read` / `users:write`                 | Member search, blocks, reports                        |
+| `locks:read` / `locks:write`                 | The user's locks and their extensions                 |
+| `shared_locks:read` / `shared_locks:write`   | The user's shared locks                               |
+| `keyholder:read` / `keyholder:write`         | Locks the user keyholds                               |
+| `messaging:read` / `messaging:write`         | Private conversations and attachments                 |
+| `notifications:read` / `notifications:write` | Notifications                                         |
+| `calendar:read` / `calendar:write`           | Calendar events                                       |
+| `posts:read` / `posts:write`                 | Activity feed and keyholding request posts            |
+| `developer`                                  | Extensions API and developer extension management     |
+
+For OAuth apps, `profile` is always included. The 18 read/write scopes are offered on the consent screen. The `developer` scope is not offered to OAuth apps; it comes only with the [developer token](#developer-token).
+
+## Legacy scopes
+
+The following scopes stay valid with no end date. Each counts as its read and write pair.
+
+| Legacy scope   | Counts as                                    |
+| -------------- | -------------------------------------------- |
+| `locks`        | `locks:read` and `locks:write`               |
+| `shared_locks` | `shared_locks:read` and `shared_locks:write` |
+| `keyholder`    | `keyholder:read` and `keyholder:write`       |
+| `messaging`    | `messaging:read` and `messaging:write`       |
+
+Apps created after the update are offered the granular scopes only. Existing apps receive the granular scopes alongside their current ones. Use granular scopes for new work.
+
+## Email and phone are never shared
+
+There is no `email` or `phone` scope. `GET /auth/profile` returns the email, `billingEmail` and `phoneNumber` fields as `null` for every OAuth app and developer token. ID tokens and userinfo do not carry email addresses or phone numbers either. Identify users by their user id.
+
+Profile edits through `PATCH /current-user` or `POST /auth/profile` that change the email or phone number return `400`. Other profile fields remain editable with `profile:write`.
+
+## Endpoints without a scope
+
+These endpoints accept any valid token without requiring a scope:
+
+- Public member profiles: `GET /users/profile/:username`, `GET /users/profile/:username/details`, `GET /users/profile/by-id/:userId`, `GET /user-profile/:username/*` and `GET /achievements/user/:userId`.
+- File uploads: `POST /files/upload`.
+
+Public locks, pillory search, shared links, explore categories, the extensions list, session offer token lookup, community event categories, public Academy pages, `GET /data/countries` and `GET /data/countries/:code` work without a token and accept any valid token.
+
+Other endpoints that work with or without a token check the required scope when you send a token. For example, `GET /extensions/tasks/votes/:taskVoteId` is open anonymously and needs `locks:read` with a token. Other access rules for an endpoint still apply, including account permissions and community access.
+
+## Reserved for the Chaster app
+
+Only endpoints in the [API reference](https://api.chaster.app/api) are supported for apps. These endpoints return `403` to OAuth apps and developer tokens:
+
+- `GET /auth/totp/status`
+- `POST /auth/totp/disable`
+- `GET /auth/profile/update`
+
+`GET /users/search/by-discord-id/:discordId` is reserved for the Chaster Discord bot and returns `401` to OAuth apps and developer tokens.
+
+## Developer token
+
+A developer token acts as the account that generated it. It holds every scope listed on this page, including `developer` and the legacy scopes. It is still treated as an app token: email and phone fields remain `null`, the reserved endpoints above stay closed, and edits to the email or phone number return `400`.
+
+New developer tokens use a stronger random generator. Existing tokens keep working. See [Developer token](/api/public-api/developer-token) to generate one.

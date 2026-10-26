@@ -14,15 +14,15 @@ Verified refs on 2026-10-26:
 
 Read these at the Core refs above. Use a private scratch clone, never the shared human checkout.
 
-| Fact | Source |
-| --- | --- |
-| Scope catalog and meaning | project `design.md`, Scope catalog; `api-changelog.md`, New scopes |
-| Shipped scope values | `server/src/modules/auth/models/app-scope.model.ts` (`AppScope`, 24 values) |
-| Scopes offered to developer apps | same file, `DEVELOPER_CLIENT_ALLOWED_SCOPES` (the 18 granular read/write scopes); `server/src/modules/developer/services/keycloak-client-sync.service.ts` (`profile` is a default client scope; no `email` or `phone`) |
-| Legacy aliases | `server/src/modules/auth/utils/expand-scopes.ts` (`LEGACY_SCOPE_EXPANSION`) |
-| Developer token scopes and generation | `server/src/modules/auth/guard/jwt-auth.guard.ts` (developer auth sets `scope: Object.values(AppScope)` and nothing else); `server/src/modules/developer/repositories/developer-token.repository.ts` (`randomBytes(32)`) |
-| Per-endpoint scope | `@ApiScope(...)` on handlers in controllers of the modules listed in `includedModules` (`server/src/scripts/generate-swagger.ts`). `ApiScope` sets both the enforced scope and the OpenAPI `security` block, and `server/src/modules/auth/public-routes-scopes.test.ts` keeps them equal |
-| Changes and actions for existing apps | project `api-changelog.md`, from the title through the end of the "Action needed" list (lines 1 to 134 at `40320a552`) |
+| Fact                                  | Source                                                                                                                                                                                                                                                                                   |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Scope catalog and meaning             | project `design.md`, Scope catalog; `api-changelog.md`, New scopes                                                                                                                                                                                                                       |
+| Shipped scope values                  | `server/src/modules/auth/models/app-scope.model.ts` (`AppScope`, 24 values)                                                                                                                                                                                                              |
+| Scopes offered to developer apps      | same file, `DEVELOPER_CLIENT_ALLOWED_SCOPES` (the 18 granular read/write scopes); `server/src/modules/developer/services/keycloak-client-sync.service.ts` (`profile` is a default client scope; no `email` or `phone`)                                                                   |
+| Legacy aliases                        | `server/src/modules/auth/utils/expand-scopes.ts` (`LEGACY_SCOPE_EXPANSION`)                                                                                                                                                                                                              |
+| Developer token scopes and generation | `server/src/modules/auth/guard/jwt-auth.guard.ts` (developer auth sets `scope: Object.values(AppScope)` and nothing else); `server/src/modules/developer/repositories/developer-token.repository.ts` (`randomBytes(32)`)                                                                 |
+| Per-endpoint scope                    | `@ApiScope(...)` on handlers in controllers of the modules listed in `includedModules` (`server/src/scripts/generate-swagger.ts`). `ApiScope` sets both the enforced scope and the OpenAPI `security` block, and `server/src/modules/auth/public-routes-scopes.test.ts` keeps them equal |
+| Changes and actions for existing apps | project `api-changelog.md`, from the title through the end of the "Action needed" list (lines 1 to 134 at `40320a552`)                                                                                                                                                                   |
 
 The ticket also names `server/tmp/api.json` after `generate-api-clients`. That file is the web app's full client document, and generating it compiles the server. The handler-level `@ApiScope` declarations in published modules are the same data (enforced and documented scopes are equal by test), so a source cross-check is enough. Generate `api.json` only if the source check leaves a real doubt, under the heavy-check lock.
 
@@ -42,28 +42,29 @@ Keep the document ID `api/reference/scopes`, title "OAuth scopes" and sidebar la
 2. **How scopes work.** Each area has a read scope and a write scope. A read scope only allows endpoints that change nothing (judged by what the endpoint does, not its HTTP method). A write scope does not include the read scope: request both if you need both. An endpoint needs every scope it lists; each endpoint's scopes are in its `security` block in the [API reference](https://api.chaster.app/api).
 3. **Scope catalog.** One table with these rows, using the meanings from `api-changelog.md` New scopes:
 
-   | Scope | Allows |
-   | --- | --- |
-   | `profile` | The user's id, username and avatar |
-   | `profile:read` / `profile:write` | The user's own profile, settings, kink profile, stats |
-   | `users:read` / `users:write` | Member search, blocks, reports |
-   | `locks:read` / `locks:write` | The user's locks and their extensions |
-   | `shared_locks:read` / `shared_locks:write` | The user's shared locks |
-   | `keyholder:read` / `keyholder:write` | Locks the user keyholds |
-   | `messaging:read` / `messaging:write` | Private conversations and attachments |
-   | `notifications:read` / `notifications:write` | Notifications |
-   | `calendar:read` / `calendar:write` | Calendar events |
-   | `posts:read` / `posts:write` | Activity feed and keyholding request posts |
-   | `developer` | Extensions API and developer extension management |
+   | Scope                                        | Allows                                                |
+   | -------------------------------------------- | ----------------------------------------------------- |
+   | `profile`                                    | The user's id, username and avatar                    |
+   | `profile:read` / `profile:write`             | The user's own profile, settings, kink profile, stats |
+   | `users:read` / `users:write`                 | Member search, blocks, reports                        |
+   | `locks:read` / `locks:write`                 | The user's locks and their extensions                 |
+   | `shared_locks:read` / `shared_locks:write`   | The user's shared locks                               |
+   | `keyholder:read` / `keyholder:write`         | Locks the user keyholds                               |
+   | `messaging:read` / `messaging:write`         | Private conversations and attachments                 |
+   | `notifications:read` / `notifications:write` | Notifications                                         |
+   | `calendar:read` / `calendar:write`           | Calendar events                                       |
+   | `posts:read` / `posts:write`                 | Activity feed and keyholding request posts            |
+   | `developer`                                  | Extensions API and developer extension management     |
 
    Then state which scopes an OAuth app can request: `profile` is always included; the 18 read/write scopes are offered on the consent screen; `developer` is not offered to OAuth apps and comes only with the developer token (verify against `DEVELOPER_CLIENT_ALLOWED_SCOPES` and `keycloak-client-sync.service.ts`).
+
 4. **Legacy scopes.** `locks`, `shared_locks`, `keyholder` and `messaging` stay valid with no end date. Each counts as its read and write pair (small table: legacy scope → pair). Apps created after the update are offered the granular scopes only; existing apps receive the granular scopes alongside their current ones. Recommend granular scopes for new work.
 5. **Email and phone are never shared.** There is no `email` or `phone` scope. `GET /auth/profile` returns `email`, `billingEmail` and `phoneNumber` as `null` for every app and developer token. ID tokens and userinfo do not carry them. Profile edits (`PATCH /current-user`, `POST /auth/profile`) that change the email or phone number return `400`; other fields stay editable with `profile:write`. Identify users by their user id.
 6. **Endpoints without a scope.**
    - Any valid token, no scope: public member profiles (`GET /users/profile/:username`, `/users/profile/:username/details`, `/users/profile/by-id/:userId`, `GET /user-profile/:username/*`, `GET /achievements/user/:userId`) and `POST /files/upload`.
    - Open without a token, any valid token accepted: public locks, pillory search, shared links, explore categories, the extensions list, session offer token lookup, community event categories, public Academy pages and `GET /data/countries`, `GET /data/countries/:code`.
    - Endpoints that work with or without a token check the scope when a token is sent. Example: `GET /extensions/tasks/votes/:taskVoteId` is open anonymously and needs `locks:read` with a token.
-   Check each path against the shipped controllers before publishing; drop any item that does not match rather than guessing.
+     Check each path against the shipped controllers before publishing; drop any item that does not match rather than guessing.
 7. **Reserved for the Chaster app.** Only endpoints in the API reference are supported for apps. Name exactly these, from the public changelog: `GET /auth/totp/status`, `POST /auth/totp/disable` and `GET /auth/profile/update` return `403` to OAuth apps and developer tokens; `GET /users/search/by-discord-id/:discordId` is reserved for the Chaster Discord bot and returns `401`. Do not add any other examples or categories of reserved endpoints.
 8. **Developer token.** It acts as the account that generated it and holds every scope in the catalog, including `developer` and the legacy scopes. It is still treated as an app token: email and phone are `null`, the reserved endpoints above stay closed, and identity edits return `400`. New tokens use a stronger random generator; existing tokens keep working. Link to `/api/public-api/developer-token`. Do not claim anything about expiry.
 
@@ -73,7 +74,7 @@ New page, title "OAuth scopes update", sidebar label "Scopes update", added to t
 
 Build it only from `api-changelog.md` lines 1 to 134 at `40320a552` (title through "Action needed"). Keep its structure (Part 1: security changes; Part 2: granular scopes; Action needed) and every endpoint, scope and status code in those lines. Edits allowed:
 
-- Rewrite future and announcement wording to the present ("now return", "are no longer shared"), because the page is published after both parts are live. Drop "each announced with its date before it goes live"; add no dates.
+- Rewrite future wording to the present ("now return", "are no longer shared"), because the page is published after both parts are live. Drop "each announced with its date before it goes live"; add no dates.
 - Link to the scopes page for the catalog instead of repeating its whole table, or keep the table: either is fine as long as all 24 values stay on the scopes page.
 - Sentence-case headings and no em dashes, for the lint.
 

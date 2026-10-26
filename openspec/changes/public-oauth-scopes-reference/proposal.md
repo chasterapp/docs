@@ -7,7 +7,7 @@ The Chaster server now checks granular OAuth scopes such as `locks:read` and `lo
 ## What changes
 
 - Rewrite `docs/api/reference/scopes.mdx` from the approved scope catalog and the shipped server: the read and write rule, the full catalog, the legacy scopes that keep working, endpoints that need no scope, email and phone, endpoints reserved for the Chaster app, and the developer token.
-- Add `docs/api/reference/oauth-scopes-update.mdx`, a "Changes" page built from the project's API changelog announcement: new scopes, endpoints that changed scope, newly available, deprecated and removed endpoints, and the action list for existing apps.
+- Add `docs/api/reference/oauth-scopes-update.mdx`, a "Changes" page built from the project's API changelog: new scopes, endpoints that changed scope, newly available, deprecated and removed endpoints, and the action list for existing apps.
 - Add the new page to the Reference group in `sidebars.json`, after Scopes.
 - Narrow consistency edits so the API pages agree with the new reference: the per-area `Scope:` lines in `docs/api/basics/getting-started.mdx` and the "Application scopes" paragraph in `docs/api/public-api/developer-token.mdx`.
 
@@ -25,7 +25,7 @@ None. No API or runtime requirement changes.
 
 Repository: `chasterapp/docs`, default branch `main`. Changes are limited to the four pages above, `sidebars.json` and this OpenSpec change. No server, client, Keycloak, consent-screen or localization work. Publishing the site is the founder's step after T05 deploys (project roadmap, Human checklist).
 
-Feature switch: none. The server change rolls out by deploy (project `design.md`, Rollout and rollback); this page only describes it.
+Runtime flag: none. The server change rolls out by deploy (project `design.md`, Rollout and rollback); this page only describes it.
 
 Sensitive surfaces: public developer documentation and product copy, published to API users; it describes auth/authz behavior and the public API contract. Content rules for this page are recorded on the Paperclip issue (CHA-1412) and are part of the acceptance criteria.
 

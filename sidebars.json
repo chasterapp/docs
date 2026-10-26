@@ -91,6 +91,10 @@
       "api/extensions-api/configuration",
       "api/extensions-api/changelog"
     ],
-    "Reference": ["api/reference/scopes", "api/reference/action-logs"]
+    "Reference": [
+      "api/reference/scopes",
+      "api/reference/oauth-scopes-update",
+      "api/reference/action-logs"
+    ]
   }
 }

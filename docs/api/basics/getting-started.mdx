@@ -2,6 +2,7 @@
 title: Getting started - API
 sidebar_label: Getting started
 ---
+
 Here is all the information you need to start using the Chaster API.
 
 ## Apply for a developer access
@@ -32,13 +33,15 @@ If you have a security issue, or need to share sensitive data with us, please co
 On your [developer interface](https://chaster.app/developers/applications), you can create an application that will allow you to use the API. Once the application is created, you will have access to your client ID and your client secret. These keys will allow you to authenticate a user on the API with OAuth 2.
 
 ## Chaster APIs
-Chaster offers you two different APIs, to use according to your needs. 
+
+Chaster offers you two different APIs, to use according to your needs.
 
 ### Public API
 
 The Public API allows you to interact with the interface and objects of a user. You can access personal locks, and if the user is a keyholder, shared locks and the list of locked users. This is the easiest way to use the Chaster API.
 
 Before using the API, you must obtain either a developer token or an access token, belonging to the user whose data you want to access. You can obtain a token in two ways:
+
 - Generate a developer token from the [developer interface](https://chaster.app/developers/applications). This token will be linked to your Chaster account, which is useful if you are developing an application just for you.
 - Use OAuth 2 to obtain an access token, to allow any user to log in and use your application.
 
@@ -46,28 +49,30 @@ If you are creating an app just for you, or want to access Chaster data in your 
 
 The specification is available here: https://api.chaster.app/api
 
+See [OAuth scopes](/api/reference/scopes) for scope meanings and the read/write rules.
+
 #### Locks
 
-Scope: `locks`
+Scopes: `locks:read`, `locks:write`
 
 You can see the user's lock list, create a lock, and perform the possible actions by the wearer: add time, retrieve the history, retrieve the combination once the lock is unlocked.
 
 #### Shared Locks
 
-Scope: `shared_locks`
+Scopes: `shared_locks:read`, `shared_locks:write`
 
-You can access the list of the user's shared locks, create, modify or delete them. 
+You can access the list of the user's shared locks, create, modify or delete them.
 
 #### Keyholder
 
-Scope: `keyholder`
+Scopes: `keyholder:read`, `keyholder:write`
 
 You can access the list of wearers controlled by the user. You also have access to the wearers' keyholding requests.
 You can control the locks of the wearers: add or remove time, retrieve the history or the combination.
 
 #### Messaging
 
-Scope: `messaging`
+Scopes: `messaging:read`, `messaging:write`
 
 You can see and send private messages.
 
@@ -82,6 +87,7 @@ The Extensions API allows you to create an extension that will be available to a
 This API requires more work and you will have to go through an integration process before you can publish your extension on Chaster. This includes testing your extension to ensure its quality.
 
 Here are some ideas of applications you can make:
-- Connected safe-locks: lock and unlock your lock 
+
+- Connected safe-locks: lock and unlock your lock
 - Games: dice roll, blackjack, poker, slot machine
 - Link with other services: connected sextoys, sync with games
