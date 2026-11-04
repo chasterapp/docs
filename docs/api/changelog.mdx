@@ -42,31 +42,33 @@ Changes to the Public API and the Extensions API, newest first.
 ### OAuth scopes: action needed
 
 1. **Your authorize URL requests `email` or `phone`:** remove them, or sign-in fails with `invalid_scope`.
-2. **You call extension actions with a token:** make sure it has `locks:read` and `locks:write`, or the legacy `locks`.
+2. **You call extension actions, or task or pillory votes, with a token:** make sure it has `locks:read` and `locks:write`, or the legacy `locks`.
 3. **You call blocks, reports, the badge count or calendar statistics:** request the scope listed in [Endpoints that changed scope](#endpoints-that-changed-scope). Users authorize your app again.
 4. **You call `PUT /locks/shared-locks/:sharedLockId/extensions`:** switch to `PUT /shared-locks/:sharedLockId/extensions`. The old route keeps working and is deprecated.
 5. **New apps:** request granular scopes. Existing apps hold them alongside their legacy scopes and can switch at any time.
 
 ### Endpoints that changed scope
 
-| Endpoints                                                                               | Before          | Now                  |
-| --------------------------------------------------------------------------------------- | --------------- | -------------------- |
-| `GET /blocks`, `GET /blocks/block-interaction/:targetUserId`, `GET /locks/user/:userId` | any valid token | `users:read`         |
-| `POST /blocks`, `POST /blocks/unblock`, `POST /reports`                                 | any valid token | `users:write`        |
-| `GET /users/badge/count`                                                                | any valid token | `notifications:read` |
-| `GET /user-profile/calendar-statistics`                                                 | `profile`       | `profile:read`       |
-| `GET /locks/:lockId/extensions/:extensionId`, with a token                              | any valid token | `locks:read`         |
-| `POST /locks/:lockId/extensions/:extensionId/action`, task and pillory votes, with a token | any valid token | `locks:write`     |
+| Endpoints                                                                                                                                          | Before          | Now                  |
+| -------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- | -------------------- |
+| `GET /blocks`, `GET /blocks/block-interaction/:targetUserId`, `GET /locks/user/:userId`                                                            | any valid token | `users:read`         |
+| `POST /blocks`, `POST /blocks/unblock`, `POST /reports`                                                                                            | any valid token | `users:write`        |
+| `GET /users/badge/count`                                                                                                                           | any valid token | `notifications:read` |
+| `GET /user-profile/calendar-statistics`                                                                                                            | `profile`       | `profile:read`       |
+| `GET /locks/:lockId/extensions/:extensionId`, with a token                                                                                         | any valid token | `locks:read`         |
+| `POST /locks/:lockId/extensions/:extensionId/action`, `POST /extensions/tasks/:lockId/vote`, `POST /extensions/pillory/:lockId/vote`, with a token | any valid token | `locks:write`        |
 
 Anonymous calls to endpoints that accept them behave as before.
 
-### Endpoints closed to OAuth apps
+### Endpoints closed to OAuth apps and developer tokens
 
-- `GET /auth/totp/status`, `POST /auth/totp/disable` and `GET /auth/profile/update` return `403`
+- `GET /auth/totp/status`, `POST /auth/totp/disable` and `GET /auth/profile/update` return `403` and are removed from the API reference
 - `GET /users/search/by-discord-id/:discordId` returns `401`
 - Profile edits that change the email or phone number return `400`
 
 ### Newly available endpoints
+
+These endpoints were listed but returned `403`, or were not listed:
 
 | Endpoints                                                                                  | Scope                                        |
 | ------------------------------------------------------------------------------------------ | -------------------------------------------- |
@@ -222,7 +224,6 @@ These endpoints were never callable by OAuth apps: partner configuration creatio
 
 - Fixed: The configuration description template was not rendered in the lock extension settings.
 
-
 ## 2023-10-13
 
 **New features**
@@ -230,7 +231,6 @@ These endpoints were never callable by OAuth apps: partner configuration creatio
 - You can now modify the users who have access to your application.
   - Users with access can use your private test extensions.
   - You can add up to 20 accounts to an application.
-
 
 ## 2023-07-09: Extensions API Launch in Test Mode
 
