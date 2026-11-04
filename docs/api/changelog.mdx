@@ -10,6 +10,7 @@ Changes to the Public API and the Extensions API, newest first.
 **Breaking changes**
 
 - Added the `lock_event.created` webhook, sent alongside `action_log.created`
+  - `lock_event.created` is experimental, like extension communication: its payload can change. `action_log.created` stays stable
   - Extensions without a manifest receive `lock_event.created` for every event of their locks, including hidden events and except their own
   - A visible history entry is sent in both webhooks, with the same `data.actionLog`. Handlers that react to any webhook containing `data.actionLog` without checking `event` react twice
   - Check `event`, answer `2xx` to event types you do not handle, and deduplicate on `data.actionLog._id` or `data.eventId`, never on `requestId`
@@ -23,7 +24,8 @@ Changes to the Public API and the Extensions API, newest first.
 
 **New features**
 
-- Added extension communication
+- Added extension communication, **experimental**
+  - The manifest, commands, queries, lock events, endpoints and webhooks can change in incompatible ways or be removed. Changes are listed in this changelog
   - Extensions publish a manifest of their commands, queries and events, with JSON Schemas
   - Extensions discover what a lock offers and call other extensions through Chaster
   - Every lock has an ordered event stream, delivered by the `lock_event.created` webhook and readable with `GET /api/extensions/sessions/:sessionId/events`

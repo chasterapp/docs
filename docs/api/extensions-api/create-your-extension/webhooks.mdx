@@ -76,8 +76,8 @@ To determine which event types to monitor and configure webhooks for, consider t
 - `extension_session.deleted`: Monitor this event to receive notifications when a session is deleted.
 - `peer_verification.ended`: Receive the terminal verdict for a standalone review created by your extension/session, with vote totals and criterion results.
 - `action_log.created`: Monitor this event to receive notifications when a new action log entry is created, such as when a lock is unlocked, time is added, etc.
-- `lock_event.created`: Receive the events of the locks where your extension is installed, with their sequence number, type and causation. See [Lock events](/api/extensions-api/extension-communication/lock-events).
-- `action.invoke`: Receive calls from other extensions to your commands and queries, when your manifest has no `invokeUrl`. See [Handling invocations](/api/extensions-api/extension-communication/handling-invocations).
+- `lock_event.created` (experimental): Receive the events of the locks where your extension is installed, with their sequence number, type and causation. See [Lock events](/api/extensions-api/extension-communication/lock-events).
+- `action.invoke` (experimental): Receive calls from other extensions to your commands and queries, when your manifest has no `invokeUrl`. See [Handling invocations](/api/extensions-api/extension-communication/handling-invocations).
 
 Choose the event types that are relevant to your extension functionality and use cases.
 
@@ -85,7 +85,7 @@ To know exactly the data that is sent with each event type, please refer to the 
 
 ## Lock events and action logs
 
-`action_log.created` and `lock_event.created` both carry history entries, and overlap:
+`action_log.created` and `lock_event.created` both carry history entries, and overlap. `lock_event.created` is part of [extension communication](/api/extensions-api/extension-communication/introduction), which is experimental: its payload can change, while `action_log.created` stays stable.
 
 ```mermaid
 flowchart LR
