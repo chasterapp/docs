@@ -4,7 +4,7 @@ sidebar_label: Scopes update
 ---
 
 This update makes OAuth scopes more precise and makes the public API reference match what
-your app can call. The two parts below describe the security changes and granular scopes.
+your app can call. It has two parts, both live: the security changes and the granular scopes.
 
 **Tokens with `locks`, `shared_locks`, `keyholder` or `messaging` keep working.** A few
 endpoints change scope or close to OAuth apps: see "Action needed" at the end.
@@ -33,9 +33,10 @@ returns `401` to OAuth apps.
 Some endpoints work with or without a token, such as public lock search or task votes.
 Anonymous calls behave as before. When a token is sent, it must hold the endpoint's scope:
 
-- `GET /locks/:lockId/extensions/:extensionId` and
-  `POST /locks/:lockId/extensions/:extensionId/action` need `locks`.
-- Task and pillory votes need `locks` when called with a token.
+- `GET /locks/:lockId/extensions/:extensionId` needs `locks:read`, and
+  `POST /locks/:lockId/extensions/:extensionId/action` needs `locks:write`.
+- Task and pillory votes need `locks:write` when called with a token.
+- The legacy `locks` scope covers all of them.
 - Public reads (public locks, pillory search, shared links, explore categories, extensions
   list, community event categories) accept any valid token.
 
@@ -129,7 +130,8 @@ screen short.
 
 ## Action needed
 
-1. **You call extension actions with a token:** make sure it has `locks` (Part 1).
+1. **You call extension actions with a token:** make sure it has `locks:read` and
+   `locks:write`, or the legacy `locks` (Part 1).
 2. **You call blocks, reports, the badge count or calendar statistics:** request
    the scope in "Endpoints that changed scope"; users authorize your app again (Part 2).
 3. **You call `PUT /locks/shared-locks/:sharedLockId/extensions`:** switch to

@@ -37,7 +37,7 @@ To configure webhooks for your Chaster extension, follow these steps:
 
 3. **Extension URLs**: In the Extension URLs section, you'll find options to configure webhooks. Enter the URL where you want to receive webhook notifications for each event type. This URL should be publicly accessible over HTTPS.
 
-4. **Basic Authentication**: If you want to protect your webhook URL with basic authentication, you can provide a username and password. We will include these credentials in the HTTP request to your webhook URL.
+4. **Basic Authentication**: If you want to protect your webhook URL with basic authentication, you can provide a username and password. We will include these credentials in the HTTP request to your webhook URL. These credentials are required for other extensions to call your commands and queries.
 
 ## Handling webhooks
 
@@ -45,9 +45,11 @@ To configure webhooks for your Chaster extension, follow these steps:
 
 When an event occurs, Chaster will send an HTTP POST request to the specified webhook URL. Upon receiving a webhook, your extension should promptly respond with an HTTP status code in the 2xx range (e.g., 200 OK) to acknowledge the receipt of the notification. This response serves as confirmation that your extension has successfully received the event data. Acknowledge only after accepting the event into your durable processing workflow. A 2xx response does not guarantee delivery of later events.
 
+Chaster adds new event types over time. Read the `event` field first, and answer `2xx` to event types your extension does not handle: any other response triggers retries.
+
 ### Retries
 
-Chaster employs a retry mechanism for webhook notifications to improve reliability. If the initial HTTP POST request to your webhook URL fails to receive a response within 10 seconds or encounters an error, Chaster will make up to four additional attempts. These retries use exponential backoff starting at 60 seconds (approximately 1, 2, 4 and 8 minutes). Each attempt has a new `requestId` and `sentAt`. Retries apply to queued notifications; they do not guarantee that every event is enqueued or delivered.
+Chaster employs a retry mechanism for webhook notifications to improve reliability. If the initial HTTP POST request to your webhook URL fails to receive a response within 10 seconds or encounters an error, Chaster will make up to four additional attempts. These retries use exponential backoff starting at 60 seconds (approximately 1, 2, 4 and 8 minutes). Each attempt has a new `requestId` and `sentAt`. Retries apply to queued notifications; they do not guarantee that every event is enqueued or delivered. Never deduplicate on `requestId`: use the id of the object the event carries, such as `data.eventId` for `lock_event.created`.
 
 ### Debugging
 
@@ -56,6 +58,8 @@ The debug section is not available yet, but will be added soon.
 :::
 
 To assist you in monitoring webhook delivery and troubleshooting any potential issues, Chaster Developer Interface maintains a history of sent webhooks. This history includes details about the HTTP status codes of the responses your extension provided. You can access this information to review the webhook notifications sent by Chaster and to debug any problems that may arise during webhook handling.
+
+Webhook history is kept for 7 days.
 
 If you encounter difficulties, need guidance on webhook implementation, or require help with debugging webhook reception, don't hesitate to reach out to us.
 
@@ -68,10 +72,37 @@ To determine which event types to monitor and configure webhooks for, consider t
 - `extension_session.deleted`: Monitor this event to receive notifications when a session is deleted.
 - `peer_verification.ended`: Receive the terminal verdict for a standalone review created by your extension/session, with vote totals and criterion results.
 - `action_log.created`: Monitor this event to receive notifications when a new action log entry is created, such as when a lock is unlocked, time is added, etc.
+- `lock_event.created`: Receive the events of the locks where your extension is installed, with their sequence number, type and causation. See [Lock events](/api/extensions-api/extension-communication/lock-events).
+- `action.invoke`: Receive calls from other extensions to your commands and queries, when your manifest has no `invokeUrl`. See [Handling invocations](/api/extensions-api/extension-communication/handling-invocations).
 
 Choose the event types that are relevant to your extension functionality and use cases.
 
 To know exactly the data that is sent with each event type, please refer to the [API documentation](https://api.chaster.app/api) and the model `WebhookEventForPublic`.
+
+## Lock events and action logs
+
+`action_log.created` and `lock_event.created` both carry history entries, and overlap:
+
+| | `action_log.created` | `lock_event.created` |
+| --- | --- | --- |
+| Visible history entries | Yes | Yes, depending on subscriptions |
+| Hidden events | No | Yes, depending on subscriptions |
+| Entries created by your own extension | Yes | No, unless you subscribe to them |
+| Entry | `data.actionLog` | `data.actionLog`, plus `eventId`, `seq`, `type`, `payload`, `source`, `correlationId`, `causationId` |
+
+`data.actionLog` has the same format in both events, and `data.eventId` equals `data.actionLog._id`.
+
+An extension without a [manifest](/api/extensions-api/extension-communication/manifest) receives `lock_event.created` for every event of the lock. A visible history entry then reaches it twice, once per event type.
+
+:::warning
+If your handler reacts to any webhook that contains `data.actionLog`, without checking `event`, it reacts twice to each history entry, and also reacts to hidden events. Do one of the following:
+
+- Check `event` and handle only `action_log.created`. Answer `2xx` to `lock_event.created` and ignore it.
+- Move to `lock_event.created` and ignore `action_log.created`.
+- Upload a manifest whose `subscriptions` list only the event types you need. A manifest with no subscriptions stops `lock_event.created` entirely.
+- Deduplicate on `data.actionLog._id`.
+:::
+
 
 ## Peer review verdicts
 

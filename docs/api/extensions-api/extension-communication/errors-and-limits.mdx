@@ -1,0 +1,77 @@
+---
+title: Errors and limits
+sidebar_label: Errors and limits
+---
+
+When Chaster refuses a call before running it, it answers with an HTTP error and a stable `code` your extension can rely on.
+
+## Error format
+
+```json
+{
+  "statusCode": 422,
+  "code": "command-unavailable",
+  "message": "command-unavailable",
+  "details": { "reason": "lock-not-active" }
+}
+```
+
+`details` is present only for some codes.
+
+## Error codes
+
+| Status | Code                       | Meaning                                                                                         |
+| ------ | -------------------------- | ----------------------------------------------------------------------------------------------- |
+| 400    | `invalid-command-id`       | The command id is not a valid capability id.                                                    |
+| 403    | `caller-not-allowed`       | The capability does not list `extension` (or the current caller) in `invocableBy`.              |
+| 403    | `reserved-namespace`       | The `lock` namespace belongs to Chaster.                                                        |
+| 403    | `foreign-namespace`        | You emitted an event outside your own namespace.                                                |
+| 404    | `not-installed`            | The target extension is not installed on this lock.                                             |
+| 404    | `unknown-command`          | No such command or query on this lock.                                                          |
+| 404    | `unknown-event`            | The event is not declared in your manifest.                                                     |
+| 404    | `options-not-declared`     | The field has no `x-chaster-options`.                                                           |
+| 409    | `idempotency-key-conflict` | The `idempotencyKey` was already used for another command on this lock.                         |
+| 422    | `command-unavailable`      | The command is unavailable right now. `details.reason` says why, for example `lock-not-active`. |
+| 422    | `invalid-input`            | The input does not match the `inputSchema`.                                                     |
+| 422    | `invalid-payload`          | The event payload does not match the `payloadSchema`.                                           |
+| 422    | `invalid-actor`            | `actor` is `keyholder` on a lock without a keyholder.                                           |
+| 422    | `invalid-causation`        | `causationId` is not an event or invocation your extension can refer to on this lock.           |
+| 422    | `depth-exceeded`           | The chain of calls reached the maximum depth.                                                   |
+| 422    | `start-not-supported`      | `start` commands of partner extensions cannot be called.                                        |
+| 422    | `not-dispatchable`         | The target extension has no endpoint or webhook credentials to receive calls.                   |
+| 422    | `invocable-by-widened`     | An availability push tried to add callers that the manifest does not allow.                     |
+| 429    | `rate-limited`             | A rate limit was reached. See below.                                                            |
+| 502    | `options-unavailable`      | The query behind `x-chaster-options` failed.                                                    |
+| 503    | `partner-busy`             | The target extension already handles too many calls. `details.retryAfterSeconds` is `1`.        |
+
+## Rate limits
+
+Calls to commands and queries and emitted events count toward two limits:
+
+- **Per extension and lock**: 120 per minute. When your extension exceeds it, it is blocked on that lock for 5 minutes, and a visible line is added to the lock history.
+- **Per lock**: 300 per minute, all extensions together.
+
+A refused call returns `429` with `details`:
+
+```json
+{ "bucket": "extension", "retryAfterSeconds": 240 }
+```
+
+`bucket` is `extension` or `lock`. Wait `retryAfterSeconds` before calling again.
+
+These limits also apply to [lock actions](/api/extensions-api/create-your-extension/lock-actions) and to the endpoints of the Tasks, Penalties, Hygiene opening, Verification picture and Pillory APIs, which run through the same broker.
+
+## Depth limit
+
+A chain of calls and events (an event causing a call, causing an event, and so on) stops at a depth of 8. The call that exceeds it is refused with `depth-exceeded`, and counts toward the rate limit of the extension that started the chain.
+
+## Other limits
+
+| Limit                                   | Value                                |
+| --------------------------------------- | ------------------------------------ |
+| Response time of an invoked extension   | 10 seconds                           |
+| Response size of an invoked extension   | 64 KiB                               |
+| Options returned by `x-chaster-options` | 200, up to 32 KiB, cached 20 seconds |
+| Nesting of `input` and `payload`        | 64 levels                            |
+| Invocation retention                    | 30 days                              |
+| Hidden event retention                  | 30 days                              |
