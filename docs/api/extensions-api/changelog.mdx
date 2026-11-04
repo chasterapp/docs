@@ -3,6 +3,39 @@ title: Changelog
 sidebar_label: Changelog
 ---
 
+## 2026-11-04
+
+**Breaking changes**
+
+- Added the `lock_event.created` webhook, sent alongside `action_log.created`
+  - Extensions without a manifest receive `lock_event.created` for every event of their locks, including hidden events and except their own
+  - A visible history entry is sent in both webhooks, with the same `data.actionLog`. Handlers that react to any webhook containing `data.actionLog` without checking `event` react twice
+  - Check `event`, answer `2xx` to event types you do not handle, and deduplicate on `data.actionLog._id` or `data.eventId`, never on `requestId`
+  - Documentation: [Lock events and action logs](/api/extensions-api/create-your-extension/webhooks#lock-events-and-action-logs)
+- Granular OAuth scopes for the public API
+  - 18 new `area:read` / `area:write` scopes. `locks`, `shared_locks`, `keyholder` and `messaging` keep working
+  - Blocks, reports, `GET /locks/user/:userId`, the badge count and calendar statistics require a scope
+  - OAuth apps and developer tokens no longer receive email addresses or phone numbers, and the `email` and `phone` scopes are removed
+  - Documentation: [OAuth scopes](/api/reference/scopes), [OAuth scopes update](/api/reference/oauth-scopes-update)
+
+**New features**
+
+- Added extension communication
+  - Extensions publish a manifest of their commands, queries and events, with JSON Schemas
+  - Extensions discover what a lock offers and call other extensions through Chaster
+  - Every lock has an ordered event stream, delivered by the `lock_event.created` webhook and readable with `GET /api/extensions/sessions/:sessionId/events`
+  - New endpoints:
+    - `PUT /api/developers/extensions/:extensionId/manifest` - Upload the manifest of your extension
+    - `GET /api/extensions/:slug/manifest` - Read the public manifest of an extension
+    - `GET /api/extensions/sessions/:sessionId/capabilities` - List the capabilities of a lock
+    - `POST /api/extensions/sessions/:sessionId/actions/:commandId` - Call a command or a query
+    - `POST /api/extensions/sessions/:sessionId/events` - Emit an event
+    - `PUT /api/extensions/sessions/:sessionId/subscriptions` - Change the subscriptions of a session
+  - New webhook `action.invoke`, for calls to your commands and queries
+  - Lock actions and the Tasks, Penalties, Hygiene opening, Verification picture and Pillory endpoints keep their formats, and share the new [rate limits](/api/extensions-api/extension-communication/errors-and-limits#rate-limits)
+  - Documentation: [Extension communication](/api/extensions-api/extension-communication/introduction)
+- Webhook history is kept for 7 days
+
 ## 2026-02-03
 
 **New features**

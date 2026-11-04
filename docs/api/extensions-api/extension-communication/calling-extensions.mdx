@@ -1,0 +1,165 @@
+---
+title: Calling extensions
+sidebar_label: Calling extensions
+---
+
+Your extension can discover what the other extensions on a lock offer, and run their commands and queries through Chaster.
+
+## Discover what a lock offers
+
+- `GET /api/extensions/sessions/:sessionId/capabilities`: list the capabilities of every extension installed on the lock of this session.
+
+The response always starts with the `lock` entry, which holds the commands Chaster offers on every lock. Each command and query includes `available` and `reason`, computed for this lock right now:
+
+```json
+{
+  "extensions": [
+    {
+      "slug": "lock",
+      "displayName": "Lock",
+      "partnerExtensionId": null,
+      "revision": 1,
+      "commands": [
+        {
+          "id": "lock.add-time",
+          "title": "Add time",
+          "description": "Add time to a current lock session",
+          "kind": "control",
+          "invocableBy": ["wearer", "keyholder", "extension"],
+          "inputSchema": { "...": "..." },
+          "outputSchema": { "...": "..." },
+          "deprecated": null,
+          "available": true,
+          "reason": null
+        }
+      ],
+      "queries": [],
+      "events": [
+        {
+          "id": "lock.time-changed",
+          "payloadSchema": { "...": "..." },
+          "deprecated": null
+        }
+      ]
+    }
+  ]
+}
+```
+
+`partnerExtensionId` is set for partner extensions and `null` for Chaster extensions. Read the capabilities again when you receive a `lock.capabilities-changed` event.
+
+This endpoint also accepts the main page token of your iframe in the `X-Chaster-Main-Token` header, instead of your developer token. In that case, availability is computed for the wearer or keyholder viewing the page.
+
+## Call a command or a query
+
+- `POST /api/extensions/sessions/:sessionId/actions/:commandId`: run a command or a query (read the [API documentation](https://api.chaster.app/api)).
+
+```json
+{
+  "input": { "task": { "task": "Write 100 lines", "points": 5 } },
+  "idempotencyKey": "spin-6731b2c4e5:assign",
+  "actor": "extension",
+  "causationId": "6731b2c4e5f0a1b2c3d4e5f6"
+}
+```
+
+| Field            | Description                                                                                                                                                                                                                            |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `input`          | The input object, validated against the `inputSchema` of the command. Defaults to `{}`.                                                                                                                                                |
+| `idempotencyKey` | Required, 1 to 200 characters. Protects you against running the same call twice. See [Retries and idempotency](#retries-and-idempotency).                                                                                              |
+| `actor`          | Optional: `extension` (default), `wearer` or `keyholder`. Who the action is attributed to in the history. See [Actor system](/api/extensions-api/interact-with-extensions/actor-system). `keyholder` requires a lock with a keyholder. |
+| `causationId`    | Optional. The `eventId` of the event, or the id of the invocation, that caused this call.                                                                                                                                              |
+
+Your extension can only call capabilities whose `invocableBy` contains `extension`, on an extension installed on the same lock. The target capability must be available.
+
+### Response
+
+The response is an invocation:
+
+```json
+{
+  "invocationId": "6731b2d0e5f0a1b2c3d4e5f7",
+  "commandId": "tasks.assign",
+  "capability": "command",
+  "status": "completed",
+  "result": {},
+  "error": null,
+  "causationId": "6731b2c4e5f0a1b2c3d4e5f6",
+  "correlationId": "6731b2c4e5f0a1b2c3d4e5f6",
+  "depth": 1,
+  "causationInferred": false,
+  "createdAt": "2026-11-04T12:00:00.000Z",
+  "settledAt": "2026-11-04T12:00:00.250Z"
+}
+```
+
+```mermaid
+flowchart LR
+    R[Your request] --> Q{Accepted by Chaster?}
+    Q -- No --> E["HTTP error<br/>see Errors and limits"]
+    Q -- Yes --> P[pending]
+    P --> OK[completed]
+    P --> RJ[rejected]
+    P --> F[failed]
+    P --> U[unknown]
+```
+
+:::warning
+A `200` response does not mean the command succeeded. Always read `status`:
+
+- `completed`: the command ran. `result` holds its output.
+- `rejected`: the target extension refused the call. `error` holds its `code` and `message`.
+- `failed`: the call could not be completed (error response, unreachable endpoint).
+- `unknown`: Chaster could not tell whether the command ran (timeout, invalid response). Check the lock state before trying again.
+- `pending`: the call is still running.
+
+Calls refused before they are dispatched return an HTTP error instead. See [Errors and limits](/api/extensions-api/extension-communication/errors-and-limits).
+:::
+
+### Retries and idempotency
+
+Chaster never retries a call for you. If your request times out on your side, send it again with the **same** `idempotencyKey`: if the first request was recorded, Chaster returns that invocation instead of running the command a second time.
+
+- Keys are scoped to your extension and the lock. Reusing a key with a different command returns `409`.
+- A repeated request is checked again (availability, rate limits) before Chaster looks up the existing invocation, so it can still be refused with an HTTP error.
+- Invocations, and the protection of their key, last 30 days.
+- To start a new attempt after a `failed` or `rejected` call, use a new key.
+
+- `GET /api/extensions/sessions/:sessionId/invocations/:invocationId`: read one of your invocations again, for example while it is `pending`. Invocations are kept for 30 days.
+
+### Causation and correlation
+
+Chaster links each call to what caused it:
+
+```mermaid
+flowchart LR
+    A["Wheel lands<br/>(event)"] --> B["Your call<br/>tasks.assign"] --> C["Task assigned<br/>(event)"]
+```
+
+All three share the same `correlationId`. Your call stores the wheel event as its `causationId`, and the `tasks.assigned` event points back to your call in `source.invocationId`.
+
+- `causationId` is the event or invocation that directly caused the call.
+- `correlationId` is shared by every call and event in the same chain, starting from the first event.
+- `depth` is the position in the chain. Chains stop at a depth of 8 with `depth-exceeded`, which prevents two extensions from triggering each other forever.
+
+When you omit `causationId`, Chaster uses the last event delivered to your extension on this lock in the previous 10 seconds, and sets `causationInferred` to `true`. Pass `causationId` explicitly when you know it. It must be on the same lock, and be one of: an event your extension created, an event Chaster sent to your extension as a `lock_event.created` webhook in the last 7 days, or an invocation your extension made or received. Other ids, including events you only read with `GET .../events` or received as `action_log.created`, return `invalid-causation`.
+
+## Built-in capabilities
+
+Chaster publishes manifests for the lock itself and for its own extensions. Read the `lock.*` schemas in the capabilities of a session. For the other extensions, you can also use `GET /api/extensions/:slug/manifest`.
+
+| Namespace              | Commands                                                                                                  | Queries  | Events                                                                          |
+| ---------------------- | --------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------- |
+| `lock`                 | `add-time`, `remove-time`, `freeze`, `unfreeze`, `toggle-freeze`, `pillory`, `set-display-remaining-time` |          | `time-changed`, `capabilities-changed`                                          |
+| `tasks`                | `assign`, `start-timer`, `complete`                                                                       |          | `assigned`, `completed`, `failed`, `unassigned`, `vote-ended`, `vote-cancelled` |
+| `penalty`              | `increment`, `create-time-limit`, `cancel-time-limit`                                                     |          |                                                                                 |
+| `verification-picture` | `request`                                                                                                 |          | `requested`, `submitted`, `verdict`                                             |
+| `temporary-opening`    | `open`                                                                                                    |          | `opened`, `relocked`, `late`                                                    |
+| `pillory`              |                                                                                                           | `status` | `started`, `ended`                                                              |
+| `dice`                 |                                                                                                           |          | `rolled`                                                                        |
+| `link`                 |                                                                                                           |          | `voted`, `time-changed`                                                         |
+| `wheel-of-fortune`     |                                                                                                           |          | `landed`                                                                        |
+
+`lock.remove-time`, `lock.unfreeze`, `lock.toggle-freeze` and `lock.set-display-remaining-time` cannot be called by the wearer. The capabilities of an extension appear only when it is installed on the lock.
+
+The existing endpoints of the Extensions API ([lock actions](/api/extensions-api/create-your-extension/lock-actions), [Tasks](/api/extensions-api/interact-with-extensions/tasks), [Penalties](/api/extensions-api/interact-with-extensions/penalties), [Hygiene opening](/api/extensions-api/interact-with-extensions/hygiene-opening), [Verification picture](/api/extensions-api/interact-with-extensions/verification-picture), [Pillory](/api/extensions-api/interact-with-extensions/pillory)) keep their request and response formats. Chaster handles them the same way, so the same rate limits and depth limit apply to them.

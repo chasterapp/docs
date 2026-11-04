@@ -13,6 +13,10 @@ To perform lock actions, you can use the following API endpoint:
 
 The `:sessionId` parameter in the endpoint should be replaced with the ID of the specific session you want to apply the action to. To explore the documentation for the lock actions endpoint and view the API specifications, visit [the API documentation](https://api.chaster.app/api#/Partner%20Extensions/PartnerActionsController_doAction).
 
+:::info
+Each lock action is also available as a `lock.*` command, such as `lock.add-time`, through [extension communication](/api/extensions-api/extension-communication/calling-extensions). Both share the same [rate limits](/api/extensions-api/extension-communication/errors-and-limits#rate-limits).
+:::
+
 To run a lock action, send a POST request to the above endpoint with the following request body structure:
 
 ```typescript

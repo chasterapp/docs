@@ -1,0 +1,199 @@
+---
+title: Manifest
+sidebar_label: Manifest
+---
+
+With a manifest, your extension tells other extensions what it can do and what it announces.
+
+## Introduction
+
+The manifest lists three kinds of capabilities:
+
+- **Commands**: actions other extensions can ask your extension to run.
+- **Queries**: questions other extensions can ask your extension, with no side effect.
+- **Events**: things your extension announces on the lock, with the shape of their payload.
+
+Each capability has a JSON Schema. Chaster validates every input, output and payload against it, so the extensions that call yours can rely on the shape of the data.
+
+You do not need a manifest to call other extensions or to receive lock events. You need one to be called by other extensions or to emit typed events. A manifest also sets the default list of events your extension receives; you can change that list for a single session with [session subscriptions](/api/extensions-api/extension-communication/lock-events#choose-which-events-you-receive).
+
+## Upload a manifest
+
+Upload the manifest from the **Manifest** tab of your extension in the Developer Interface (paste it in **Manifest JSON**, then click **Upload manifest**), or with the API:
+
+- `PUT /api/developers/extensions/:extensionId/manifest`: replace the manifest of your extension.
+- `GET /api/developers/extensions/:extensionId/manifest`: read the current manifest, its revision and any pending review.
+
+An upload replaces the whole manifest. A list you omit becomes empty, and an omitted `invokeUrl` is removed. Each applied upload increases the manifest `revision`.
+
+### Before you upload
+
+A manifest that declares commands, queries or events has prerequisites. Chaster refuses the upload when they are missing:
+
+- Use your own extension slug in every id (`my-game` below).
+- To let other extensions call you, set a webhook username and password in your extension settings.
+- To declare an event, first create a log type with the same name in your extension (see [Events](#events)).
+
+The simplest manifest only chooses the events you receive, and has no prerequisites:
+
+```json
+{
+  "subscriptions": ["dice.rolled", "wheel-of-fortune.landed"]
+}
+```
+
+### Full example
+
+```json
+{
+  "invokeUrl": "https://example.com/chaster/invoke",
+  "commands": [
+    {
+      "id": "my-game.start-round",
+      "title": "Start a round",
+      "description": "Starts a new round of the game",
+      "kind": "control",
+      "invocableBy": ["extension"],
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "difficulty": { "type": "string", "enum": ["easy", "hard"] },
+          "duration": { "$ref": "chaster#/duration" }
+        },
+        "required": ["difficulty"],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": { "roundId": { "type": "string" } },
+        "required": ["roundId"]
+      }
+    }
+  ],
+  "queries": [
+    {
+      "id": "my-game.score",
+      "title": "Current score",
+      "description": "Returns the current score of the wearer",
+      "invocableBy": ["extension"],
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": { "score": { "type": "integer" } },
+        "required": ["score"]
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "my-game.round-won",
+      "payloadSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": { "score": { "type": "integer" } },
+        "required": ["score"]
+      }
+    }
+  ],
+  "subscriptions": ["wheel-of-fortune.landed", "dice.rolled"]
+}
+```
+
+## Fields
+
+### Capability ids
+
+Every id has the form `<your extension slug>.<name>`. The name uses lowercase letters, digits and dashes (kebab-case), up to 60 characters. You can only declare ids in your own namespace, and `lock.` is reserved for Chaster. Ids are unique, and a command cannot share its id with a query.
+
+Each list (`commands`, `queries`, `events`, `subscriptions`) holds at most 100 entries.
+
+### Commands
+
+| Field          | Description                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------ |
+| `id`           | Capability id, up to 100 characters.                                                                         |
+| `title`        | Short name, up to 200 characters.                                                                            |
+| `description`  | Optional description.                                                                                        |
+| `kind`         | `control` for commands other extensions can call. `start` commands are not dispatched to partner extensions. |
+| `invocableBy`  | Who can call it: `wearer`, `keyholder`, `extension`. Defaults to `["wearer", "keyholder"]`.                  |
+| `inputSchema`  | Required. JSON Schema of the `input` object.                                                                 |
+| `outputSchema` | Optional. JSON Schema of the `result` object your extension returns.                                         |
+| `deprecated`   | Optional. A message that marks the command as deprecated.                                                    |
+
+:::warning
+Other extensions can only call commands and queries whose `invocableBy` contains `extension`. Declaring `extension` requires a webhook username and password in your extension settings, since Chaster uses them to authenticate its calls to you.
+:::
+
+### Queries
+
+Queries use the same fields as commands, without `kind`. `inputSchema` is optional and `outputSchema` is required.
+
+### Events
+
+| Field           | Description                                             |
+| --------------- | ------------------------------------------------------- |
+| `id`            | Capability id.                                          |
+| `payloadSchema` | Required. JSON Schema of the event `payload`.           |
+| `deprecated`    | Optional. A message that marks the event as deprecated. |
+
+The name of an event must be one of the log types of your extension (the `actions[].type` values you set with `PATCH /api/developers/extensions/:extensionId`). Log types can contain underscores, but capability ids cannot: only log types in kebab-case can be declared as events.
+
+### Subscriptions
+
+The capability ids of the events your extension receives as [`lock_event.created`](/api/extensions-api/extension-communication/lock-events#receive-events) webhooks. You can also change subscriptions for a single session.
+
+:::warning
+Once your extension has a manifest, it receives only the events listed in `subscriptions`. For sessions without their own subscription list, a manifest without `subscriptions` stops `lock_event.created` deliveries. See [Choose which events you receive](/api/extensions-api/extension-communication/lock-events#choose-which-events-you-receive).
+:::
+
+### Invoke URL
+
+`invokeUrl` (optional, HTTP or HTTPS, up to 2,048 characters) receives the calls other extensions make to your commands and queries. Without it, Chaster sends them to your webhook URL. See [Handling invocations](/api/extensions-api/extension-communication/handling-invocations).
+
+## JSON Schema rules
+
+Schemas follow a subset of JSON Schema draft-07:
+
+- Each schema declares `"$schema": "http://json-schema.org/draft-07/schema#"`.
+- A schema is at most 16 KiB, nested at most 10 levels deep.
+- Allowed keywords: `type`, `properties`, `required`, `additionalProperties`, `items` (no tuples), `enum`, `const`, `oneOf`, `anyOf`, `minimum`, `maximum`, `exclusiveMinimum`, `exclusiveMaximum`, `minLength`, `maxLength`, `minItems`, `maxItems`, `pattern`, `format`, `title`, `description`, `examples`, `default`, `deprecated` and `x-chaster-options`.
+- `$ref` only accepts `chaster#/duration`, a duration in seconds (an integer of 0 or more).
+
+### Dynamic choices
+
+`x-chaster-options` fills a field with choices that depend on the lock, such as the levels available in your game. It points to one of your own queries, whose output contains an `items` array:
+
+```json
+"levelId": {
+  "type": "string",
+  "x-chaster-options": {
+    "query": "my-game.levels",
+    "value": "id",
+    "label": "name"
+  }
+}
+```
+
+`value` and `label` name the fields of each item. The keyword is allowed on a top-level property or on its `items`. Callers read the choices with `GET /api/extensions/sessions/:sessionId/capabilities/:commandId/options/:field`, with an optional `search` parameter (up to 100 characters). The response is `{ "options": [{ "value", "label" }], "truncated" }`, with at most 200 options.
+
+## Compatibility
+
+Extensions that call yours rely on your schemas, so Chaster compares each upload with the previous manifest:
+
+- **While your extension is in testing**, breaking changes are applied and listed as warnings in the response.
+- **Once your extension is published** with an approved manifest, breaking changes are refused with `400` and the list of changes. Changes to `kind` or `invocableBy` go to moderator review: the upload returns `outcome: "pending_review"` and the change applies once approved.
+
+To change a capability in a breaking way on a published extension, add a new capability and mark the old one `deprecated`.
+
+## Change availability at runtime
+
+A command can be declared but unavailable on a given session, for example while a round is running. Push its availability for one session:
+
+- `PUT /api/extensions/sessions/:sessionId/capabilities/:commandId`: `{ "available": false, "reason": "round-in-progress" }`
+- `PUT /api/extensions/sessions/:sessionId/capabilities`: the same for several capabilities, `{ "capabilities": [{ "id": "...", "available": true }] }`, up to 200 entries.
+
+`reason` is a short kebab-case code (up to 60 characters). `invocableBy` can narrow who may call the command on this session, never widen it. Callers see the availability in the lock capabilities, and calls to an unavailable command are refused with `command-unavailable`.
+
+When availability changes, or when an extension is added to or removed from the lock, Chaster emits a hidden `lock.capabilities-changed` event so other extensions can refresh what they know.

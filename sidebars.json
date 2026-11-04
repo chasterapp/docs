@@ -88,6 +88,16 @@
           "api/extensions-api/interact-with-extensions/verification-picture"
         ]
       },
+      {
+        "Extension communication": [
+          "api/extensions-api/extension-communication/introduction",
+          "api/extensions-api/extension-communication/manifest",
+          "api/extensions-api/extension-communication/calling-extensions",
+          "api/extensions-api/extension-communication/handling-invocations",
+          "api/extensions-api/extension-communication/lock-events",
+          "api/extensions-api/extension-communication/errors-and-limits"
+        ]
+      },
       "api/extensions-api/configuration",
       "api/extensions-api/changelog"
     ],
