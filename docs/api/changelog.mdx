@@ -17,8 +17,8 @@ Changes to the Public API and the Extensions API, newest first.
   - Documentation: [Lock events and action logs](/api/extensions-api/create-your-extension/webhooks#lock-events-and-action-logs)
 - Granular OAuth scopes for the Public API
   - 18 new `area:read` / `area:write` scopes. `locks`, `shared_locks`, `keyholder` and `messaging` keep working with no end date, each counting as its read and write pair
-  - OAuth apps and developer tokens no longer receive email addresses or phone numbers. `GET /auth/profile` returns `email`, `billingEmail` and `phoneNumber` as `null`, and ID tokens and userinfo no longer carry them
-  - The `email` and `phone` scopes are removed: an authorize URL that still requests them fails with `invalid_scope` before the consent screen
+  - OAuth apps and developer tokens no longer receive email addresses. `GET /auth/profile` returns `email` and `billingEmail` as `null`, and ID tokens and userinfo no longer carry them
+  - The `email` scope is removed: an authorize URL that still requests it fails with `invalid_scope` before the consent screen
   - Some endpoints change scope or close to OAuth apps, see [OAuth scopes: action needed](#oauth-scopes-action-needed)
   - Documentation: [OAuth scopes](/api/reference/scopes)
 
@@ -43,7 +43,7 @@ Changes to the Public API and the Extensions API, newest first.
 
 ### OAuth scopes: action needed
 
-1. **Your authorize URL requests `email` or `phone`:** remove them, or sign-in fails with `invalid_scope`.
+1. **Your authorize URL requests `email`:** remove it, or sign-in fails with `invalid_scope`.
 2. **You call extension actions, or task or pillory votes, with a token:** make sure it has `locks:read` and `locks:write`, or the legacy `locks`.
 3. **You call blocks, reports, the badge count or calendar statistics:** request the scope listed in [Endpoints that changed scope](#endpoints-that-changed-scope). Users authorize your app again.
 4. **You call `PUT /locks/shared-locks/:sharedLockId/extensions`:** switch to `PUT /shared-locks/:sharedLockId/extensions`. The old route keeps working and is deprecated.
@@ -66,7 +66,7 @@ Anonymous calls to endpoints that accept them behave as before.
 
 - `GET /auth/totp/status`, `POST /auth/totp/disable` and `GET /auth/profile/update` return `403` and are removed from the API reference
 - `GET /users/search/by-discord-id/:discordId` returns `401`
-- Profile edits that change the email or phone number return `400`
+- Profile edits that change the email return `400`
 
 ### Newly available endpoints
 
