@@ -46,7 +46,7 @@ To configure webhooks for your Chaster extension, follow these steps:
 When an event occurs, Chaster will send an HTTP POST request to the specified webhook URL. Upon receiving a webhook, your extension should promptly respond with an HTTP status code in the 2xx range (e.g., 200 OK) to acknowledge the receipt of the notification. This response serves as confirmation that your extension has successfully received the event data. Acknowledge only after accepting the event into your durable processing workflow. A 2xx response does not guarantee delivery of later events.
 
 :::info
-These rules apply to notifications. `action.invoke` is different: it is a call from another extension, and Chaster expects the result of the command in the response, within 10 seconds. It is never retried. See [Handling invocations](/api/extensions-api/extension-communication/handling-invocations).
+These rules apply to notifications. `action.invoke` (experimental) is different: it is a call from another extension, and Chaster expects the result of the command in the response, within 10 seconds. It is never retried. See [Handling invocations](/api/extensions-api/extension-communication/handling-invocations).
 :::
 
 Chaster adds new event types over time. Read the `event` field first, and answer `2xx` to event types your extension does not handle: any other response triggers retries.
@@ -113,7 +113,7 @@ If your handler reacts to any webhook that contains `data.actionLog` without che
 **To keep your current behavior**, handle only `action_log.created`. When `event` is `lock_event.created`, answer `2xx` and do nothing else.
 :::
 
-To move to `lock_event.created` instead:
+To move to `lock_event.created` instead, knowing its payload can still change:
 
 1. Upload a [manifest](/api/extensions-api/extension-communication/manifest) whose `subscriptions` list the event types you need. Untyped entries such as custom logs are then no longer delivered as lock events.
 2. Ignore `action_log.created`, or deduplicate on `data.actionLog._id` if you keep both.
