@@ -1,7 +1,9 @@
 ---
-title: Changelog
+title: API changelog
 sidebar_label: Changelog
 ---
+
+Changes to the Public API and the Extensions API, newest first.
 
 ## 2026-11-04
 
@@ -12,11 +14,12 @@ sidebar_label: Changelog
   - A visible history entry is sent in both webhooks, with the same `data.actionLog`. Handlers that react to any webhook containing `data.actionLog` without checking `event` react twice
   - Check `event`, answer `2xx` to event types you do not handle, and deduplicate on `data.actionLog._id` or `data.eventId`, never on `requestId`
   - Documentation: [Lock events and action logs](/api/extensions-api/create-your-extension/webhooks#lock-events-and-action-logs)
-- Granular OAuth scopes for the public API
-  - 18 new `area:read` / `area:write` scopes. `locks`, `shared_locks`, `keyholder` and `messaging` keep working
-  - Blocks, reports, `GET /locks/user/:userId`, the badge count and calendar statistics require a scope
-  - OAuth apps and developer tokens no longer receive email addresses or phone numbers, and the `email` and `phone` scopes are removed
-  - Documentation: [OAuth scopes](/api/reference/scopes), [OAuth scopes update](/api/reference/oauth-scopes-update)
+- Granular OAuth scopes for the Public API
+  - 18 new `area:read` / `area:write` scopes. `locks`, `shared_locks`, `keyholder` and `messaging` keep working with no end date, each counting as its read and write pair
+  - OAuth apps and developer tokens no longer receive email addresses or phone numbers. `GET /auth/profile` returns `email`, `billingEmail` and `phoneNumber` as `null`, and ID tokens and userinfo no longer carry them
+  - The `email` and `phone` scopes are removed: an authorize URL that still requests them fails with `invalid_scope` before the consent screen
+  - Some endpoints change scope or close to OAuth apps, see [OAuth scopes: action needed](#oauth-scopes-action-needed)
+  - Documentation: [OAuth scopes](/api/reference/scopes)
 
 **New features**
 
@@ -35,6 +38,62 @@ sidebar_label: Changelog
   - Lock actions and the Tasks, Penalties, Hygiene opening, Verification picture and Pillory endpoints keep their formats, and share the new [rate limits](/api/extensions-api/extension-communication/errors-and-limits#rate-limits)
   - Documentation: [Extension communication](/api/extensions-api/extension-communication/introduction)
 - Webhook history is kept for 7 days
+
+### OAuth scopes: action needed
+
+1. **Your authorize URL requests `email` or `phone`:** remove them, or sign-in fails with `invalid_scope`.
+2. **You call extension actions with a token:** make sure it has `locks:read` and `locks:write`, or the legacy `locks`.
+3. **You call blocks, reports, the badge count or calendar statistics:** request the scope listed in [Endpoints that changed scope](#endpoints-that-changed-scope). Users authorize your app again.
+4. **You call `PUT /locks/shared-locks/:sharedLockId/extensions`:** switch to `PUT /shared-locks/:sharedLockId/extensions`. The old route keeps working and is deprecated.
+5. **New apps:** request granular scopes. Existing apps hold them alongside their legacy scopes and can switch at any time.
+
+### Endpoints that changed scope
+
+| Endpoints                                                                               | Before          | Now                  |
+| --------------------------------------------------------------------------------------- | --------------- | -------------------- |
+| `GET /blocks`, `GET /blocks/block-interaction/:targetUserId`, `GET /locks/user/:userId` | any valid token | `users:read`         |
+| `POST /blocks`, `POST /blocks/unblock`, `POST /reports`                                 | any valid token | `users:write`        |
+| `GET /users/badge/count`                                                                | any valid token | `notifications:read` |
+| `GET /user-profile/calendar-statistics`                                                 | `profile`       | `profile:read`       |
+| `GET /locks/:lockId/extensions/:extensionId`, with a token                              | any valid token | `locks:read`         |
+| `POST /locks/:lockId/extensions/:extensionId/action`, task and pillory votes, with a token | any valid token | `locks:write`     |
+
+Anonymous calls to endpoints that accept them behave as before.
+
+### Endpoints closed to OAuth apps
+
+- `GET /auth/totp/status`, `POST /auth/totp/disable` and `GET /auth/profile/update` return `403`
+- `GET /users/search/by-discord-id/:discordId` returns `401`
+- Profile edits that change the email or phone number return `400`
+
+### Newly available endpoints
+
+| Endpoints                                                                                  | Scope                                        |
+| ------------------------------------------------------------------------------------------ | -------------------------------------------- |
+| Calendar events: `GET`, `POST /calendar/events`, `PATCH`, `DELETE /calendar/events/:id`    | `calendar:read` / `calendar:write`           |
+| Notifications: counts, search, channel health, read, act, read all, seen, Discord channel  | `notifications:read` / `notifications:write` |
+| Kink profile: `GET`, `PUT /current-user/kink-profile`, predefined list                     | `profile:read` / `profile:write`             |
+| `GET /lock-stats/reset-config`, `POST /community-event/details`                            | `profile:read`                               |
+| Profile edits: `PATCH /current-user`, `POST /auth/profile`                                 | `profile:write`                              |
+| `POST /lock-stats/reset`                                                                   | `profile:write`                              |
+| Academy enrollment and lesson progress                                                     | `profile:write`                              |
+| Member search: `POST /users/search`, `/users/search/by-username`                           | `users:read`                                 |
+| Activity feed and posts: `POST /posts`, `GET /posts/:postId`, subjects, cancel             | `posts:read` / `posts:write`                 |
+| Keyholder applications: apply, withdraw                                                    | `keyholder:write`                            |
+| Keyholder applications on a lock: list / answer                                            | `locks:read` / `locks:write`                 |
+| Combination image verification and combination upload                                      | `locks:write`                                |
+| Extension schedules: `GET`, `PATCH /locks/:lockId/extensions/:extensionPartyId/schedule`   | `locks:read` / `locks:write`                 |
+| `PUT /shared-locks/:sharedLockId/extensions`, `POST /shared-locks/:sharedLockId/unarchive` | `shared_locks:write`                         |
+| `GET /extensions/tasks/votes/:taskVoteId`                                                  | `locks:read`, or anonymous                   |
+| `GET /data/countries`, `GET /data/countries/:code`                                         | none                                         |
+
+### Removed from the API reference
+
+These endpoints were never callable by OAuth apps: partner configuration creation, extension tester join, `GET /users/profile-completeness`, `/user-pictures/*`, and the `/health`, `/live` and `/ready` probes.
+
+### Other changes
+
+- New developer tokens use a stronger random generator. Existing tokens keep working.
 
 ## 2026-02-03
 

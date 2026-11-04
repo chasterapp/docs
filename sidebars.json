@@ -32,7 +32,9 @@
       "features/calendar",
       "features/statistics"
     ],
-    "Activity": ["activity/activity"],
+    "Activity": [
+      "activity/activity"
+    ],
     "Extensions": [
       "extensions/extensions",
       "extensions/dice",
@@ -98,13 +100,14 @@
           "api/extensions-api/extension-communication/errors-and-limits"
         ]
       },
-      "api/extensions-api/configuration",
-      "api/extensions-api/changelog"
+      "api/extensions-api/configuration"
     ],
     "Reference": [
       "api/reference/scopes",
-      "api/reference/oauth-scopes-update",
       "api/reference/action-logs"
+    ],
+    "Changelog": [
+      "api/changelog"
     ]
   }
 }

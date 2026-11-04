@@ -97,5 +97,16 @@ module.exports = {
       },
     ],
   ],
-  plugins: [require.resolve("docusaurus-lunr-search")],
+  plugins: [
+    require.resolve("docusaurus-lunr-search"),
+    [
+      "@docusaurus/plugin-client-redirects",
+      {
+        redirects: [
+          { from: "/api/extensions-api/changelog", to: "/api/changelog" },
+          { from: "/api/reference/oauth-scopes-update", to: "/api/changelog" },
+        ],
+      },
+    ],
+  ],
 };
