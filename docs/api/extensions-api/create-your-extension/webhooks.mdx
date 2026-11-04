@@ -105,7 +105,7 @@ flowchart LR
 
 `data.actionLog` has the same format in both events, and `data.eventId` equals `data.actionLog._id`.
 
-An extension without a [manifest](/api/extensions-api/extension-communication/manifest) receives `lock_event.created` for every event of the lock. A visible history entry then reaches it twice, once per event type.
+An extension without a [manifest](/api/extensions-api/extension-communication/manifest) or session subscription list receives `lock_event.created` for every event of the lock, except the events it created itself. A visible history entry then reaches it twice, once per event type.
 
 :::warning
 If your handler reacts to any webhook that contains `data.actionLog` without checking `event`, it reacts twice to each history entry, and also reacts to hidden events.

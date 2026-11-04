@@ -48,7 +48,7 @@ The response always starts with the `lock` entry, which holds the commands Chast
 
 `partnerExtensionId` is set for partner extensions and `null` for Chaster extensions. Read the capabilities again when you receive a `lock.capabilities-changed` event.
 
-This endpoint also accepts the main page token of your iframe in the `X-Chaster-Main-Token` header, instead of your developer token. In that case, the list is filtered for the wearer or keyholder viewing the page.
+This endpoint also accepts the main page token of your iframe in the `X-Chaster-Main-Token` header, instead of your developer token. In that case, availability is computed for the wearer or keyholder viewing the page.
 
 ## Call a command or a query
 

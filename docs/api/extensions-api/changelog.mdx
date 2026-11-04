@@ -8,7 +8,7 @@ sidebar_label: Changelog
 **Breaking changes**
 
 - Added the `lock_event.created` webhook, sent alongside `action_log.created`
-  - Extensions without a manifest receive `lock_event.created` for every event of their locks, including hidden events
+  - Extensions without a manifest receive `lock_event.created` for every event of their locks, including hidden events and except their own
   - A visible history entry is sent in both webhooks, with the same `data.actionLog`. Handlers that react to any webhook containing `data.actionLog` without checking `event` react twice
   - Check `event`, answer `2xx` to event types you do not handle, and deduplicate on `data.actionLog._id` or `data.eventId`, never on `requestId`
   - Documentation: [Lock events and action logs](/api/extensions-api/create-your-extension/webhooks#lock-events-and-action-logs)
