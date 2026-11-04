@@ -53,7 +53,7 @@ Chaster adds new event types over time. Read the `event` field first, and answer
 
 ### Retries
 
-Chaster employs a retry mechanism for webhook notifications to improve reliability. If the initial HTTP POST request to your webhook URL fails to receive a response within 10 seconds or encounters an error, Chaster will make up to four additional attempts. These retries use exponential backoff starting at 60 seconds (approximately 1, 2, 4 and 8 minutes). Each attempt has a new `requestId` and `sentAt`. Retries apply to queued notifications; they do not guarantee that every event is enqueued or delivered. Never deduplicate on `requestId`: use the id of the object the event carries, such as `data.eventId` for `lock_event.created`.
+Chaster employs a retry mechanism for webhook notifications to improve reliability. If the initial HTTP POST request to your webhook URL fails to receive a response within 10 seconds or encounters an error, Chaster will make up to four additional attempts. These retries use exponential backoff starting at 60 seconds (approximately 1, 2, 4 and 8 minutes). Each attempt has a new `requestId` and `sentAt`. Retries apply to queued notifications; they do not guarantee that every event is enqueued or delivered. Never deduplicate on `requestId`. For `lock_event.created`, deduplicate on `data.eventId`; for `action_log.created`, on `data.actionLog._id`. Other notifications, such as `extension_session.updated`, can legitimately repeat for the same session, so do not deduplicate them on the session id.
 
 ### Debugging
 

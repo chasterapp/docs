@@ -50,14 +50,12 @@ sequenceDiagram
     C->>O: action.invoke
     O-->>C: { "result": { ... } }
     C-->>You: Invocation (status and result)
-    Note over C: Writes the event in the lock history
-    C->>You: lock_event.created
 ```
 
 1. Your extension reads the [capabilities](/api/extensions-api/extension-communication/calling-extensions#discover-what-a-lock-offers) of the lock: every installed extension with its commands, queries and events, and whether each one is available right now.
 2. It [calls a command or a query](/api/extensions-api/extension-communication/calling-extensions#call-a-command-or-a-query). Chaster validates the input against the JSON Schema, checks who may call it and applies rate limits.
 3. Built-in commands run inside Chaster. Commands of another partner extension are forwarded to it as an [`action.invoke` request](/api/extensions-api/extension-communication/handling-invocations).
-4. What happens on the lock lands in the history and is delivered to subscribed extensions as a [`lock_event.created` webhook](/api/extensions-api/extension-communication/lock-events).
+4. Separately, everything written to the lock history (time added, a task assigned by Tasks, a dice roll, an event an extension emits) is delivered to subscribed extensions as a [`lock_event.created` webhook](/api/extensions-api/extension-communication/lock-events). A partner command does not write to the history by itself: the extension that runs it emits its own events if it wants to.
 
 ## Example: a wheel that assigns a task
 

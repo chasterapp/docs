@@ -15,7 +15,7 @@ The manifest lists three kinds of capabilities:
 
 Each capability has a JSON Schema. Chaster validates every input, output and payload against it, so the extensions that call yours can rely on the shape of the data.
 
-You do not need a manifest to call other extensions or to receive lock events. You need one to be called by other extensions, to emit typed events, or to choose which events you receive.
+You do not need a manifest to call other extensions or to receive lock events. You need one to be called by other extensions or to emit typed events. A manifest also sets the default list of events your extension receives; you can change that list for a single session with [session subscriptions](/api/extensions-api/extension-communication/lock-events#choose-which-events-you-receive).
 
 ## Upload a manifest
 

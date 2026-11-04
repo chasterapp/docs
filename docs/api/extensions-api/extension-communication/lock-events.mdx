@@ -60,9 +60,9 @@ Which events your extension receives depends on its subscriptions:
 
 ```mermaid
 flowchart LR
-    E[New event] --> Q{Does your extension<br/>have subscriptions?}
-    Q -- No --> A["Every event,<br/>except your own"]
-    Q -- Yes --> B["Only the event types<br/>in the list"]
+    E[New event] --> Q{Is a subscription list set?<br/>session list first, then manifest}
+    Q -- "No list" --> A["Every event,<br/>except your own"]
+    Q -- "A list, even empty" --> B["Only the event types<br/>in the list"]
 ```
 
 - **No subscriptions** (no manifest and no session list): receives every event of the lock, typed or not, visible or hidden, except the events created by your own extension.
@@ -72,7 +72,7 @@ flowchart LR
 Your extension never receives its own `lock.capabilities-changed`.
 
 :::warning
-`lock_event.created` and `action_log.created` overlap. A visible history entry is sent in both, with the same `actionLog._id`. If your extension handles `action_log.created`, either ignore `lock_event.created`, upload a manifest with only the subscriptions you need, or deduplicate on `actionLog._id`. See [Webhooks](/api/extensions-api/create-your-extension/webhooks#lock-events-and-action-logs).
+`lock_event.created` and `action_log.created` overlap. A visible history entry is sent in both, with the same `actionLog._id`. If your extension handles `action_log.created`, the safe option is to answer `2xx` to `lock_event.created` and ignore it. Subscriptions only filter `lock_event.created`: if you subscribe to an event type, ignore `action_log.created` or deduplicate on `actionLog._id`. See [Webhooks](/api/extensions-api/create-your-extension/webhooks#lock-events-and-action-logs).
 :::
 
 ### Delivery
