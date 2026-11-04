@@ -46,65 +46,72 @@
       "extensions/ai-keyholder"
     ]
   },
-  "apiSidebar": {
-    "API Basics": [
-      "api/basics/introduction",
-      "api/basics/getting-started",
-      "api/basics/create-application"
-    ],
-    "Public API": [
-      "api/public-api/developer-token",
-      "api/public-api/oauth-2",
-      "api/public-api/endpoints"
-    ],
-    "Extensions API": [
-      "api/extensions-api/getting-started",
-      "api/extensions-api/onboarding-process",
-      "api/extensions-api/review-process",
-      "api/extensions-api/guidelines",
-      "api/extensions-api/authentication",
-      "api/extensions-api/sessions",
-      {
-        "Create your extension": [
-          "api/extensions-api/create-your-extension/main-page",
-          "api/extensions-api/create-your-extension/configuration-page",
-          "api/extensions-api/create-your-extension/lock-actions",
-          "api/extensions-api/create-your-extension/regular-actions",
-          "api/extensions-api/create-your-extension/custom-logs",
-          "api/extensions-api/create-your-extension/session-metadata",
-          "api/extensions-api/create-your-extension/custom-data",
-          "api/extensions-api/create-your-extension/files",
-          "api/extensions-api/create-your-extension/peer-verifications",
-          "api/extensions-api/create-your-extension/webhooks"
-        ]
-      },
-      {
-        "Interact with extensions": [
-          "api/extensions-api/interact-with-extensions/actor-system",
-          "api/extensions-api/interact-with-extensions/tasks",
-          "api/extensions-api/interact-with-extensions/hygiene-opening",
-          "api/extensions-api/interact-with-extensions/pillory",
-          "api/extensions-api/interact-with-extensions/penalties",
-          "api/extensions-api/interact-with-extensions/verification-picture"
-        ]
-      },
-      {
-        "Extension communication": [
-          "api/extensions-api/extension-communication/introduction",
-          "api/extensions-api/extension-communication/manifest",
-          "api/extensions-api/extension-communication/calling-extensions",
-          "api/extensions-api/extension-communication/handling-invocations",
-          "api/extensions-api/extension-communication/lock-events",
-          "api/extensions-api/extension-communication/errors-and-limits"
-        ]
-      },
-      "api/extensions-api/configuration",
-      "api/extensions-api/changelog"
-    ],
-    "Reference": [
-      "api/reference/scopes",
-      "api/reference/oauth-scopes-update",
-      "api/reference/action-logs"
-    ]
-  }
+  "apiSidebar": [
+    {
+      "API Basics": [
+        "api/basics/introduction",
+        "api/basics/getting-started",
+        "api/basics/create-application"
+      ]
+    },
+    {
+      "Public API": [
+        "api/public-api/developer-token",
+        "api/public-api/oauth-2",
+        "api/public-api/endpoints"
+      ]
+    },
+    {
+      "Extensions API": [
+        "api/extensions-api/getting-started",
+        "api/extensions-api/onboarding-process",
+        "api/extensions-api/review-process",
+        "api/extensions-api/guidelines",
+        "api/extensions-api/authentication",
+        "api/extensions-api/sessions",
+        {
+          "Create your extension": [
+            "api/extensions-api/create-your-extension/main-page",
+            "api/extensions-api/create-your-extension/configuration-page",
+            "api/extensions-api/create-your-extension/lock-actions",
+            "api/extensions-api/create-your-extension/regular-actions",
+            "api/extensions-api/create-your-extension/custom-logs",
+            "api/extensions-api/create-your-extension/session-metadata",
+            "api/extensions-api/create-your-extension/custom-data",
+            "api/extensions-api/create-your-extension/files",
+            "api/extensions-api/create-your-extension/peer-verifications",
+            "api/extensions-api/create-your-extension/webhooks"
+          ]
+        },
+        {
+          "Interact with extensions": [
+            "api/extensions-api/interact-with-extensions/actor-system",
+            "api/extensions-api/interact-with-extensions/tasks",
+            "api/extensions-api/interact-with-extensions/hygiene-opening",
+            "api/extensions-api/interact-with-extensions/pillory",
+            "api/extensions-api/interact-with-extensions/penalties",
+            "api/extensions-api/interact-with-extensions/verification-picture"
+          ]
+        },
+        {
+          "Extension communication": [
+            "api/extensions-api/extension-communication/introduction",
+            "api/extensions-api/extension-communication/manifest",
+            "api/extensions-api/extension-communication/calling-extensions",
+            "api/extensions-api/extension-communication/handling-invocations",
+            "api/extensions-api/extension-communication/lock-events",
+            "api/extensions-api/extension-communication/errors-and-limits"
+          ]
+        },
+        "api/extensions-api/configuration"
+      ]
+    },
+    {
+      "Reference": [
+        "api/reference/scopes",
+        "api/reference/action-logs"
+      ]
+    },
+    "api/changelog"
+  ]
 }

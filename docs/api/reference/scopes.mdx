@@ -3,7 +3,7 @@ title: OAuth scopes
 sidebar_label: Scopes
 ---
 
-Each access token holds scopes that determine what your app can do. Request only the scopes your app uses: users see one consent line per scope. If you already use the API, see the [OAuth scopes update](/api/reference/oauth-scopes-update) for changes and actions for existing apps.
+Each access token holds scopes that determine what your app can do. Request only the scopes your app uses: users see one consent line per scope. Changes to scopes are listed in the [API changelog](/api/changelog).
 
 ## How scopes work
 
@@ -40,11 +40,11 @@ The following scopes stay valid with no end date. Each counts as its read and wr
 | `keyholder`    | `keyholder:read` and `keyholder:write`       |
 | `messaging`    | `messaging:read` and `messaging:write`       |
 
-Apps created after the update are offered the granular scopes only. Existing apps receive the granular scopes alongside their current ones. Use granular scopes for new work.
+New apps are offered the granular scopes only. Apps that hold legacy scopes also hold the granular ones. Use granular scopes for new work.
 
 ## Email and phone are never shared
 
-There is no `email` or `phone` scope. `GET /auth/profile` returns the email, `billingEmail` and `phoneNumber` fields as `null` for every OAuth app and developer token. ID tokens and userinfo do not carry email addresses or phone numbers either. Identify users by their user id.
+There is no `email` or `phone` scope: an authorize URL that requests them fails with `invalid_scope` before the consent screen. `GET /auth/profile` returns the email, `billingEmail` and `phoneNumber` fields as `null` for every OAuth app and developer token. ID tokens and userinfo do not carry email addresses or phone numbers either. Identify users by their user id.
 
 Profile edits through `PATCH /current-user` or `POST /auth/profile` that change the email or phone number return `400`. Other profile fields remain editable with `profile:write`.
 
@@ -73,4 +73,4 @@ Only endpoints in the [API reference](https://api.chaster.app/api) are supported
 
 A developer token acts as the account that generated it. It holds every scope listed on this page, including `developer` and the legacy scopes. It is still treated as an app token: email and phone fields remain `null`, the reserved endpoints above stay closed, and edits to the email or phone number return `400`.
 
-New developer tokens use a stronger random generator. Existing tokens keep working. See [Developer token](/api/public-api/developer-token) to generate one.
+See [Developer token](/api/public-api/developer-token) to generate one.
