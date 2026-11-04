@@ -7,7 +7,7 @@ With extension communication, your extension can work together with the other ex
 
 ## Introduction
 
-A lock often runs several extensions at once. Without extension communication, each one lives in its own bubble: a game extension cannot assign a task, and a rules engine cannot react to a Wheel of Fortune result unless both were written by the same developer.
+A lock often runs several extensions at once. Extension communication gives them one common API: your extension finds out what the others can do, calls them, and reacts to what they announce, without knowing them in advance.
 
 Extension communication solves this with three ideas:
 

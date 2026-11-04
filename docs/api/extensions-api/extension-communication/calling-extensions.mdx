@@ -142,7 +142,7 @@ All three share the same `correlationId`. Your call stores the wheel event as it
 - `correlationId` is shared by every call and event in the same chain, starting from the first event.
 - `depth` is the position in the chain. Chains stop at a depth of 8 with `depth-exceeded`, which prevents two extensions from triggering each other forever.
 
-When you omit `causationId`, Chaster uses the last event delivered to your extension on this lock in the previous 10 seconds, and sets `causationInferred` to `true`. Pass `causationId` explicitly when you know it. It must be an event or invocation on the same lock that your extension created, received, or is linked to.
+When you omit `causationId`, Chaster uses the last event delivered to your extension on this lock in the previous 10 seconds, and sets `causationInferred` to `true`. Pass `causationId` explicitly when you know it. It must be on the same lock, and be one of: an event your extension created, an event Chaster delivered to your extension by webhook, or an invocation your extension made or received. Reading an event with `GET .../events` does not make it usable as a cause, and returns `invalid-causation`.
 
 ## Built-in capabilities
 

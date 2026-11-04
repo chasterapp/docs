@@ -145,7 +145,7 @@ The name of an event must be one of the log types of your extension (the `action
 The capability ids of the events your extension receives as [`lock_event.created`](/api/extensions-api/extension-communication/lock-events#receive-events) webhooks. You can also change subscriptions for a single session.
 
 :::warning
-Once your extension has a manifest, it receives only the events listed in `subscriptions`. A manifest without `subscriptions` stops all `lock_event.created` deliveries. See [Choose which events you receive](/api/extensions-api/extension-communication/lock-events#choose-which-events-you-receive).
+Once your extension has a manifest, it receives only the events listed in `subscriptions`. For sessions without their own subscription list, a manifest without `subscriptions` stops `lock_event.created` deliveries. See [Choose which events you receive](/api/extensions-api/extension-communication/lock-events#choose-which-events-you-receive).
 :::
 
 ### Invoke URL
