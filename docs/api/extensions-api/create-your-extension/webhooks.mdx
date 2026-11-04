@@ -46,7 +46,7 @@ To configure webhooks for your Chaster extension, follow these steps:
 When an event occurs, Chaster will send an HTTP POST request to the specified webhook URL. Upon receiving a webhook, your extension should promptly respond with an HTTP status code in the 2xx range (e.g., 200 OK) to acknowledge the receipt of the notification. This response serves as confirmation that your extension has successfully received the event data. Acknowledge only after accepting the event into your durable processing workflow. A 2xx response does not guarantee delivery of later events.
 
 :::info
-These rules apply to notifications. `action.invoke` is different: it is a call from another extension, and Chaster expects the result of the command in the response, within 10 seconds. It is never retried. See [Handling invocations](/api/extensions-api/extension-communication/handling-invocations).
+These rules apply to notifications. `action.invoke` (experimental) is different: it is a call from another extension, and Chaster expects the result of the command in the response, within 10 seconds. It is never retried. See [Handling invocations](/api/extensions-api/extension-communication/handling-invocations).
 :::
 
 Chaster adds new event types over time. Read the `event` field first, and answer `2xx` to event types your extension does not handle: any other response triggers retries.
@@ -76,8 +76,8 @@ To determine which event types to monitor and configure webhooks for, consider t
 - `extension_session.deleted`: Monitor this event to receive notifications when a session is deleted.
 - `peer_verification.ended`: Receive the terminal verdict for a standalone review created by your extension/session, with vote totals and criterion results.
 - `action_log.created`: Monitor this event to receive notifications when a new action log entry is created, such as when a lock is unlocked, time is added, etc.
-- `lock_event.created`: Receive the events of the locks where your extension is installed, with their sequence number, type and causation. See [Lock events](/api/extensions-api/extension-communication/lock-events).
-- `action.invoke`: Receive calls from other extensions to your commands and queries, when your manifest has no `invokeUrl`. See [Handling invocations](/api/extensions-api/extension-communication/handling-invocations).
+- `lock_event.created` (experimental): Receive the events of the locks where your extension is installed, with their sequence number, type and causation. See [Lock events](/api/extensions-api/extension-communication/lock-events).
+- `action.invoke` (experimental): Receive calls from other extensions to your commands and queries, when your manifest has no `invokeUrl`. See [Handling invocations](/api/extensions-api/extension-communication/handling-invocations).
 
 Choose the event types that are relevant to your extension functionality and use cases.
 
@@ -85,7 +85,7 @@ To know exactly the data that is sent with each event type, please refer to the 
 
 ## Lock events and action logs
 
-`action_log.created` and `lock_event.created` both carry history entries, and overlap:
+`action_log.created` and `lock_event.created` both carry history entries, and overlap. `lock_event.created` is part of [extension communication](/api/extensions-api/extension-communication/introduction), which is experimental: its payload can change, while `action_log.created` stays stable.
 
 ```mermaid
 flowchart LR
@@ -113,7 +113,7 @@ If your handler reacts to any webhook that contains `data.actionLog` without che
 **To keep your current behavior**, handle only `action_log.created`. When `event` is `lock_event.created`, answer `2xx` and do nothing else.
 :::
 
-To move to `lock_event.created` instead:
+To move to `lock_event.created` instead, knowing its payload can still change:
 
 1. Upload a [manifest](/api/extensions-api/extension-communication/manifest) whose `subscriptions` list the event types you need. Untyped entries such as custom logs are then no longer delivered as lock events.
 2. Ignore `action_log.created`, or deduplicate on `data.actionLog._id` if you keep both.

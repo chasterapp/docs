@@ -94,7 +94,7 @@
           ]
         },
         {
-          "Extension communication": [
+          "Extension communication (experimental)": [
             "api/extensions-api/extension-communication/introduction",
             "api/extensions-api/extension-communication/manifest",
             "api/extensions-api/extension-communication/calling-extensions",
