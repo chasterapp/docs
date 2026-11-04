@@ -57,7 +57,7 @@ A refused call returns `429` with `details`:
 { "bucket": "extension", "retryAfterSeconds": 240 }
 ```
 
-`bucket` is `extension` or `lock`. Wait `retryAfterSeconds` before calling again.
+`bucket` is `extension`, `lock`, or `options` for dynamic choices (60 requests per minute per lock and caller). Wait `retryAfterSeconds` before calling again.
 
 These limits also apply to [lock actions](/api/extensions-api/create-your-extension/lock-actions) and to the endpoints of the Tasks, Penalties, Hygiene opening, Verification picture and Pillory APIs.
 
