@@ -15,6 +15,19 @@ To receive calls, your extension needs:
 
 Chaster validates the input against your `inputSchema` and checks availability and rate limits before calling you, so the input you receive always matches your schema.
 
+```mermaid
+sequenceDiagram
+    participant Caller as Calling extension
+    participant C as Chaster
+    participant You as Your extension
+    Caller->>C: POST actions/my-game.start-round
+    Note over C: Validates the input against your inputSchema
+    C->>You: POST invokeUrl (basic authentication)
+    You-->>C: { "result": { "roundId": "r-42" } }
+    Note over C: Validates the result against your outputSchema
+    C-->>Caller: status completed, result
+```
+
 ## The request
 
 Chaster sends a `POST` request with these headers:

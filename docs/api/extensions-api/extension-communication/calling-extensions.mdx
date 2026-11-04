@@ -66,7 +66,7 @@ This endpoint also accepts the main page token of your iframe in the `X-Chaster-
 | Field            | Description                                                                                                                                                                                                                            |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `input`          | The input object, validated against the `inputSchema` of the command. Defaults to `{}`.                                                                                                                                                |
-| `idempotencyKey` | Required, 1 to 200 characters. Sending the same key again on the same lock returns the first invocation instead of running the command twice.                                                                                          |
+| `idempotencyKey` | Required, 1 to 200 characters. Protects you against running the same call twice. See [Retries and idempotency](#retries-and-idempotency).                                                                                              |
 | `actor`          | Optional: `extension` (default), `wearer` or `keyholder`. Who the action is attributed to in the history. See [Actor system](/api/extensions-api/interact-with-extensions/actor-system). `keyholder` requires a lock with a keyholder. |
 | `causationId`    | Optional. The `eventId` of the event, or the id of the invocation, that caused this call.                                                                                                                                              |
 
@@ -93,6 +93,17 @@ The response is an invocation:
 }
 ```
 
+```mermaid
+flowchart LR
+    R[Your request] --> Q{Accepted by Chaster?}
+    Q -- No --> E["HTTP error<br/>see Errors and limits"]
+    Q -- Yes --> P[pending]
+    P --> OK[completed]
+    P --> RJ[rejected]
+    P --> F[failed]
+    P --> U[unknown]
+```
+
 :::warning
 A `200` response does not mean the command succeeded. Always read `status`:
 
@@ -105,13 +116,27 @@ A `200` response does not mean the command succeeded. Always read `status`:
 Calls refused before they are dispatched return an HTTP error instead. See [Errors and limits](/api/extensions-api/extension-communication/errors-and-limits).
 :::
 
-Chaster does not retry a failed call. To retry, send the same request with a new `idempotencyKey`. Reusing the same key with a different command returns `409`.
+### Retries and idempotency
+
+Chaster never retries a call for you. If your request times out on your side, send it again with the **same** `idempotencyKey`: if the first request was recorded, Chaster returns that invocation instead of running the command a second time.
+
+- Keys are scoped to your extension and the lock. Reusing a key with a different command returns `409`.
+- A repeated request is checked again (availability, rate limits) before Chaster looks up the existing invocation, so it can still be refused with an HTTP error.
+- Invocations, and the protection of their key, last 30 days.
+- To start a new attempt after a `failed` or `rejected` call, use a new key.
 
 - `GET /api/extensions/sessions/:sessionId/invocations/:invocationId`: read one of your invocations again, for example while it is `pending`. Invocations are kept for 30 days.
 
 ### Causation and correlation
 
 Chaster links each call to what caused it:
+
+```mermaid
+flowchart LR
+    A["Wheel lands<br/>(event)"] --> B["Your call<br/>tasks.assign"] --> C["Task assigned<br/>(event)"]
+```
+
+All three share the same `correlationId`. Your call stores the wheel event as its `causationId`, and the `tasks.assigned` event points back to your call in `source.invocationId`.
 
 - `causationId` is the event or invocation that directly caused the call.
 - `correlationId` is shared by every call and event in the same chain, starting from the first event.
@@ -121,7 +146,7 @@ When you omit `causationId`, Chaster uses the last event delivered to your exten
 
 ## Built-in capabilities
 
-Chaster publishes manifests for the lock itself and for its own extensions. Read the exact schemas in the lock capabilities or with `GET /api/extensions/:slug/manifest`.
+Chaster publishes manifests for the lock itself and for its own extensions. Read the `lock.*` schemas in the capabilities of a session. For the other extensions, you can also use `GET /api/extensions/:slug/manifest`.
 
 | Namespace              | Commands                                                                                                  | Queries  | Events                                                                          |
 | ---------------------- | --------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------- |
@@ -137,4 +162,4 @@ Chaster publishes manifests for the lock itself and for its own extensions. Read
 
 `lock.remove-time`, `lock.unfreeze`, `lock.toggle-freeze` and `lock.set-display-remaining-time` cannot be called by the wearer. The capabilities of an extension appear only when it is installed on the lock.
 
-The existing endpoints of the Extensions API ([lock actions](/api/extensions-api/create-your-extension/lock-actions), [Tasks](/api/extensions-api/interact-with-extensions/tasks), [Penalties](/api/extensions-api/interact-with-extensions/penalties), [Hygiene opening](/api/extensions-api/interact-with-extensions/hygiene-opening), [Verification picture](/api/extensions-api/interact-with-extensions/verification-picture), [Pillory](/api/extensions-api/interact-with-extensions/pillory)) keep their request and response formats. They run through the same broker, so the same rate limits and depth limit apply to them.
+The existing endpoints of the Extensions API ([lock actions](/api/extensions-api/create-your-extension/lock-actions), [Tasks](/api/extensions-api/interact-with-extensions/tasks), [Penalties](/api/extensions-api/interact-with-extensions/penalties), [Hygiene opening](/api/extensions-api/interact-with-extensions/hygiene-opening), [Verification picture](/api/extensions-api/interact-with-extensions/verification-picture), [Pillory](/api/extensions-api/interact-with-extensions/pillory)) keep their request and response formats. Chaster handles them the same way, so the same rate limits and depth limit apply to them.

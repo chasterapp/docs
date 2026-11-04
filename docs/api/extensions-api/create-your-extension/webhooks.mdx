@@ -45,6 +45,10 @@ To configure webhooks for your Chaster extension, follow these steps:
 
 When an event occurs, Chaster will send an HTTP POST request to the specified webhook URL. Upon receiving a webhook, your extension should promptly respond with an HTTP status code in the 2xx range (e.g., 200 OK) to acknowledge the receipt of the notification. This response serves as confirmation that your extension has successfully received the event data. Acknowledge only after accepting the event into your durable processing workflow. A 2xx response does not guarantee delivery of later events.
 
+:::info
+These rules apply to notifications. `action.invoke` is different: it is a call from another extension, and Chaster expects the result of the command in the response, within 10 seconds. It is never retried. See [Handling invocations](/api/extensions-api/extension-communication/handling-invocations).
+:::
+
 Chaster adds new event types over time. Read the `event` field first, and answer `2xx` to event types your extension does not handle: any other response triggers retries.
 
 ### Retries
@@ -83,6 +87,15 @@ To know exactly the data that is sent with each event type, please refer to the 
 
 `action_log.created` and `lock_event.created` both carry history entries, and overlap:
 
+```mermaid
+flowchart LR
+    H[New visible history entry] --> A["action_log.created<br/>data.actionLog"]
+    H --> B["lock_event.created<br/>data.actionLog + eventId, seq, type..."]
+    X[New hidden event] --> B
+    A --> Y[Your webhook URL]
+    B --> Y
+```
+
 | | `action_log.created` | `lock_event.created` |
 | --- | --- | --- |
 | Visible history entries | Yes | Yes, depending on subscriptions |
@@ -95,13 +108,16 @@ To know exactly the data that is sent with each event type, please refer to the 
 An extension without a [manifest](/api/extensions-api/extension-communication/manifest) receives `lock_event.created` for every event of the lock. A visible history entry then reaches it twice, once per event type.
 
 :::warning
-If your handler reacts to any webhook that contains `data.actionLog`, without checking `event`, it reacts twice to each history entry, and also reacts to hidden events. Do one of the following:
+If your handler reacts to any webhook that contains `data.actionLog` without checking `event`, it reacts twice to each history entry, and also reacts to hidden events.
 
-- Check `event` and handle only `action_log.created`. Answer `2xx` to `lock_event.created` and ignore it.
-- Move to `lock_event.created` and ignore `action_log.created`.
-- Upload a manifest whose `subscriptions` list only the event types you need. A manifest with no subscriptions stops `lock_event.created` entirely.
-- Deduplicate on `data.actionLog._id`.
+**To keep your current behavior**, handle only `action_log.created`. When `event` is `lock_event.created`, answer `2xx` and do nothing else.
 :::
+
+To move to `lock_event.created` instead:
+
+1. Upload a [manifest](/api/extensions-api/extension-communication/manifest) whose `subscriptions` list the event types you need. Untyped entries such as custom logs are then no longer delivered as lock events.
+2. Ignore `action_log.created`, or deduplicate on `data.actionLog._id` if you keep both.
+3. If you changed the subscriptions of a session, they override the manifest for that session.
 
 
 ## Peer review verdicts

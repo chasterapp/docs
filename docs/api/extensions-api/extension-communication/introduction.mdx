@@ -3,7 +3,7 @@ title: Extension communication
 sidebar_label: Introduction
 ---
 
-With extension communication, your extension can work together with the other extensions on a lock, including ones you have never heard of: spin a Wheel of Fortune, assign a task, react when the wearer rolls the dice, or let other extensions drive yours.
+With extension communication, your extension can work together with the other extensions on a lock, including ones you have never heard of: add time, assign a task, react when the wearer rolls the dice, or let other extensions drive yours.
 
 ## Introduction
 
@@ -11,11 +11,18 @@ A lock often runs several extensions at once. Without extension communication, e
 
 Extension communication solves this with three ideas:
 
-1. **Every extension publishes what it can do.** It lists its commands, its queries and the events it announces in a **manifest**, with a JSON Schema for every input and output. Chaster publishes manifests for its own extensions (Tasks, Penalties, Pillory, Dice, Wheel of Fortune...) and for the lock itself.
-2. **Chaster is the broker.** Extensions never call each other directly. Your extension asks Chaster to run a command on the lock, Chaster checks it, forwards it to the extension that owns it and records the outcome.
+1. **Extensions describe what they can do.** A **manifest** lists the commands, queries and events of an extension, with a JSON Schema (a standard JSON format that describes the shape of data) for every input and output. Chaster provides them for the lock itself and its own extensions (Tasks, Penalties, Pillory, Dice, Wheel of Fortune...). Your extension can call these commands and receive events without a manifest. You publish one only when you want other extensions to call your extension or subscribe to your events.
+2. **Chaster is the middleman.** Extensions never call each other directly. Your extension asks Chaster to run a command on the lock, Chaster checks it, forwards it to the extension that owns it and records the outcome.
 3. **Every lock has one ordered stream of events.** Each entry in the lock history, from any extension or from Chaster, is an event with a sequence number. Your extension receives the events it subscribed to by webhook, and can read the stream again at any time.
 
 Nothing is hardcoded: your extension discovers at runtime what the other extensions on the lock offer, so it keeps working when a new extension appears.
+
+```mermaid
+flowchart LR
+    A[Your extension] -- "calls a command" --> C[Chaster]
+    C -- "forwards it" --> B[Other extension]
+    C -- "sends the events<br/>you subscribed to" --> A
+```
 
 ## Vocabulary
 
@@ -31,16 +38,20 @@ Nothing is hardcoded: your extension discovers at runtime what the other extensi
 
 ## How it works
 
-```text
- Your extension                      Chaster                         Other extension
- --------------                      -------                         ---------------
- GET  capabilities  ------------->   lists what the lock offers
- POST actions/tasks.assign  ----->   checks caller, input, limits
-                                     runs it, or forwards it  ---->  action.invoke webhook
-                                     records the result  <--------   { "result": {...} }
-                     <-----------    invocation (status, result)
-                                     writes a history entry
-                     <-----------    lock_event.created webhook
+```mermaid
+sequenceDiagram
+    participant You as Your extension
+    participant C as Chaster
+    participant O as Other extension
+    You->>C: GET capabilities
+    C-->>You: What each extension on the lock offers
+    You->>C: POST actions/other-game.start-round
+    Note over C: Checks the caller, the input and the limits
+    C->>O: action.invoke
+    O-->>C: { "result": { ... } }
+    C-->>You: Invocation (status and result)
+    Note over C: Writes the event in the lock history
+    C->>You: lock_event.created
 ```
 
 1. Your extension reads the [capabilities](/api/extensions-api/extension-communication/calling-extensions#discover-what-a-lock-offers) of the lock: every installed extension with its commands, queries and events, and whether each one is available right now.

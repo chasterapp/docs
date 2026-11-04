@@ -26,7 +26,23 @@ Upload the manifest from the **Manifest** tab of your extension in the Developer
 
 An upload replaces the whole manifest. A list you omit becomes empty, and an omitted `invokeUrl` is removed. Each applied upload increases the manifest `revision`.
 
-### Example
+### Before you upload
+
+A manifest that declares commands, queries or events has prerequisites. Chaster refuses the upload when they are missing:
+
+- Use your own extension slug in every id (`my-game` below).
+- To let other extensions call you, set a webhook username and password in your extension settings.
+- To declare an event, first create a log type with the same name in your extension (see [Events](#events)).
+
+The simplest manifest only chooses the events you receive, and has no prerequisites:
+
+```json
+{
+  "subscriptions": ["dice.rolled", "wheel-of-fortune.landed"]
+}
+```
+
+### Full example
 
 ```json
 {

@@ -7,9 +7,16 @@ module.exports = {
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
+  markdown: {
+    mermaid: true,
+  },
+  themes: ["@docusaurus/theme-mermaid"],
   organizationName: "chaster",
   projectName: "docs",
   themeConfig: {
+    mermaid: {
+      theme: { dark: "dark", light: "neutral" },
+    },
     colorMode: {
       defaultMode: "dark",
       disableSwitch: true,
