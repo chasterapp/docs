@@ -64,24 +64,24 @@ Which events your extension receives depends on its subscriptions:
 
 ```mermaid
 flowchart LR
-    E[New event] --> Q{Is a subscription list set?<br/>session list first, then manifest}
-    Q -- "No list" --> A["Every event,<br/>except your own"]
+    E[New event] --> Q{Is a subscription list set?<br/>session list first, then extension setting}
+    Q -- "No list, or [&quot;*&quot;]" --> A["Every event,<br/>except your own"]
     Q -- "A list, even empty" --> B["Only the event types<br/>in the list"]
 ```
 
-- **No subscriptions** (no manifest and no session list): receives every event of the lock, typed or not, visible or hidden, except the events created by your own extension.
-- **Extension with a manifest**: receives only the event types listed in the `subscriptions` of its [manifest](/api/extensions-api/extension-communication/manifest#subscriptions). Untyped events (`type: null`) are never delivered. An empty list delivers nothing.
-- **Per session**: `PUT /api/extensions/sessions/:sessionId/subscriptions` with `{ "subscriptions": ["dice.rolled"] }` replaces the list for one session (up to 100 ids). Send `{ "subscriptions": null }` to go back to the list of the manifest.
+- **Every event except your own** (no manifest, `subscriptions: ["*"]` in the manifest, or **Receive everything** in the [Webhooks tab](/api/extensions-api/create-your-extension/webhooks#choose-the-events-you-receive)), with no session list: receives every event of the lock, typed or not, visible or hidden, including event types added later, except the events created by your own extension.
+- **A list** (set in the [manifest](/api/extensions-api/extension-communication/manifest#subscriptions) or the Webhooks tab): receives only the event types in the list. Untyped events (`type: null`) are never delivered. An empty list delivers nothing.
+- **Per session**: `PUT /api/extensions/sessions/:sessionId/subscriptions` with `{ "subscriptions": ["dice.rolled"] }` replaces the list for one session (up to 100 ids). `"*"` is not accepted here. Send `{ "subscriptions": null }` to go back to the extension setting.
 
 Your extension never receives its own `lock.capabilities-changed`.
 
 :::warning
-`lock_event.created` and `action_log.created` overlap. A visible history entry is sent in both, with the same `actionLog._id`. If your extension handles `action_log.created`, the safe option is to answer `2xx` to `lock_event.created` and ignore it. Subscriptions only filter `lock_event.created`: if you subscribe to an event type, ignore `action_log.created` or deduplicate on `actionLog._id`. See [Webhooks](/api/extensions-api/create-your-extension/webhooks#lock-events-and-action-logs).
+`lock_event.created` and `action_log.created` overlap. A visible history entry is sent in both, with the same `actionLog._id`. If your extension handles `action_log.created`, the safe option is to answer `2xx` to `lock_event.created` and ignore it. Subscriptions only filter `lock_event.created`: if you subscribe to an event type, [turn `action_log.created` off](/api/extensions-api/create-your-extension/webhooks#choose-the-events-you-receive), ignore it, or deduplicate on `actionLog._id`. See [Webhooks](/api/extensions-api/create-your-extension/webhooks#lock-events-and-action-logs).
 :::
 
 ### Delivery
 
-- Webhook delivery can fail or repeat. Deduplicate on `eventId`: retries keep the same `eventId` and get a new `requestId`.
+- Webhook delivery can fail or repeat. Deduplicate on `eventId` (also sent as the `X-Chaster-Event-Id` [header](/api/extensions-api/create-your-extension/webhooks#request-headers)): retries keep the same `eventId` and get a new `requestId`.
 - Chaster skips deliveries it already recorded as successful (`2xx`) for your extension.
 - Failed deliveries are retried like other [webhooks](/api/extensions-api/create-your-extension/webhooks#retries): up to 5 attempts, with exponential backoff starting at 60 seconds.
 - Events can arrive out of order. Order them by `seq`, and use the [event stream](#read-the-event-stream) to recover events your endpoint missed.
@@ -130,4 +130,4 @@ Your extension can add typed events to the stream, which other extensions can su
 
 The response contains the `eventId`, `seq`, `type`, `visibility`, `correlationId`, `causationId`, `depth`, `causationInferred` and `createdAt` of the new event. Emitting events counts toward the [rate limits](/api/extensions-api/extension-communication/errors-and-limits#rate-limits).
 
-[Custom logs](/api/extensions-api/create-your-extension/custom-logs) are untyped events: they reach extensions without a manifest, but never match a subscription.
+[Custom logs](/api/extensions-api/create-your-extension/custom-logs) are untyped events: they reach extensions that receive every event, but never match a subscription list.

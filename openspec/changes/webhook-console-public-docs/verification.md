@@ -1,0 +1,56 @@
+# Verification
+
+## Refs
+
+- Docs base: `3bcfa8e437d1df195b3c4e9bbd8d4d0357157200` (`main`).
+- Chaster: `78e540ebcd8b048ad530adeadc8b70314308647a` (`origin/main` on 2026-11-05, read from a private scratch clone). `main` has not moved past `78e540eb`, so no source changed since the proposal.
+
+Server paths are relative to `server/src/modules/`.
+
+## Claim trace
+
+| Claim | Page and section | Source (function or constant) |
+| --- | --- | --- |
+| Headers `X-Chaster-Request-Id`, `X-Chaster-Event`, `X-Chaster-Event-Id`, `X-Chaster-Attempt` | webhooks `#request-headers` | `partner-webhook/helpers/webhook-headers.ts` (`webhookHeaders`) |
+| Event id: `data.eventId` (lock events), `data.actionLog._id` (action logs), job id otherwise | webhooks `#request-headers`, `#deduplicate-deliveries` | `partner-webhook/helpers/resolve-delivery-identity.ts` |
+| Attempt count 1-based, a resend continues it | webhooks `#request-headers`, `#resend-a-delivery` | `partner-webhook/jobs/call-partner-webhook.job.ts` (`attempt = head?.attemptCount ?? ...`) |
+| Headers not on `action.invoke` | webhooks `#request-headers` | `webhookHeaders` is only called from `call-partner-webhook.job.ts` and `webhook-test.service.ts` |
+| 5 attempts, backoff from 60 s | webhooks `#retries`, endpoint card | `partner-webhook/jobs/call-partner-webhook.options.ts` (`WEBHOOK_JOB_OPTIONS`) |
+| 10 s timeout, no redirects | webhooks `#configuring-webhooks`, `#retries` | `partner-webhook/services/webhook-request.service.ts` (`timeout: 10000`, `maxRedirects: 0`) |
+| Non-public addresses refused | webhooks `#configuring-webhooks`, changelog | `partner-webhook/helpers/webhook-address-guard.ts` (`BLOCKED_RANGES`, `literalHostRefusal`) |
+| `2xx` delivers; other status, timeout, connection error fail | webhooks `#retries` | `call-partner-webhook.job.ts` (`success`, `if (error) throw error`) |
+| No automatic attempt once delivered | webhooks `#retries` | `call-partner-webhook.job.ts` (`isDelivered`) |
+| Statuses `delivered`, `retrying`, `failed` | webhooks `#delivery-statuses` | `partner-webhook/models/webhook-delivery-status.enum.ts`; `call-partner-webhook.job.ts` (`nextState`) |
+| Failed resend keeps a live retry schedule; delivered stays delivered | webhooks `#resend-a-delivery` | `partner-webhook/repositories/webhook-history.repository.ts` (`finishAttempt`, `keepRetrying`) |
+| Stored body 4 KB, 512 bytes on automatic `2xx` | webhooks `#webhooks-tab` | `partner-webhook/helpers/capture-response-body.ts`; `call-partner-webhook.job.ts` |
+| History kept 7 days | webhooks `#webhooks-tab` | `partner-webhook/models/webhook-history.model.ts` (TTL), `developers.json` `webhooks.endpoint.retention` |
+| Failure banner: at least 90% of at least 20 attempts | webhooks `#webhooks-tab` | `webhook-console/services/webhook-console.service.ts` (`DIAGNOSIS_MIN_ATTEMPTS`, `DIAGNOSIS_FAILURE_RATIO`) |
+| `Authorization` masked | webhooks `#webhooks-tab`, `#webhooks-api` | `webhook-console/mappers/webhook-console.mapper.ts` (`Basic ••••••••`) |
+| Copy as cURL has no credentials | webhooks `#webhooks-tab` | `web/src/modules/developers/business/webhooks/webhook-curl.ts` (`buildCurl`) |
+| Seven endpoints, developer token, `developer` scope, `202` on resend, `200` on search and test | webhooks `#webhooks-api`, changelog | `webhook-console/controllers/webhook-console.controller.ts`; `developer-client/guards/developer-client.guard.ts` |
+| Search body and response | webhooks `#webhooks-api` | `webhook-console/dto/search-webhook-deliveries.dto.ts`; controller `search` |
+| Stats `range` `1h`, `24h` default, `7d` | webhooks `#webhooks-api` | `webhook-console/dto/webhook-stats.dto.ts` |
+| Test body, events, response fields | webhooks `#send-a-test-event`, `#webhooks-api` | `webhook-console/dto/send-webhook-test.dto.ts` |
+| Test envelope `"test": true`, sent once, kept out of stats | webhooks `#send-a-test-event` | `partner-webhook/services/webhook-test.service.ts` |
+| `unknown-event-type` `400`, lock not installed `404` | webhooks `#webhooks-api` | `lock-event-delivery/services/webhook-sample.service.ts` |
+| Resend: queued, one attempt, same event id; `test-delivery`; `payload-unavailable` `409` | webhooks `#resend-a-delivery`, `#webhooks-api` | `webhook-console.service.ts` (`resend`); `call-partner-webhook.job.ts` (`resend`, `attempts: 1`) |
+| 30 per extension per minute (`429`), `webhook-url-missing`, `webhook-target-not-public` | webhooks `#send-a-test-event` | `webhook-console.service.ts` (`checkSend`, `SENDS_PER_MINUTE`) |
+| Subscriptions `GET`/`PUT`, `null` = every event, `invalid-id`, `duplicate-id` | webhooks `#webhooks-api` | `webhook-console/dto/webhook-subscriptions.dto.ts`; `webhook-console.service.ts` (`setSubscriptions`) |
+| Console save does not change the revision or trigger review | webhooks `#choose-the-events-you-receive` | `partner-extension/services/partner-extension.service.ts` (`setWebhookSubscriptions` sets only `subscriptions` and `actionLogFeed`) |
+| `action_log.created` switch, on unless off | webhooks `#choose-the-events-you-receive` | `action-log-webhook/listeners/create-webhook-on-action-log-created.listener.ts` (`actionLogFeed !== false`) |
+| Matching: session list first, then extension; unset = all except own | lock-events `#choose-which-events-you-receive` | `lock-event-delivery/services/lock-event-subscriptions.service.ts` (`matches`) |
+| Manifest `["*"]` = unset; `wildcard-not-alone`; omitted first upload `[]`, later kept; never held for review | manifest `#subscriptions`, changelog | `partner-extension/services/partner-extension-manifest.service.ts` (`MANIFEST_SUBSCRIBE_ALL`, subscriptions resolution); `partner-extension.service.ts` (`requestManifestReview` writes subscriptions directly) |
+| `GET .../manifest` returns `["*"]` when unset | manifest `#subscriptions` | `partner-extension/mappers/partner-extension-manifest.mapper.ts` |
+| Session `PUT` refuses `"*"`; `null` inherits | lock-events `#choose-which-events-you-receive`, manifest `#subscriptions` | `partner-extension/dto/session-subscriptions.dto.ts` (`MANIFEST_ID_PATTERN`) |
+| UI labels | webhooks `#webhooks-tab` | `web/src/locales/en/developers.json` (`tabs.webhooks`, `webhooks.*`) |
+| Endpoints in the API reference | webhooks `#webhooks-api` | `server/src/scripts/generate-swagger.ts` (`WebhookConsoleModule`) |
+
+## Differences from `design.md`
+
+- The design says an extension with "no manifest list" receives every event. The code sets `[]` when the **first** upload omits `subscriptions` (`(extension.revision ?? 0) > 0 ? extension.subscriptions : []`), so the pages say "no manifest" instead of "no manifest list".
+- The `action_log.created` switch is labeled **Legacy feed** in the Subscriptions view (`webhooks.subscriptions.legacy`); the page names it.
+- Screenshots skipped (design decision 6 allows it): no image references were added.
+
+## Checks
+
+See the PR description and the issue proof comment for command output.
