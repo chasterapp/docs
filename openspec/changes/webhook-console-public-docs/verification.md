@@ -14,7 +14,12 @@ Server paths are relative to `server/src/modules/`.
 | Headers `X-Chaster-Request-Id`, `X-Chaster-Event`, `X-Chaster-Event-Id`, `X-Chaster-Attempt` | webhooks `#request-headers` | `partner-webhook/helpers/webhook-headers.ts` (`webhookHeaders`) |
 | Event id: `data.eventId` (lock events), `data.actionLog._id` (action logs), job id otherwise | webhooks `#request-headers`, `#deduplicate-deliveries` | `partner-webhook/helpers/resolve-delivery-identity.ts` |
 | Attempt count 1-based, a resend continues it | webhooks `#request-headers`, `#resend-a-delivery` | `partner-webhook/jobs/call-partner-webhook.job.ts` (`attempt = head?.attemptCount ?? ...`) |
-| Headers not on `action.invoke` | webhooks `#request-headers` | `webhookHeaders` is only called from `call-partner-webhook.job.ts` and `webhook-test.service.ts` |
+| `action.invoke` has `X-Chaster-Request-Id` only, none of the event headers | webhooks `#request-headers` | `webhookHeaders` is only called from `call-partner-webhook.job.ts` and `webhook-test.service.ts`; `extension-broker/clients/partner-invoke.client.ts` (sets `X-Chaster-Request-Id`) |
+| Event id is the event's id, found with search `query`, not `:deliveryId` | webhooks `#request-headers` | `resolve-delivery-identity.ts`; `webhook-console/dto/search-webhook-deliveries.dto.ts` (`query`) |
+| Delivery details list the latest 50 attempts | webhooks `#webhooks-api`, changelog | `partner-webhook/repositories/webhook-history.repository.ts` (`MAX_ATTEMPTS_LISTED`, `findAttemptsOf`) |
+| **Retrying now** is a current count, not tied to the range | webhooks `#webhooks-tab` | `webhook-console.service.ts` (`stats`: `countRetrying(extension._id, now)`) |
+| Failure banner reads the last 24 hours, whatever the range | webhooks `#webhooks-tab` | `web/src/modules/developers/business/webhooks/useActiveWebhookDiagnoses.ts` (`WebhookStatsRangeEnum._24h`) |
+| Lock event delivery skips automatic attempts once delivered; resends are sent | lock-events `#delivery` | `call-partner-webhook.job.ts` (`isDelivered`, `resend`) |
 | 5 attempts, backoff from 60 s | webhooks `#retries`, endpoint card | `partner-webhook/jobs/call-partner-webhook.options.ts` (`WEBHOOK_JOB_OPTIONS`) |
 | 10 s timeout, no redirects | webhooks `#configuring-webhooks`, `#retries` | `partner-webhook/services/webhook-request.service.ts` (`timeout: 10000`, `maxRedirects: 0`) |
 | Non-public addresses refused | webhooks `#configuring-webhooks`, changelog | `partner-webhook/helpers/webhook-address-guard.ts` (`BLOCKED_RANGES`, `literalHostRefusal`) |
@@ -47,7 +52,7 @@ Server paths are relative to `server/src/modules/`.
 
 ## Differences from `design.md`
 
-- The design says an extension with "no manifest list" receives every event. The code sets `[]` when the **first** upload omits `subscriptions` (`(extension.revision ?? 0) > 0 ? extension.subscriptions : []`), so the pages say "no manifest" instead of "no manifest list".
+- The design says an extension with "no manifest list" receives every event. The code sets `[]` when the **first** upload omits `subscriptions` (`(extension.revision ?? 0) > 0 ? extension.subscriptions : []`), which also replaces a list saved in the Webhooks tab. The pages say "nothing set in the manifest or the Webhooks tab", and state the first-upload exception in webhooks `#choose-the-events-you-receive` and the manifest `#subscriptions` info box.
 - The `action_log.created` switch is labeled **Legacy feed** in the Subscriptions view (`webhooks.subscriptions.legacy`); the page names it.
 - Screenshots skipped (design decision 6 allows it): no image references were added.
 
@@ -63,5 +68,15 @@ All on 2026-11-05.
 | `npm ci`, then `flock --verbose /tmp/chaster-recovery-heavy-check.lock timeout --kill-after=30s 10m env NODE_OPTIONS=--max-old-space-size=3072 npm run build` | `6578c2c` | Pass, no broken link or anchor warning (`onBrokenLinks: "throw"`) |
 | Same build | `56f9c5a` (Mermaid quote fix) | Pass, no warning |
 | `npx docusaurus serve --host 127.0.0.1 --port 4021`, curl and headless Chromium (Playwright) | `56f9c5a` | All 14 webhooks anchors, `manifest#subscriptions`, `lock-events#choose-which-events-you-receive` and `changelog#2026-11-05` exist; the "not available yet" caution is gone; the Mermaid diagram renders `No list, or ["*"]` with no syntax error; deep links scroll the heading to the top. Server stopped afterwards. |
+
+### Review round 1 rework
+
+Fixes R1 to R6, R8 and R9 from the review comment, on the four pages. R7 kept as written (real traffic always resolves an id). Chaster `main` is still `78e540eb`.
+
+| Command | Input | Result |
+| --- | --- | --- |
+| `bash .claude/hooks/lint-docs.sh <file>` for the four pages | rework commit | RESULT_LINT |
+| `git diff --check` | rework commit | RESULT_DIFF |
+| Same build under the heavy-check lock | rework commit | RESULT_BUILD |
 
 Rerun the build only if a page under `docs/` changes.

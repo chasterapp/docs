@@ -60,11 +60,11 @@ Every notification carries these headers, next to the JSON body:
 | Header | Value |
 | --- | --- |
 | `X-Chaster-Event` | The event name, the same as `event` in the body. |
-| `X-Chaster-Event-Id` | The id of the delivery, the same on every attempt and resend. For `lock_event.created`, it is `data.eventId`. For `action_log.created`, it is `data.actionLog._id`. For other events, it is an id Chaster assigns to the delivery. |
+| `X-Chaster-Event-Id` | The id of the event, the same on every attempt and resend. Search for it with `query` in the [Webhooks API](#webhooks-api); it is not the `deliveryId`. For `lock_event.created`, it is `data.eventId`. For `action_log.created`, it is `data.actionLog._id`. For other events, it is an id Chaster assigns to the delivery. |
 | `X-Chaster-Attempt` | `1` on the first attempt, then `2`, `3` and so on. A resend continues the count. |
 | `X-Chaster-Request-Id` | New on every attempt, the same as `requestId` in the body. Use it for diagnostics only. |
 
-The body is unchanged. `action.invoke` calls are not notifications and do not carry these headers: see [Handling invocations](/api/extensions-api/extension-communication/handling-invocations).
+The body is unchanged. `action.invoke` calls are not notifications: they carry `X-Chaster-Request-Id`, but no `X-Chaster-Event`, `X-Chaster-Event-Id` or `X-Chaster-Attempt`. See [Handling invocations](/api/extensions-api/extension-communication/handling-invocations).
 
 ### Deduplicate deliveries
 
@@ -97,8 +97,8 @@ You can still [resend](#resend-a-delivery) a failed delivery. Test deliveries ar
 The Developer Interface shows every webhook delivery of your extension. Open the Developer Interface, select your extension, then open the **Webhooks** tab.
 
 - The **Endpoint** card shows your webhook URL, its authentication, `Timeout 10 s`, `5 attempts, exponential from 1 min` and `History kept 7 days`. **Send test event** opens the [test event](#send-a-test-event) dialog.
-- The time range (`1 h`, `24 h`, `7 d`) sets the period of the **Attempts**, **Success rate**, **p95 response time** and **Retrying now** figures, and of the **Delivery attempts** chart.
-- When one event type keeps failing (at least 90% of at least 20 attempts in the range), a banner names it and the most common failure. Return `2xx` for event types you ignore, or [unsubscribe](#choose-the-events-you-receive) from them.
+- The time range (`1 h`, `24 h`, `7 d`) sets the period of the **Attempts**, **Success rate** and **p95 response time** figures, and of the **Delivery attempts** chart. **Retrying now** counts the deliveries retrying at this moment, whatever the range.
+- When one event type keeps failing (at least 90% of at least 20 attempts in the last 24 hours, whatever the range), a banner names it and the most common failure. Return `2xx` for event types you ignore, or [unsubscribe](#choose-the-events-you-receive) from them.
 
 The **Deliveries** view lists deliveries, newest first. Filter them by status, event and type, or search by event ID or lock ID. **Live** keeps the list up to date, and **Load older** shows earlier deliveries.
 
@@ -159,14 +159,14 @@ The **Subscriptions** view controls two settings.
 - a list of event types;
 - none (an empty list).
 
-Saving applies at once to new events. It does not trigger a manifest review and does not change the manifest revision. The [manifest](/api/extensions-api/extension-communication/manifest#subscriptions) and this view write the same setting: the last write wins, and a manifest upload without `subscriptions` keeps it. Event types that are no longer in the event catalog stay listed until you remove them. Sessions can override the extension setting: see [Lock events](/api/extensions-api/extension-communication/lock-events#choose-which-events-you-receive).
+Saving applies at once to new events. It does not trigger a manifest review and does not change the manifest revision. The [manifest](/api/extensions-api/extension-communication/manifest#subscriptions) and this view write the same setting: the last write wins. A manifest upload without `subscriptions` keeps it, except the first upload of your extension, which sets an empty list and replaces what you saved here. Event types that are no longer in the event catalog stay listed until you remove them. Sessions can override the extension setting: see [Lock events](/api/extensions-api/extension-communication/lock-events#choose-which-events-you-receive).
 
 ## Webhooks API
 
 The Webhooks tab uses these endpoints. They use the same authentication as the other developer endpoints: the developer token, with the `developer` scope (see [Authentication](/api/extensions-api/authentication)).
 
 - `POST /api/developers/extensions/:extensionId/webhooks/deliveries/search`: lists deliveries, newest first. Body: `limit` (1 to 100, default 50), `cursor`, `status` (`delivered`, `retrying` or `failed`), `event`, `eventType`, and `query` (an exact event id or a lock id). Response: `results`, `hasMore` and `nextCursor`.
-- `GET /api/developers/extensions/:extensionId/webhooks/deliveries/:deliveryId`: one delivery with all its attempts, their request headers (`Authorization` masked), payloads and responses, and the related delivery.
+- `GET /api/developers/extensions/:extensionId/webhooks/deliveries/:deliveryId`: one delivery with its latest 50 attempts, their request headers (`Authorization` masked), payloads and responses, and the related delivery.
 - `GET /api/developers/extensions/:extensionId/webhooks/stats?range=24h`: attempts, success rate, durations, hourly series, deliveries retrying now and failing event types. `range` is `1h`, `24h` (default) or `7d`.
 - `POST /api/developers/extensions/:extensionId/webhooks/deliveries/:deliveryId/resend`: queues a [resend](#resend-a-delivery) and returns `202` with `{ "deliveryId": "..." }`. A test delivery returns `400` with code `test-delivery`; a delivery whose payload cannot be resent returns `409` with code `payload-unavailable`.
 - `POST /api/developers/extensions/:extensionId/webhooks/test`: sends a [test event](#send-a-test-event). Body: `{ "event": "lock_event.created", "type": "...", "lockId": "..." }` (`lockId` optional). Response: `deliveryId`, `eventId`, `statusCode`, `durationMs`, `responseBody` and `error`. An unknown event type returns `400` with code `unknown-event-type`; a lock where your extension is not installed returns `404`.
@@ -213,7 +213,7 @@ flowchart LR
 
 `data.actionLog` has the same format in both events, and `data.eventId` equals `data.actionLog._id`. Both deliveries also carry the same `X-Chaster-Event-Id`.
 
-An extension whose subscriptions are not set (no [manifest](/api/extensions-api/extension-communication/manifest#subscriptions), `subscriptions: ["*"]` in its manifest, or **Receive everything** in the [Webhooks tab](#choose-the-events-you-receive)) and no session subscription list receives `lock_event.created` for every event of the lock, except the events it created itself. A visible history entry then reaches it twice, once per event type.
+An extension whose subscriptions are not set (nothing set in the [manifest](/api/extensions-api/extension-communication/manifest#subscriptions) or the Webhooks tab, `subscriptions: ["*"]` in its manifest, or **Receive everything** in the [Webhooks tab](#choose-the-events-you-receive)) and no session subscription list receives `lock_event.created` for every event of the lock, except the events it created itself. A visible history entry then reaches it twice, once per event type.
 
 :::warning
 If your handler reacts to any webhook that contains `data.actionLog` without checking `event`, it reacts twice to each history entry, and also reacts to hidden events.

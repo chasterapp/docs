@@ -69,7 +69,7 @@ flowchart LR
     Q -- "A list, even empty" --> B["Only the event types<br/>in the list"]
 ```
 
-- **Every event except your own** (no manifest, `subscriptions: ["*"]` in the manifest, or **Receive everything** in the [Webhooks tab](/api/extensions-api/create-your-extension/webhooks#choose-the-events-you-receive)), with no session list: receives every event of the lock, typed or not, visible or hidden, including event types added later, except the events created by your own extension.
+- **Every event except your own** (nothing set in the manifest or the Webhooks tab, `subscriptions: ["*"]` in the manifest, or **Receive everything** in the [Webhooks tab](/api/extensions-api/create-your-extension/webhooks#choose-the-events-you-receive)), with no session list: receives every event of the lock, typed or not, visible or hidden, including event types added later, except the events created by your own extension.
 - **A list** (set in the [manifest](/api/extensions-api/extension-communication/manifest#subscriptions) or the Webhooks tab): receives only the event types in the list. Untyped events (`type: null`) are never delivered. An empty list delivers nothing.
 - **Per session**: `PUT /api/extensions/sessions/:sessionId/subscriptions` with `{ "subscriptions": ["dice.rolled"] }` replaces the list for one session (up to 100 ids). `"*"` is not accepted here. Send `{ "subscriptions": null }` to go back to the extension setting.
 
@@ -82,7 +82,7 @@ Your extension never receives its own `lock.capabilities-changed`.
 ### Delivery
 
 - Webhook delivery can fail or repeat. Deduplicate on `eventId` (also sent as the `X-Chaster-Event-Id` [header](/api/extensions-api/create-your-extension/webhooks#request-headers)): retries keep the same `eventId` and get a new `requestId`.
-- Chaster skips deliveries it already recorded as successful (`2xx`) for your extension.
+- Chaster skips automatic attempts for deliveries it already recorded as successful (`2xx`) for your extension. A [resend](/api/extensions-api/create-your-extension/webhooks#resend-a-delivery) is still sent.
 - Failed deliveries are retried like other [webhooks](/api/extensions-api/create-your-extension/webhooks#retries): up to 5 attempts, with exponential backoff starting at 60 seconds.
 - Events can arrive out of order. Order them by `seq`, and use the [event stream](#read-the-event-stream) to recover events your endpoint missed.
 

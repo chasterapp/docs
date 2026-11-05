@@ -161,7 +161,7 @@ The capability ids of the event types your extension receives as [`lock_event.cr
 - Omitted: on later uploads, the current setting is kept, including a change made in the [Webhooks tab](/api/extensions-api/create-your-extension/webhooks#choose-the-events-you-receive).
 
 :::info
-On the **first** manifest upload of your extension, omitting `subscriptions` sets an empty list: your extension then receives no `lock_event.created`. Send `["*"]` to keep receiving every event.
+On the **first** manifest upload of your extension, omitting `subscriptions` sets an empty list, and replaces what you saved in the Webhooks tab: your extension then receives no `lock_event.created`. Send `["*"]` to keep receiving every event.
 :::
 
 Subscriptions apply as soon as the upload succeeds. They are never held for manifest review.
