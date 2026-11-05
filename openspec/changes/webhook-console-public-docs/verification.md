@@ -52,7 +52,7 @@ Server paths are relative to `server/src/modules/`.
 
 ## Differences from `design.md`
 
-- The design says an extension with "no manifest list" receives every event. The code sets `[]` when the **first** upload omits `subscriptions` (`(extension.revision ?? 0) > 0 ? extension.subscriptions : []`), which also replaces a list saved in the Webhooks tab. The pages say "nothing set in the manifest or the Webhooks tab", and state the first-upload exception in webhooks `#choose-the-events-you-receive` and the manifest `#subscriptions` info box.
+- The design says an extension with "no manifest list" receives every event. The code sets `[]` when the **first** upload omits `subscriptions` (`(extension.revision ?? 0) > 0 ? extension.subscriptions : []`), which also replaces a list saved in the Webhooks tab. The pages say "no manifest uploaded yet and no list saved in the Webhooks tab" (R10), and state the first-upload exception in webhooks `#choose-the-events-you-receive` and the manifest `#subscriptions` info box.
 - The `action_log.created` switch is labeled **Legacy feed** in the Subscriptions view (`webhooks.subscriptions.legacy`); the page names it.
 - Screenshots skipped (design decision 6 allows it): no image references were added.
 
@@ -78,5 +78,15 @@ Fixes R1 to R6, R8 and R9 from the review comment, on the four pages. R7 kept as
 | `bash .claude/hooks/lint-docs.sh <file>` for the four pages | `62b4738` | Pass. Same existing 2023 changelog warning. |
 | `git diff --check` | `62b4738` | Pass |
 | Same build under the heavy-check lock | `62b4738` | Pass, `[SUCCESS] Generated static files in "build".`, no broken link or anchor warning |
+
+### Review round 2 rework
+
+R10: "no manifest uploaded yet and no list saved in the Webhooks tab" in webhooks `#lock-events-and-action-logs` and lock-events `#choose-which-events-you-receive`. Source: `partner-extension-manifest.service.ts` (a first upload without `subscriptions` sets `[]`).
+
+| Command | Input | Result |
+| --- | --- | --- |
+| `bash .claude/hooks/lint-docs.sh <file>` for the four pages | R10 commit | R10_LINT |
+| `git diff --check` | R10 commit | R10_DIFF |
+| Same build under the heavy-check lock | R10 commit | R10_BUILD |
 
 Rerun the build only if a page under `docs/` changes.

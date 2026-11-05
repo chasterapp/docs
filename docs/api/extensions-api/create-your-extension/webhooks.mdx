@@ -213,7 +213,7 @@ flowchart LR
 
 `data.actionLog` has the same format in both events, and `data.eventId` equals `data.actionLog._id`. Both deliveries also carry the same `X-Chaster-Event-Id`.
 
-An extension whose subscriptions are not set (nothing set in the [manifest](/api/extensions-api/extension-communication/manifest#subscriptions) or the Webhooks tab, `subscriptions: ["*"]` in its manifest, or **Receive everything** in the [Webhooks tab](#choose-the-events-you-receive)) and no session subscription list receives `lock_event.created` for every event of the lock, except the events it created itself. A visible history entry then reaches it twice, once per event type.
+An extension whose subscriptions are not set (no [manifest](/api/extensions-api/extension-communication/manifest#subscriptions) uploaded yet and no list saved in the Webhooks tab, `subscriptions: ["*"]` in its manifest, or **Receive everything** in the [Webhooks tab](#choose-the-events-you-receive)) and no session subscription list receives `lock_event.created` for every event of the lock, except the events it created itself. A visible history entry then reaches it twice, once per event type.
 
 :::warning
 If your handler reacts to any webhook that contains `data.actionLog` without checking `event`, it reacts twice to each history entry, and also reacts to hidden events.
