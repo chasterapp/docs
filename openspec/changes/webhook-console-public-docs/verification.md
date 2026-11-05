@@ -53,4 +53,15 @@ Server paths are relative to `server/src/modules/`.
 
 ## Checks
 
-See the PR description and the issue proof comment for command output.
+All on 2026-11-05.
+
+| Command | Input | Result |
+| --- | --- | --- |
+| `bash .claude/hooks/lint-docs.sh <file>` for the four pages | `6578c2c` | Pass. One existing warning on an untouched 2023 changelog heading. |
+| `git diff --check` | `6578c2c` | Pass |
+| `npx openspec validate ...` | - | Not available in this repo (no `openspec` package), skipped |
+| `npm ci`, then `flock --verbose /tmp/chaster-recovery-heavy-check.lock timeout --kill-after=30s 10m env NODE_OPTIONS=--max-old-space-size=3072 npm run build` | `6578c2c` | Pass, no broken link or anchor warning (`onBrokenLinks: "throw"`) |
+| Same build | `56f9c5a` (Mermaid quote fix) | Pass, no warning |
+| `npx docusaurus serve --host 127.0.0.1 --port 4021`, curl and headless Chromium (Playwright) | `56f9c5a` | All 14 webhooks anchors, `manifest#subscriptions`, `lock-events#choose-which-events-you-receive` and `changelog#2026-11-05` exist; the "not available yet" caution is gone; the Mermaid diagram renders `No list, or ["*"]` with no syntax error; deep links scroll the heading to the top. Server stopped afterwards. |
+
+Rerun the build only if a page under `docs/` changes.
