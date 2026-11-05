@@ -42,11 +42,11 @@ The following scopes stay valid with no end date. Each counts as its read and wr
 
 New apps are offered the granular scopes only. Apps that hold legacy scopes also hold the granular ones. Use granular scopes for new work.
 
-## Email and phone are never shared
+## Email addresses are never shared
 
-There is no `email` or `phone` scope: an authorize URL that requests them fails with `invalid_scope` before the consent screen. `GET /auth/profile` returns the email, `billingEmail` and `phoneNumber` fields as `null` for every OAuth app and developer token. ID tokens and userinfo do not carry email addresses or phone numbers either. Identify users by their user id.
+There is no `email` scope: an authorize URL that requests it fails with `invalid_scope` before the consent screen. `GET /auth/profile` returns the `email` and `billingEmail` fields as `null` for every OAuth app and developer token. ID tokens and userinfo do not carry email addresses either. Identify users by their user id.
 
-Profile edits through `PATCH /current-user` or `POST /auth/profile` that change the email or phone number return `400`. Other profile fields remain editable with `profile:write`.
+Profile edits through `PATCH /current-user` or `POST /auth/profile` that change the email return `400`. Other profile fields remain editable with `profile:write`.
 
 ## Endpoints without a scope
 
@@ -71,6 +71,6 @@ Only endpoints in the [API reference](https://api.chaster.app/api) are supported
 
 ## Developer token
 
-A developer token acts as the account that generated it. It holds every scope listed on this page, including `developer` and the legacy scopes. It is still treated as an app token: email and phone fields remain `null`, the reserved endpoints above stay closed, and edits to the email or phone number return `400`.
+A developer token acts as the account that generated it. It holds every scope listed on this page, including `developer` and the legacy scopes. It is still treated as an app token: email fields remain `null`, the reserved endpoints above stay closed, and edits to the email return `400`.
 
 See [Developer token](/api/public-api/developer-token) to generate one.
