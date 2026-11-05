@@ -85,8 +85,8 @@ R10: "no manifest uploaded yet and no list saved in the Webhooks tab" in webhook
 
 | Command | Input | Result |
 | --- | --- | --- |
-| `bash .claude/hooks/lint-docs.sh <file>` for the four pages | R10 commit | R10_LINT |
-| `git diff --check` | R10 commit | R10_DIFF |
-| Same build under the heavy-check lock | R10 commit | R10_BUILD |
+| `bash .claude/hooks/lint-docs.sh <file>` for the four pages | `ff88c8f` | Pass. Same existing 2023 changelog warning. |
+| `git diff --check` | `ff88c8f` | Pass |
+| Same build under the heavy-check lock | `ff88c8f` | Pass, `[SUCCESS] Generated static files in "build".`, no broken link or anchor warning |
 
 Rerun the build only if a page under `docs/` changes.
