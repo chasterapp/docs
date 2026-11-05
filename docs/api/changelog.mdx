@@ -5,6 +5,42 @@ sidebar_label: Changelog
 
 Changes to the Public API and the Extensions API, newest first.
 
+## 2026-11-05
+
+**Breaking changes**
+
+- Webhook requests no longer follow redirects, and URLs that resolve to non-public addresses are refused
+  - A `3xx` response is now a failed attempt: point your webhook URL at the final endpoint
+  - Private, loopback, link-local and other non-public addresses fail
+  - Documentation: [Configuring webhooks](/api/extensions-api/create-your-extension/webhooks#configuring-webhooks)
+- A manifest upload without `subscriptions` keeps the current setting once your extension has a manifest
+  - Before, it emptied the list. On the first upload, an omitted `subscriptions` is still an empty list
+  - Subscriptions apply as soon as the upload succeeds, and are never held for manifest review
+  - Documentation: [Subscriptions](/api/extensions-api/extension-communication/manifest#subscriptions)
+
+**New features**
+
+- Added the **Webhooks** tab to the Developer Interface
+  - Deliveries with their latest 50 attempts, request headers, payload, response status and body, and stats over 1 hour, 24 hours or 7 days
+  - Resend a delivery, and send test events with `"test": true` in the envelope
+  - Documentation: [Webhooks tab](/api/extensions-api/create-your-extension/webhooks#webhooks-tab)
+- Every notification carries the `X-Chaster-Event`, `X-Chaster-Event-Id` and `X-Chaster-Attempt` headers
+  - Deduplicate on `X-Chaster-Event` and `X-Chaster-Event-Id`: they stay the same on every attempt and resend
+  - Documentation: [Request headers](/api/extensions-api/create-your-extension/webhooks#request-headers)
+- `action_log.created` can be turned off, and lock event subscriptions can be changed without a manifest upload
+  - Documentation: [Choose the events you receive](/api/extensions-api/create-your-extension/webhooks#choose-the-events-you-receive)
+- `subscriptions: ["*"]` in the manifest receives every event of the lock except your own, including event types added later
+  - Documentation: [Subscriptions](/api/extensions-api/extension-communication/manifest#subscriptions)
+- New endpoints:
+  - `POST /api/developers/extensions/:extensionId/webhooks/deliveries/search` - Search the deliveries of your extension
+  - `GET /api/developers/extensions/:extensionId/webhooks/deliveries/:deliveryId` - Read a delivery and its attempts
+  - `GET /api/developers/extensions/:extensionId/webhooks/stats` - Read delivery stats
+  - `POST /api/developers/extensions/:extensionId/webhooks/deliveries/:deliveryId/resend` - Resend a delivery
+  - `POST /api/developers/extensions/:extensionId/webhooks/test` - Send a test event
+  - `GET /api/developers/extensions/:extensionId/webhooks/subscriptions` - Read your subscriptions and the `action_log.created` switch
+  - `PUT /api/developers/extensions/:extensionId/webhooks/subscriptions` - Change them
+  - Documentation: [Webhooks API](/api/extensions-api/create-your-extension/webhooks#webhooks-api)
+
 ## 2026-11-04
 
 **Breaking changes**
