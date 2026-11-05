@@ -65,7 +65,7 @@ Which events your extension receives depends on its subscriptions:
 ```mermaid
 flowchart LR
     E[New event] --> Q{Is a subscription list set?<br/>session list first, then extension setting}
-    Q -- "No list, or [&quot;*&quot;]" --> A["Every event,<br/>except your own"]
+    Q -- "No list, or [#quot;*#quot;]" --> A["Every event,<br/>except your own"]
     Q -- "A list, even empty" --> B["Only the event types<br/>in the list"]
 ```
 
