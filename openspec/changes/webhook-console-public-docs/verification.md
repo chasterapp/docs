@@ -75,8 +75,8 @@ Fixes R1 to R6, R8 and R9 from the review comment, on the four pages. R7 kept as
 
 | Command | Input | Result |
 | --- | --- | --- |
-| `bash .claude/hooks/lint-docs.sh <file>` for the four pages | rework commit | RESULT_LINT |
-| `git diff --check` | rework commit | RESULT_DIFF |
-| Same build under the heavy-check lock | rework commit | RESULT_BUILD |
+| `bash .claude/hooks/lint-docs.sh <file>` for the four pages | `62b4738` | Pass. Same existing 2023 changelog warning. |
+| `git diff --check` | `62b4738` | Pass |
+| Same build under the heavy-check lock | `62b4738` | Pass, `[SUCCESS] Generated static files in "build".`, no broken link or anchor warning |
 
 Rerun the build only if a page under `docs/` changes.
