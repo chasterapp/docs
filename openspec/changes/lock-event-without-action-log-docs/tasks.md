@@ -14,7 +14,7 @@
 
 ## 3. Verify and hand off
 
-- [ ] 3.1 Run `npm run lint:docs`, `git diff --check`, and `npx openspec validate lock-event-without-action-log-docs --strict` if available. Record commands and results in `verification.md`. Existing warnings on untouched pages are out of scope.
-- [ ] 3.2 Commit and push the issue-owned paths. Then build under the host lock (`npm ci` first if `node_modules` is missing): `flock --verbose /tmp/chaster-recovery-heavy-check.lock timeout --kill-after=30s 10m env NODE_OPTIONS=--max-old-space-size=3072 npm run build`. Fix new broken-link or anchor warnings. Record the tested commit and result.
-- [ ] 3.3 Serve the build on a free port other than 3000 and 3001 (for example `npm run serve -- --host 127.0.0.1 --port 4021`), open both pages and the changelog, check the Mermaid diagram, the tables and the anchors, then stop the server. Record observations in `verification.md`.
+- [x] 3.1 Run `npm run lint:docs`, `git diff --check`, and `npx openspec validate lock-event-without-action-log-docs --strict` if available. Record commands and results in `verification.md`. Existing warnings on untouched pages are out of scope.
+- [x] 3.2 Commit and push the issue-owned paths. Then build under the host lock (`npm ci` first if `node_modules` is missing): `flock --verbose /tmp/chaster-recovery-heavy-check.lock timeout --kill-after=30s 10m env NODE_OPTIONS=--max-old-space-size=3072 npm run build`. Fix new broken-link or anchor warnings. Record the tested commit and result.
+- [x] 3.3 Serve the build on a free port other than 3000 and 3001 (for example `npm run serve -- --host 127.0.0.1 --port 4021`), open both pages and the changelog, check the Mermaid diagram, the tables and the anchors, then stop the server. Record observations in `verification.md`.
 - [ ] 3.4 Put the claim trace in the PR description, flip the stage marker, push, and hand the same issue, branch and PR to the Reviewer. QA: none. Remind the merger to set the changelog date to the merge day.

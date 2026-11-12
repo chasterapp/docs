@@ -31,3 +31,9 @@ Open points settled:
 - `bash .claude/hooks/lint-docs.sh` on the three pages: exit 0 (one existing title-case warning at `changelog.mdx:290` on an untouched old entry).
 - `git diff --check`: clean.
 - Wording grep on added lines (previously, used to, no longer, before, now): no hit. Em dash count in added lines: 0.
+
+## Build and serve (head `e189f22`)
+
+- `npm ci` then `flock ... timeout 10m env NODE_OPTIONS=--max-old-space-size=3072 npm run build`: exit 0, "Generated static files in build", no broken link or anchor warning.
+- `npm run serve -- --host 127.0.0.1 --port 4021`, then stopped (port closed afterwards). `lock-events`, `webhooks` and `changelog` pages return 200. Anchors `#receive-events`, `#lock-events-and-action-logs`, `#request-headers` and the `2026-11-12` heading are present in the served HTML. The only `actionLog` text left on the lock-events page is the `action_log.created` reference in the warning.
+- Not checked visually: the Mermaid diagram renders client-side and no browser was used. The edit only changes the text of node B.
