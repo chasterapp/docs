@@ -101,6 +101,7 @@
             "api/extensions-api/extension-communication/calling-extensions",
             "api/extensions-api/extension-communication/handling-invocations",
             "api/extensions-api/extension-communication/lock-events",
+            "api/extensions-api/extension-communication/mcp",
             "api/extensions-api/extension-communication/errors-and-limits"
           ]
         },
