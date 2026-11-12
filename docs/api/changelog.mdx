@@ -5,6 +5,23 @@ sidebar_label: Changelog
 
 Changes to the Public API and the Extensions API, newest first.
 
+## 2026-11-12
+
+**Breaking changes**
+
+- `lock_event.created` and the events of `GET /api/extensions/sessions/:sessionId/events` have no `actionLog`
+  - `role`, `user` and `createdAt` are top-level fields of the event, next to `payload`
+  - Test events from the Webhooks tab have the same format
+  - To match a `lock_event.created` with an `action_log.created`, use `X-Chaster-Event-Id`: it is `data.eventId` in `lock_event.created` and `data.actionLog._id` in `action_log.created`
+  - Documentation: [Lock events](/api/extensions-api/extension-communication/lock-events#receive-events)
+- Each extension config is limited to 2 MB
+  - The size is measured on the JSON encoding of the config. A larger config is refused with `400`
+  - The limit applies when you save a configuration from a configuration token, update the `config` of a session, or set the default config of your extension
+
+**Minor changes**
+
+- `lock.offerToken` is always `null` in the locks sent to extensions (session payloads and webhooks)
+
 ## 2026-11-05
 
 **Breaking changes**

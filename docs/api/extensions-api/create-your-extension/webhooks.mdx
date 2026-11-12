@@ -198,7 +198,7 @@ To know exactly the data that is sent with each event type, please refer to the 
 ```mermaid
 flowchart LR
     H[New visible history entry] --> A["action_log.created<br/>data.actionLog"]
-    H --> B["lock_event.created<br/>data.actionLog + eventId, seq, type..."]
+    H --> B["lock_event.created<br/>eventId, seq, type, payload..."]
     X[New hidden event] --> B
     A --> Y[Your webhook URL]
     B --> Y
@@ -209,23 +209,24 @@ flowchart LR
 | Visible history entries | Yes | Yes, depending on subscriptions |
 | Hidden events | No | Yes, depending on subscriptions |
 | Entries created by your own extension | Yes | No, unless you subscribe to them |
-| Entry | `data.actionLog` | `data.actionLog`, plus `eventId`, `seq`, `type`, `payload`, `source`, `correlationId`, `causationId` |
+| Fields in `data` | `actionLog` | `eventId`, `seq`, `type`, `payload`, `source`, `correlationId`, `causationId`, `role`, `user`, `createdAt` |
 
-`data.actionLog` has the same format in both events, and `data.eventId` equals `data.actionLog._id`. Both deliveries also carry the same `X-Chaster-Event-Id`.
+For the same history entry, `data.eventId` of `lock_event.created` equals `data.actionLog._id` of `action_log.created`, and both deliveries carry the same `X-Chaster-Event-Id`. `lock_event.created` has no `actionLog` and no rendered history text: use `action_log.created` to display history entries.
 
 An extension whose subscriptions are not set (no [manifest](/api/extensions-api/extension-communication/manifest#subscriptions) uploaded yet and no list saved in the Webhooks tab, `subscriptions: ["*"]` in its manifest, or **Receive everything** in the [Webhooks tab](#choose-the-events-you-receive)) and no session subscription list receives `lock_event.created` for every event of the lock, except the events it created itself. A visible history entry then reaches it twice, once per event type.
 
 :::warning
-If your handler reacts to any webhook that contains `data.actionLog` without checking `event`, it reacts twice to each history entry, and also reacts to hidden events.
+If your handler does not check `event`, it reacts twice to each visible history entry, once per event type, and also reacts to hidden events.
 
-**To keep your current behavior**, handle only `action_log.created`. When `event` is `lock_event.created`, answer `2xx` and do nothing else.
+**To react once per history entry**, handle only `action_log.created`. When `event` is `lock_event.created`, answer `2xx` and do nothing else.
 :::
 
 To move to `lock_event.created` instead, knowing its payload can still change:
 
 1. Choose the event types you need, in the `subscriptions` of your [manifest](/api/extensions-api/extension-communication/manifest#subscriptions) or in the [Subscriptions view](#choose-the-events-you-receive). Untyped entries such as custom logs are then no longer delivered as lock events.
-2. Turn `action_log.created` off in the Subscriptions view, or keep it and deduplicate on `X-Chaster-Event-Id`.
-3. If you changed the subscriptions of a session, they override the extension setting for that session.
+2. Read `role`, `user` and `createdAt` at the top level of `data`: the fields of the event itself are in `payload`.
+3. Turn `action_log.created` off in the Subscriptions view, or keep it and deduplicate on `X-Chaster-Event-Id`.
+4. If you changed the subscriptions of a session, they override the extension setting for that session.
 
 
 ## Peer review verdicts
