@@ -1,0 +1,63 @@
+---
+title: Locking providers
+sidebar_label: Locking providers
+---
+
+A locking provider is an extension that replaces the lockbox combination: a connected device keeps the key until the Chaster lock ends.
+
+## Introduction
+
+By default, a Chaster lock holds a combination (a picture or a generated code) and reveals it when the session ends. A locking provider takes that role instead. The wearer picks your device on the **Locking method** step of lock creation, configures it in your configuration page, and your integration keeps the device closed until the lock lets the wearer out.
+
+Locking providers are meant for:
+
+- **Lockbox and device makers** who want their product to work with Chaster. [Reach Restraints](https://reachrestraints.com/product/reach-lock/rrcode/a19/) (Reach Lock) and [Research and Desire](https://www.researchanddesire.com/chaster) (Lockbox) are integrated this way. Wearers see them in [Your first lock](/your-first-lock#smart-lockbox-or-device).
+- **Developers building a custom integration** for their own lockbox, for example a box from a smart-lock platform such as TTLock.
+
+## Become a locking provider
+
+Only Chaster can turn an extension into a locking provider. You cannot enable it yourself from the Developer interface.
+
+### Lockbox and device makers
+
+If you sell a lockbox or device and want it available to every Chaster user, [contact us](/contacting-support) to set up a partnership. Build your extension as described in [Getting started](/api/extensions-api/getting-started), then tell us its slug and the device it controls.
+
+### Custom integrations
+
+If you are connecting your own lockbox, [contact us](/contacting-support) with your extension's slug. We enable the locking provider setting and your extension stays in testing: it shows up as a locking method only for you and the [testers](/api/extensions-api/configuration#testers) you add, not for other users.
+
+## How it works
+
+### Choosing the locking method
+
+A lock has exactly one locking method: a stored combination, or a single locking provider. When a wearer creates a lock with your provider:
+
+1. Your extension appears on the **Locking method** step, with the other supported devices. It only appears there: wearers and keyholders cannot add a locking provider from the regular extension list.
+2. Chaster opens your [configuration page](/api/extensions-api/create-your-extension/configuration-page) so the wearer can set up the device, for example pair it. Implement the `save` capability so the configuration is saved before the wearer continues.
+3. The lock is created with your extension enabled and no combination.
+
+A wearer joining a shared lock also chooses the locking method. Your provider is added to the shared lock's own extensions for that lock only.
+
+A locking provider does not count toward the extension limit of users without [Chaster Plus](/chaster-plus).
+
+### Following the lock
+
+Your extension gets a [session](/api/extensions-api/sessions) on every lock that uses it. Keep the device closed while the lock runs and open it when the wearer is free to leave. Use [webhooks](/api/extensions-api/create-your-extension/webhooks) to follow the lock as it happens:
+
+- `extension_session.created`: a lock now uses your device.
+- `action_log.created`: [action logs](/api/reference/action-logs) such as `unlocked` (the lock ended, release the key), `temporary_opening_opened` (a hygiene opening started) and `temporary_opening_locked` or `temporary_opening_locked_late` (the wearer locked again).
+- `extension_session.deleted`: your extension no longer controls this lock.
+
+Your device can be offline when an event happens. On reconnection, read the current state from the [session endpoints](/api/extensions-api/sessions) instead of replaying only the events you received.
+
+### Switching the locking method
+
+Editing a lock's extensions cannot add, remove or swap the locking provider. A wearer switches method only during a hygiene opening: when they lock again, they choose a combination or a locking provider, and configure it again in your configuration page if it is yours.
+
+### Deleting your extension
+
+You cannot delete a locking provider while it still controls locked locks of users outside your application, testers included. Those locks must end first.
+
+:::info
+Treat the wearer's safety as part of your device. Document how the wearer gets out if your service, the network or the device fails, and how that interacts with the lock's emergency unlock.
+:::

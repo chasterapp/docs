@@ -103,7 +103,8 @@
             "api/extensions-api/extension-communication/errors-and-limits"
           ]
         },
-        "api/extensions-api/configuration"
+        "api/extensions-api/configuration",
+        "api/extensions-api/locking-providers"
       ]
     },
     {
