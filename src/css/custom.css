@@ -35,3 +35,9 @@ code {
   display: block;
   margin-bottom: 2rem;
 }
+.img-phone {
+  display: block;
+  max-width: 390px;
+  width: 100%;
+  margin-bottom: var(--ifm-paragraph-margin-bottom);
+}
