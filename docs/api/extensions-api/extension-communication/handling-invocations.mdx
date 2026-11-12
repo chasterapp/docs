@@ -113,17 +113,18 @@ Chaster sends a `start` command to your extension like a `control` command. It d
 If the session limits regular actions, submit one before starting, with the invocation's `operationId`:
 
 ```http
-POST /api/extensions/sessions/{sessionId}/regular-actions
+POST /api/extensions/sessions/:sessionId/regular-actions
 
 { "operationId": "b53480a5-2045-4e7d-8e91-52cf852b510c", "payload": { "round": "r-42" } }
 ```
 
 - `201`: the action is counted. Start the activity and answer with your `result`.
 - `422`: no action is left. Answer with a refusal, for example `{ "error": { "code": "no-action-remaining", "message": "..." } }`. The invocation is recorded as `rejected`.
+- Any other status: do not start the activity, answer with a refusal.
 
-In Schedule mode, if your answer is lost or times out, submitting again with the same `operationId` returns the original acceptance and never counts a second action. See [Regular actions](/api/extensions-api/create-your-extension/regular-actions#retry-with-an-operation-id).
+In Schedule mode, if the regular-action request times out or its response is lost, submit it again with the same `operationId`: Chaster returns the original acceptance and never counts a second action. A new invocation, even one retrying an earlier call, always carries a new `operationId`. See [Regular actions](/api/extensions-api/create-your-extension/regular-actions#retry-with-an-operation-id).
 
-When the session has no action left, mark the command unavailable with `PUT /api/extensions/sessions/:sessionId/capabilities/:commandId` and `{ "available": false, "reason": "no-action-remaining" }`, so callers see it before calling. Mark it available again when the next action opens. See [Change availability at runtime](/api/extensions-api/extension-communication/manifest#change-availability-at-runtime).
+When the session has no action left, mark the command unavailable with `PUT /api/extensions/sessions/:sessionId/capabilities/:commandId` and `{ "available": false, "reason": "no-action-remaining" }`, so callers see it before calling. Mark it available again once `GET /api/extensions/sessions/:sessionId/regular-actions` reports an action left. See [Change availability at runtime](/api/extensions-api/extension-communication/manifest#change-availability-at-runtime).
 
 ## Act on the lock from a handler
 
