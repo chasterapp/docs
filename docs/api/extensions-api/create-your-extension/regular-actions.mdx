@@ -63,6 +63,7 @@ To submit a regular action on the lock, use the following endpoint:
 The request should include the following structure:
 
 - **payload**: The payload of the regular action, stored in a key-value object format. You can include any desired data in this object, which can be retrieved later when fetching the list of previous regular actions.
+- **operationId**: A UUID identifying this action. Required when the session uses the Schedule mode, optional otherwise. See [Retry with an operation id](#retry-with-an-operation-id).
 
 By submitting a regular action, you can customize and record specific interactions or events within your extension.
 
@@ -79,6 +80,30 @@ If the number of actions remaining is 0, the endpoint returns a `422 Unprocessab
 ```
 
 In this case, you must wait for the next regular action date to submit a new regular action.
+
+### Schedule mode
+
+When the wearer runs your extension on a [schedule](/extensions/schedules), `mode` is `schedule` and every `POST` needs an `operationId` UUID. A successful `POST` adds `acceptance`, which describes the accepted action:
+
+```json
+{
+  "acceptance": {
+    "operationId": "b53480a5-2045-4e7d-8e91-52cf852b510c",
+    "date": "2026-01-01T12:00:00.000Z",
+    "payload": { "result": 4 }
+  }
+}
+```
+
+- `400`: the `operationId` is missing or is not a UUID.
+- `409`: the `operationId` already belongs to another session or user of your extension.
+- `422`: no action is available. The response holds the current availability, without the action list.
+
+### Retry with an operation id
+
+In the Schedule mode, generate one UUID per action and save it before submitting. If the request times out or the response is lost, submit again with the same `operationId`: Chaster returns the original acceptance in `acceptance` and never counts a second action. A new UUID is a new action.
+
+When another extension calls one of your `start` commands, reuse the `operationId` of the invocation. See [Start commands](/api/extensions-api/extension-communication/handling-invocations#start-commands).
 
 ## Use regular actions in your extension
 

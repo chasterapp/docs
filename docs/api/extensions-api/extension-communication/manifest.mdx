@@ -128,7 +128,7 @@ Each list (`commands`, `queries`, `events`, `subscriptions`) holds at most 100 e
 | `id`           | Capability id, up to 100 characters.                                                                         |
 | `title`        | Short name, up to 200 characters.                                                                            |
 | `description`  | Optional description.                                                                                        |
-| `kind`         | `control` for commands other extensions can call. `start` commands are not dispatched to partner extensions. |
+| `kind`         | `control`, or `start` for a command that begins an activity counted against the session's regular actions. See [Start commands](/api/extensions-api/extension-communication/handling-invocations#start-commands). |
 | `invocableBy`  | Who can call it: `wearer`, `keyholder`, `extension`. Defaults to `["wearer", "keyholder"]`.                  |
 | `inputSchema`  | Required. JSON Schema of the `input` object.                                                                 |
 | `outputSchema` | Optional. JSON Schema of the `result` object your extension returns.                                         |

@@ -76,6 +76,8 @@ This endpoint also accepts the main page token of your iframe in the `X-Chaster-
 
 Your extension can only call capabilities whose `invocableBy` contains `extension`, on an extension installed on the same lock. The target capability must be available.
 
+A `start` command can count against the target session's regular actions. When none is left, the invocation has status `rejected`, or the call is refused with `command-unavailable` if the target marked the command unavailable.
+
 ### Response
 
 The response is an invocation:
@@ -125,7 +127,7 @@ Calls refused before they are dispatched return an HTTP error instead. See [Erro
 Chaster never retries a call for you. If your request times out on your side, send it again with the **same** `idempotencyKey`: if the first request was recorded, Chaster returns that invocation instead of running the command a second time.
 
 - Keys are scoped to your extension and the lock. Reusing a key with a different command returns `409`.
-- A repeated request is checked again (availability, rate limits) before Chaster looks up the existing invocation, so it can still be refused with an HTTP error.
+- A repeated request is checked again (availability, rate limits) before Chaster looks up the existing invocation, so it can still be refused with an HTTP error. A `command-unavailable` on a retry does not mean the first call failed: a `start` command that spent the last action can become unavailable after running.
 - Invocations, and the protection of their key, last 30 days.
 - To start a new attempt after a `failed` or `rejected` call, use a new key.
 
