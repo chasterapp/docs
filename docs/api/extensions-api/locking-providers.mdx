@@ -36,6 +36,18 @@ A lock has exactly one locking method: a stored combination, or a single locking
 2. Chaster opens your [configuration page](/api/extensions-api/create-your-extension/configuration-page) so the wearer can set up the device, for example pair it. Implement the `save` capability so the configuration is saved before the wearer continues.
 3. The lock is created with your extension enabled and no combination.
 
+On the **Locking method** step, partner devices get their own card with their logo, a **Recommended** badge, a **Learn more** page and a **Buy** link. Every other locking provider is reached through the device search.
+
+<img src="/img/locking-providers-method-step.png" alt="The Locking method step: the two lockbox methods, a device search card, then the Looking for a smart lock? section with the Research And Desire Lockbox and Reach Lock partner cards" className="img-mobile" />
+
+The **Supported devices** drawer lists partners first, under **Recommended by Chaster**, then every other locking provider under **Other supported devices**. Search matches your extension's name, subtitle and, for partners, vendor name.
+
+<img src="/img/locking-providers-directory.png" alt="The Supported devices drawer: the two partner cards under Recommended by Chaster, then three example devices under Other supported devices" className="img-mobile" />
+
+:::note
+The devices under **Other supported devices** are examples.
+:::
+
 A wearer joining a shared lock also chooses the locking method. Your provider is added to the shared lock's own extensions for that lock only.
 
 A locking provider does not count toward the extension limit of users without [Chaster Plus](/chaster-plus).
