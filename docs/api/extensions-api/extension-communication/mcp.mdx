@@ -85,7 +85,7 @@ The server sends the same instructions to the model when it connects, and the to
 ```
 
 - `input` defaults to `{}` and can be nested at most 64 levels deep, like the REST `input`.
-- `invoke_action` takes no `causationId`: causation is inferred from the last event delivered to your extension in the previous 10 seconds, as described in [Causation and correlation](/api/extensions-api/extension-communication/calling-extensions#causation-and-correlation). A call refused with `depth-exceeded` counts toward the MCP limits of the extension that started the chain.
+- `invoke_action` takes no `causationId`: causation is inferred from the last event delivered to your extension in the previous 10 seconds, as described in [Causation and correlation](/api/extensions-api/extension-communication/calling-extensions#causation-and-correlation). A call refused with `depth-exceeded` counts toward the MCP limits of the extension that started the chain, or toward the lock's MCP limit when no extension started it.
 - `idempotencyKey` is optional, 1 to 200 characters. When the model omits it, Chaster generates a new one, so a retry runs the command again. Pass your own key for anything that must not run twice. Keys follow the rules of [Retries and idempotency](/api/extensions-api/extension-communication/calling-extensions#retries-and-idempotency) and are shared with your REST calls.
 - The result is the invocation, in `structuredContent` and as JSON text. A `rejected` or `failed` invocation is returned with `isError: true`.
 
