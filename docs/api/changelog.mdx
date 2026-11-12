@@ -5,6 +5,20 @@ sidebar_label: Changelog
 
 Changes to the Public API and the Extensions API, newest first.
 
+## 2026-11-13
+
+**New features**
+
+- MCP server v2 for extension sessions: `POST /api/extensions/sessions/:sessionId/mcp/v2`
+  - Six fixed tools (`list_capabilities`, `describe_actions`, `invoke_action`, `get_invocation`, `read_events`, `get_field_options`) built from the manifests of the extensions installed on the lock
+  - `invoke_action` runs commands and queries as your extension, with the same checks, idempotency and history attribution as `POST /api/extensions/sessions/:sessionId/actions/:commandId`
+  - Calls made through `invoke_action` have their own rate limits (600 per 5 minutes per extension and lock, 1,200 per 5 minutes per lock), separate from your REST calls
+  - Documentation: [MCP server](/api/extensions-api/extension-communication/mcp)
+
+**Minor changes**
+
+- `POST /api/extensions/sessions/:sessionId/mcp` (without `/v2`) is deprecated and will be removed. Its six lock tools map to `invoke_action` with `lock.add-time`, `lock.remove-time`, `lock.freeze`, `lock.unfreeze`, `lock.pillory` and `lock.set-display-remaining-time`
+
 ## 2026-11-12
 
 **Breaking changes**

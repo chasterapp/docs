@@ -63,6 +63,8 @@ A refused call returns `429` with `details`:
 
 `bucket` is `extension`, `lock`, or `options` for dynamic choices (60 requests per minute per lock and caller). Wait `retryAfterSeconds` before calling again.
 
+Calls made through the [MCP server](/api/extensions-api/extension-communication/mcp) have their own limits, separate from these.
+
 These limits also apply to [lock actions](/api/extensions-api/create-your-extension/lock-actions) and to the endpoints of the Tasks, Penalties, Hygiene opening, Verification picture and Pillory APIs.
 
 ## Depth limit

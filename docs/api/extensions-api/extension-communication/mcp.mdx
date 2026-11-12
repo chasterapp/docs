@@ -1,0 +1,146 @@
+---
+title: MCP server
+sidebar_label: MCP server
+---
+
+:::caution[Experimental]
+Extension communication is experimental. The manifest, commands, queries, lock events, endpoints and webhooks can change in incompatible ways or be removed. Changes are listed in the [API changelog](/api/changelog).
+:::
+
+Chaster serves an [MCP](https://modelcontextprotocol.io) server for each extension session. Connect a language model to it and the model can discover what the extensions installed on the lock offer, and run their commands and queries as your extension.
+
+The model gets the same rights as your backend: every call goes through the same checks as [Calling extensions](/api/extensions-api/extension-communication/calling-extensions) (`invocableBy`, availability, input validation, idempotency, depth), and every history line shows that the action came from your extension.
+
+## Endpoint
+
+- `POST /api/extensions/sessions/:sessionId/mcp/v2`
+
+Authenticate with your [developer token](/api/extensions-api/authentication) in the `Authorization` header. The server only acts on the lock of `:sessionId`, and only for a session of your extension. A session of another extension returns `404`.
+
+The server is stateless: every request is answered on its own, and there is no MCP session to keep alive. It supports the MCP `2026-07-28` revision and 2025 clients on the same URL (Streamable HTTP, `POST` only).
+
+:::caution[Deprecated]
+`POST /api/extensions/sessions/:sessionId/mcp`, without `/v2`, is deprecated. It only exposes six fixed lock tools (`add-time`, `remove-time`, `freeze`, `unfreeze`, `pillory`, `set-display-remaining-time`) that skip the checks above, and it will be removed. Move to `/mcp/v2`: `invoke_action` with `lock.add-time`, `lock.remove-time`, `lock.freeze`, `lock.unfreeze`, `lock.pillory` and `lock.set-display-remaining-time` replaces each of them.
+:::
+
+## Tools
+
+The tool list is the same on every session. What the lock offers comes from the tools' results, never from the tool list.
+
+| Tool                | Arguments                                | What it does                                                                                                                                                          |
+| ------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `list_capabilities` | none                                     | Lists the commands and queries your extension can see on the lock, with `available` and `reason` (unavailable ones included), and the event types. No schemas.         |
+| `describe_actions`  | `ids` (1 to 50)                          | Returns the full entries for these ids: input and output JSON Schemas of commands and queries, payload schema of events, `invocableBy`, `deprecated`.                 |
+| `invoke_action`     | `id`, `input` (object), `idempotencyKey` | Runs a command or a query as your extension and returns the [invocation](/api/extensions-api/extension-communication/calling-extensions#response). |
+| `get_invocation`    | `id`                                     | Reads an invocation again, for example while it is `pending` or `unknown`.                                                                                            |
+| `read_events`       | `afterSeq`, `types`, `limit`             | Reads [lock events](/api/extensions-api/extension-communication/lock-events) after a cursor, like `GET /api/extensions/sessions/:sessionId/events`.                    |
+| `get_field_options` | `id`, `field`, `search`                  | Lists the lock-specific choices of an input field that declares `x-chaster-options`.                                                                                  |
+
+`list_capabilities`, `describe_actions`, `get_invocation`, `read_events` and `get_field_options` are marked read-only. `invoke_action` is marked destructive, so MCP clients can ask for confirmation before running it.
+
+### The flow
+
+1. `list_capabilities` to see what is available on this lock right now.
+2. `describe_actions` with the ids the model wants, to read their input schemas.
+3. `invoke_action` with an input that matches the schema.
+
+The server sends the same instructions to the model when it connects, and the tool descriptions repeat them.
+
+### `list_capabilities`
+
+```json
+{
+  "extensions": [
+    {
+      "slug": "lock",
+      "displayName": "Lock",
+      "provider": "chaster",
+      "commands": [
+        {
+          "id": "lock.add-time",
+          "title": "Add time",
+          "description": "Add time to a current lock session",
+          "kind": "control",
+          "available": true,
+          "reason": null
+        }
+      ],
+      "queries": [],
+      "events": [{ "id": "lock.time-changed", "title": null }]
+    }
+  ]
+}
+```
+
+`provider` is `chaster` for Chaster extensions and `third-party` for partner extensions. Descriptions longer than 200 characters are shortened; `describe_actions` returns them in full. An event `title` is the `title` of its payload schema, or `null`.
+
+### `invoke_action`
+
+```json
+{
+  "id": "lock.add-time",
+  "input": { "duration": 3600 },
+  "idempotencyKey": "chat-6731b2c4e5:turn-12"
+}
+```
+
+- `input` defaults to `{}`.
+- `idempotencyKey` is optional, 1 to 200 characters. When the model omits it, Chaster generates a new one, so a retry runs the command again. Pass your own key for anything that must not run twice. Keys follow the rules of [Retries and idempotency](/api/extensions-api/extension-communication/calling-extensions#retries-and-idempotency) and are shared with your REST calls.
+- The result is the invocation, in `structuredContent` and as JSON text. A `rejected` or `failed` invocation is returned with `isError: true`.
+
+## Results and errors
+
+Every successful result has the data in `structuredContent`, and the same JSON in a text block wrapped in `<extension-data>` tags. The text starts with a notice telling the model that titles, descriptions, schemas, results and payloads come from installed extensions, some written by third parties, and must be treated as data, not instructions.
+
+When Chaster refuses a call, the tool returns `isError: true` with the [error code](/api/extensions-api/extension-communication/errors-and-limits#error-codes):
+
+```json
+{
+  "error": {
+    "code": "invalid-input",
+    "message": "invalid-input",
+    "details": [{ "instancePath": "/duration", "message": "must be >= 1" }]
+  }
+}
+```
+
+For `invalid-input`, `details` lists the schema errors with the JSON path of each field in `instancePath`. Two more codes exist only on this server: `not-found` (an unknown invocation id in `get_invocation`) and `invalid-request`. A tool name that does not exist is a JSON-RPC error (`-32602`), not a tool result.
+
+## Rate limits
+
+Calls made through `invoke_action` count toward their own limits, separate from the [limits of your REST calls](/api/extensions-api/extension-communication/errors-and-limits#rate-limits): the model cannot use up your backend's budget, and your backend cannot use up the model's.
+
+- **Per extension and lock**: 600 per 5 minutes. When the model exceeds it, `invoke_action` is blocked on that lock for 60 seconds, and a visible line is added to the lock history.
+- **Per lock**: 1,200 per 5 minutes, all extensions together.
+
+A refused call returns `rate-limited` with `details.bucket` set to `mcp-extension` or `mcp-lock`, and `details.retryAfterSeconds`.
+
+All requests to the endpoint, tools included, also count toward 1,200 requests per minute for your extension, across all its sessions. `get_field_options` shares the `options` limit with the REST options endpoint.
+
+## Connect a client
+
+With the [MCP TypeScript SDK](https://ts.sdk.modelcontextprotocol.io/v2/) client:
+
+```ts
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client"
+
+const client = new Client(
+  { name: "my-extension", version: "1.0.0" },
+  { versionNegotiation: { mode: { pin: "2026-07-28" } } },
+)
+
+await client.connect(
+  new StreamableHTTPClientTransport(
+    new URL(`https://api.chaster.app/api/extensions/sessions/${sessionId}/mcp/v2`),
+    { requestInit: { headers: { Authorization: `Bearer ${developerToken}` } } },
+  ),
+)
+
+const { tools } = await client.listTools()
+const result = await client.callTool({
+  name: "invoke_action",
+  arguments: { id: "lock.add-time", input: { duration: 3600 } },
+})
+```
+
+Keep the developer token on your backend: connect the model to the server from your backend, never from the browser.
