@@ -37,26 +37,26 @@ Chaster sends a `lock_event.created` webhook to your webhook URL for each event 
     "payload": { "...": "..." },
     "correlationId": null,
     "causationId": null,
-    "actionLog": {
-      "_id": "6731b2c4e5f0a1b2c3d4e5f6",
-      "type": "dice_rolled",
-      "...": "..."
-    }
+    "role": "keyholder",
+    "user": { "_id": "6731a0b1c2d3e4f5a6b7c8d9", "username": "example-keyholder" },
+    "createdAt": "2026-11-04T12:00:00.000Z"
   }
 }
 ```
 
-| Field           | Description                                                                                                                                  |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sessionId`     | Your session on the lock.                                                                                                                    |
-| `eventId`       | Stable id of the event. Equal to `actionLog._id`.                                                                                            |
-| `seq`           | Position of the event in the lock stream.                                                                                                    |
-| `type`          | Capability id of the event, or `null`.                                                                                                       |
-| `source`        | The extension that created the event: `{ "extensionId", "invocationId" }`, or `null`.                                                        |
-| `payload`       | The event data, matching the `payloadSchema` of the event. Always an object.                                                                 |
-| `correlationId` | The chain the event belongs to, or `null`.                                                                                                   |
-| `causationId`   | The event or invocation that caused this event, or `null`.                                                                                   |
-| `actionLog`     | The history entry, in the same format as the [`action_log.created`](/api/extensions-api/create-your-extension/webhooks#event-types) webhook. |
+| Field           | Description                                                                                       |
+| --------------- | ------------------------------------------------------------------------------------------------- |
+| `sessionId`     | Your session on the lock.                                                                         |
+| `eventId`       | Stable id of the event, also sent as the `X-Chaster-Event-Id` header.                             |
+| `seq`           | Position of the event in the lock stream.                                                         |
+| `type`          | Capability id of the event, or `null`.                                                            |
+| `source`        | The extension that created the event: `{ "extensionId", "invocationId" }`, or `null`.             |
+| `payload`       | The event data, matching the `payloadSchema` of the event. Always an object.                      |
+| `correlationId` | The chain the event belongs to, or `null`.                                                        |
+| `causationId`   | The event or invocation that caused this event, or `null`.                                        |
+| `role`          | Who created the event: `user` (the wearer), `keyholder`, `extension` or `admin`.                  |
+| `user`          | The user who created the event, as `{ "_id", "username" }`, or `null` when the event has no user or the user cannot be found. |
+| `createdAt`     | When the event was written, as an ISO 8601 date.                                                  |
 
 ### Choose which events you receive
 
@@ -76,7 +76,7 @@ flowchart LR
 Your extension never receives its own `lock.capabilities-changed`.
 
 :::warning
-`lock_event.created` and `action_log.created` overlap. A visible history entry is sent in both, with the same `actionLog._id`. If your extension handles `action_log.created`, the safe option is to answer `2xx` to `lock_event.created` and ignore it. Subscriptions only filter `lock_event.created`: if you subscribe to an event type, [turn `action_log.created` off](/api/extensions-api/create-your-extension/webhooks#choose-the-events-you-receive), ignore it, or deduplicate on `actionLog._id`. See [Webhooks](/api/extensions-api/create-your-extension/webhooks#lock-events-and-action-logs).
+`lock_event.created` and `action_log.created` overlap. A visible history entry is sent in both, with the same id: `eventId` in `lock_event.created`, `actionLog._id` in `action_log.created`, and the same `X-Chaster-Event-Id` header. If your extension handles `action_log.created`, the safe option is to answer `2xx` to `lock_event.created` and ignore it. Subscriptions only filter `lock_event.created`: if you subscribe to an event type, [turn `action_log.created` off](/api/extensions-api/create-your-extension/webhooks#choose-the-events-you-receive), ignore it, or deduplicate on `X-Chaster-Event-Id`. See [Webhooks](/api/extensions-api/create-your-extension/webhooks#lock-events-and-action-logs).
 :::
 
 ### Delivery
