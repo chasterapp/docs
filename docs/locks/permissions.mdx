@@ -25,7 +25,7 @@ Permissions determine who can change the emergency-unlock setting. While it is e
 
 ## The permissions
 
-The contract covers eleven permissions. Each one names an action and says whether the wearer, the keyholder, or both may perform it.
+The contract covers twelve permissions. Each one names an action and says whether the wearer, the keyholder, or both may perform it.
 
 - **Add time**: add time to the lock's timer.
 - **Remove time**: remove time from the lock's timer.
@@ -36,6 +36,7 @@ The contract covers eleven permissions. Each one names an action and says whethe
 - **Show or hide the timer**: control whether the wearer sees the remaining time.
 - **Show or hide time values in history**: control whether time amounts appear in the lock history.
 - **Manage extensions**: add, remove and configure the lock's [extensions](/extensions).
+- **Edit schedules**: change the [schedules](/extensions/schedules) of the lock's extensions directly: their times, windows and number of actions. Without it, a party can only request schedule changes.
 - **Edit the bondage safety settings**: change check-in settings, the dead man's switch, and the emergency-release countdown of a bondage lock. This permission only exists on bondage locks.
 - **Change emergency unlock**: turn emergency unlock on or off. Either party can edit the confirmation phrase while it is on.
 
@@ -59,7 +60,7 @@ Even a wearer holding the "Change the maximum date" permission cannot shorten th
 The contract usually takes the form of a preset. Each preset is shown on the consent screens with the sentence below.
 
 - **Standard**: the safe default. The keyholder runs the session and the wearer keeps their safety rails. Consent sentence: "The keyholder runs the session with the usual controls; extensions stay as configured."
-- **Trusted keyholder**: Standard, plus extension management and emergency-unlock setting changes for the keyholder. The keyholder can turn emergency unlock off. Review both grants before accepting this preset.
+- **Trusted keyholder**: Standard, plus extension management, schedule editing and emergency-unlock setting changes for the keyholder. The keyholder can turn emergency unlock off. Review these grants before accepting this preset.
 - **Full trust**: every permission each party can hold. Consent sentence: "Wearer and keyholder can both change anything at any time."
 - **Custom**: any other mix of permissions, picked by hand. If a custom contract is edited back to a preset's exact settings, it snaps to that preset.
 
