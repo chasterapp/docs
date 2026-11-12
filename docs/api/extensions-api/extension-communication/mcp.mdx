@@ -84,13 +84,13 @@ The server sends the same instructions to the model when it connects, and the to
 }
 ```
 
-- `input` defaults to `{}`.
+- `input` defaults to `{}` and can be nested at most 64 levels deep, like the REST `input`.
 - `idempotencyKey` is optional, 1 to 200 characters. When the model omits it, Chaster generates a new one, so a retry runs the command again. Pass your own key for anything that must not run twice. Keys follow the rules of [Retries and idempotency](/api/extensions-api/extension-communication/calling-extensions#retries-and-idempotency) and are shared with your REST calls.
 - The result is the invocation, in `structuredContent` and as JSON text. A `rejected` or `failed` invocation is returned with `isError: true`.
 
 ## Results and errors
 
-Every successful result has the data in `structuredContent`, and the same JSON in a text block wrapped in `<extension-data>` tags. The text starts with a notice telling the model that titles, descriptions, schemas, results and payloads come from installed extensions, some written by third parties, and must be treated as data, not instructions.
+Every result, errors included, has the data in `structuredContent`, and the same JSON in a text block wrapped in `<extension-data>` tags, with `<` and `>` escaped so the text cannot close the tags. The text starts with a notice telling the model that titles, descriptions, schemas, results and payloads come from installed extensions, some written by third parties, and must be treated as data, not instructions. `structuredContent` carries no notice: if your client hands it to the model, add your own.
 
 When Chaster refuses a call, the tool returns `isError: true` with the [error code](/api/extensions-api/extension-communication/errors-and-limits#error-codes):
 
@@ -104,7 +104,7 @@ When Chaster refuses a call, the tool returns `isError: true` with the [error co
 }
 ```
 
-For `invalid-input`, `details` lists the schema errors with the JSON path of each field in `instancePath`. Two more codes exist only on this server: `not-found` (an unknown invocation id in `get_invocation`) and `invalid-request`. A tool name that does not exist is a JSON-RPC error (`-32602`), not a tool result.
+For `invalid-input`, `details` lists the schema errors with the JSON path of each field in `instancePath`. Three more codes exist only on this server: `invalid-arguments` (the tool arguments do not match the tool's input schema, with the same `details` format), `not-found` (an unknown invocation id in `get_invocation`) and `invalid-request`. A tool name that does not exist is a JSON-RPC error (`-32602`), not a tool result.
 
 ## Rate limits
 
