@@ -18,9 +18,18 @@ Changes to the Public API and the Extensions API, newest first.
   - The size is measured on the JSON encoding of the config. A larger config is refused with `400`
   - The limit applies wherever an extension config is saved, for example when you save a configuration from a configuration token, update the `config` of a session, or set the default config of your extension
 
+**New features**
+
+- Other extensions can call the `start` commands of your extension
+  - Chaster sends them like `control` commands and does not count regular actions for you. If the session limits regular actions, submit one before starting and answer with a refusal on `422`
+  - Every `action.invoke` carries an `operationId` UUID. Reuse it as the `operationId` of the regular action, so in the Schedule mode a retry never counts a second action
+  - Mark the command unavailable when no action is left
+  - Documentation: [Start commands](/api/extensions-api/extension-communication/handling-invocations#start-commands)
+
 **Minor changes**
 
 - `lock.offerToken` is always `null` in the locks sent to extensions (session payloads, `lockForUser` and webhooks)
+- The `start-not-supported` error code is removed
 
 ## 2026-11-05
 

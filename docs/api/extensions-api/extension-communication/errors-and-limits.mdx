@@ -41,7 +41,6 @@ When Chaster refuses a call before running it, it answers with an HTTP error and
 | 422    | `invalid-actor`            | `actor` is `keyholder` on a lock without a keyholder.                                           |
 | 422    | `invalid-causation`        | `causationId` is not an event or invocation your extension can refer to on this lock.           |
 | 422    | `depth-exceeded`           | The chain of calls reached the maximum depth.                                                   |
-| 422    | `start-not-supported`      | `start` commands of partner extensions cannot be called.                                        |
 | 422    | `not-dispatchable`         | The target extension has no endpoint or webhook credentials to receive calls.                   |
 | 422    | `invocable-by-widened`     | An availability push tried to add callers that the manifest does not allow.                     |
 | 429    | `rate-limited`             | A rate limit was reached. See below.                                                            |

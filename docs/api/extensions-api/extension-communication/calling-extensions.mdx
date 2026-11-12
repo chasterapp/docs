@@ -76,6 +76,8 @@ This endpoint also accepts the main page token of your iframe in the `X-Chaster-
 
 Your extension can only call capabilities whose `invocableBy` contains `extension`, on an extension installed on the same lock. The target capability must be available.
 
+A `start` command can count against the target session's regular actions. When none is left, the target extension answers `rejected` or marks the command unavailable.
+
 ### Response
 
 The response is an invocation:
