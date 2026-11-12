@@ -17,7 +17,7 @@ Changes to the Public API and the Extensions API, newest first.
 
 **Minor changes**
 
-- `POST /api/extensions/sessions/:sessionId/mcp` (without `/v2`) is deprecated and will be removed. Its six lock tools map to `invoke_action` with `lock.add-time`, `lock.remove-time`, `lock.freeze`, `lock.unfreeze`, `lock.pillory` and `lock.set-display-remaining-time`
+- `POST /api/extensions/sessions/:sessionId/mcp` (without `/v2`) is deprecated and will be removed. Its six lock tools map to `invoke_action` with `lock.add-time`, `lock.remove-time`, `lock.freeze`, `lock.unfreeze`, `lock.pillory` and `lock.set-display-remaining-time`, whose duration field is `duration` instead of `durationInSeconds`
 
 ## 2026-11-12
 

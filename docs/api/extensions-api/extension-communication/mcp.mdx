@@ -20,7 +20,7 @@ Authenticate with your [developer token](/api/extensions-api/authentication) in 
 The server is stateless: every request is answered on its own, and there is no MCP session to keep alive. It supports the MCP `2026-07-28` revision and 2025 clients on the same URL (Streamable HTTP, `POST` only).
 
 :::caution[Deprecated]
-`POST /api/extensions/sessions/:sessionId/mcp`, without `/v2`, is deprecated. It only exposes six fixed lock tools (`add-time`, `remove-time`, `freeze`, `unfreeze`, `pillory`, `set-display-remaining-time`) that skip the checks above, and it will be removed. Move to `/mcp/v2`: `invoke_action` with `lock.add-time`, `lock.remove-time`, `lock.freeze`, `lock.unfreeze`, `lock.pillory` and `lock.set-display-remaining-time` replaces each of them.
+`POST /api/extensions/sessions/:sessionId/mcp`, without `/v2`, is deprecated. It only exposes six fixed lock tools (`add-time`, `remove-time`, `freeze`, `unfreeze`, `pillory`, `set-display-remaining-time`) that skip the checks above, and it will be removed. Move to `/mcp/v2`: `invoke_action` with `lock.add-time`, `lock.remove-time`, `lock.freeze`, `lock.unfreeze`, `lock.pillory` and `lock.set-display-remaining-time` replaces each of them. Read their input schemas with `describe_actions`: the duration field is `duration`, not `durationInSeconds`.
 :::
 
 ## Tools
@@ -85,6 +85,7 @@ The server sends the same instructions to the model when it connects, and the to
 ```
 
 - `input` defaults to `{}` and can be nested at most 64 levels deep, like the REST `input`.
+- `invoke_action` takes no `causationId`: causation is inferred from the last event delivered to your extension in the previous 10 seconds, as described in [Causation and correlation](/api/extensions-api/extension-communication/calling-extensions#causation-and-correlation). A call refused with `depth-exceeded` counts toward the MCP limits of the extension that started the chain.
 - `idempotencyKey` is optional, 1 to 200 characters. When the model omits it, Chaster generates a new one, so a retry runs the command again. Pass your own key for anything that must not run twice. Keys follow the rules of [Retries and idempotency](/api/extensions-api/extension-communication/calling-extensions#retries-and-idempotency) and are shared with your REST calls.
 - The result is the invocation, in `structuredContent` and as JSON text. A `rejected` or `failed` invocation is returned with `isError: true`.
 
@@ -104,7 +105,7 @@ When Chaster refuses a call, the tool returns `isError: true` with the [error co
 }
 ```
 
-For `invalid-input`, `details` lists the schema errors with the JSON path of each field in `instancePath`. Three more codes exist only on this server: `invalid-arguments` (the tool arguments do not match the tool's input schema, with the same `details` format), `not-found` (an unknown invocation id in `get_invocation`) and `invalid-request`. A tool name that does not exist is a JSON-RPC error (`-32602`), not a tool result.
+For `invalid-input`, `details` lists the schema errors with the JSON path of each field in `instancePath`. Four more codes exist only on this server: `invalid-arguments` (the tool arguments do not match the tool's input schema, with the same `details` format), `not-found` (an unknown invocation id in `get_invocation`), `invalid-request` and `internal-error`. A tool name that does not exist is a JSON-RPC error (`-32602`), not a tool result.
 
 ## Rate limits
 
