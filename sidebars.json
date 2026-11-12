@@ -35,6 +35,7 @@
     "Activity": ["activity/activity"],
     "Extensions": [
       "extensions/extensions",
+      "extensions/schedules",
       "extensions/dice",
       "extensions/guess-the-timer",
       "extensions/penalties",
