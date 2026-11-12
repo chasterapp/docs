@@ -9,10 +9,10 @@ With shared links, share your lock with other people, and ask them to add or rem
 
 Once your session is created, you will be able to send a shared link to everyone, which you can share on social networks, Discord, or anywhere. On this link, visitors will be able to add or remove you from the time, depending on the time set.
 
-You can configure the time added and removed for each vote. You can also propose to the visitor to vote randomly, so he will have a button to make this choice.
+You can configure the time added and removed for each vote. You can also propose to the visitor to vote randomly, so they will have a button to make this choice.
 
 :::info
-Visitors can vote once per day and per IP address.
+Each visitor can vote once a day, until midnight in their time zone. The limit applies per IP address and, for signed-in visitors, per account.
 :::
 
 ## Number of visits required
@@ -33,7 +33,11 @@ Tick **Show on my profile** in the Share links settings when you set up your loc
 
 ![Share links settings with the "Show on my profile" option ticked](/img/shared-links-config-show-on-profile.png)
 
-You can turn it on or off at any time while the lock is running, with the **Show on my profile** switch on the lock's Share links page.
+On a shared lock with the option on, wearers see **Usable from your profile** on the Share links card of the lock page before they join.
+
+![Share links settings on a shared lock page with the "Usable from your profile" chip](/img/shared-links-shared-lock-on-profile-chip.png)
+
+You can turn it on or off at any time while the lock is running, with the **Show on my profile** switch on the lock's Share links page. This switch is only available in the new design of the app.
 
 ![Show on my profile switch below the vote amounts on the Share links page of a running lock](/img/shared-links-extension-page-profile-switch.png)
 
@@ -45,12 +49,12 @@ While the lock is running, visitors see "You can change this lock's time" on the
 
 After a vote, the visitor sees a confirmation, then "You can vote again in..." until their next vote is allowed.
 
-![Confirmation "You added 1 hour!" and the "You can vote again in 5 hours" chip on the profile lock card](/img/shared-links-profile-vote-cooldown.png)
+![Confirmation "You added 1 hour!" and the "You can vote again in 3 hours" chip on the profile lock card](/img/shared-links-profile-vote-cooldown.png)
 
-Votes from the profile follow the same rules as votes from the link: the same amounts of time, the same limit of one vote per day, and the same signed-in restriction if you enabled it. They count toward the number of visits required.
+Votes from the profile follow the same rules as votes from the link: the same amounts of time, the same daily limit counted per account and per IP address, and the same signed-in restriction if you enabled it. They count toward the number of visits required.
 
 ### Who can change it
 
-The **Show or hide the shared link on the wearer's profile** [permission](/locks/permissions) decides who can turn the option on or off. By default, only the wearer can. Under the Full trust preset, or with a custom contract that grants this permission, the keyholder can too.
+The **Show or hide the shared link on the wearer's profile** [permission](/locks/permissions) decides who can turn the option on or off. By default, only the wearer can. Under the Full trust preset, or with a custom contract that grants this permission, the keyholder can too. If a custom contract has no setting for this permission, only the wearer holds it.
 
 ![Extensions section of the lock permissions with the "Show or hide the shared link on the wearer's profile" row](/img/shared-links-permission-row.png)
