@@ -37,9 +37,13 @@ On a shared lock with the option on, wearers see **Usable from your profile** on
 
 ![Share links settings on a shared lock page with the "Usable from your profile" chip](/img/shared-links-shared-lock-on-profile-chip.png)
 
-You can turn it on or off at any time while the lock is running, with the **Show on my profile** switch on the lock's Share links page. This switch is only available in the new design of the app.
+You can turn it on or off at any time while the lock is running, with the **Show on my profile** switch on the lock's Share links page. The switch follows the permission described in [Who can change it](#who-can-change-it).
 
 ![Show on my profile switch below the vote amounts on the Share links page of a running lock](/img/shared-links-extension-page-profile-switch.png)
+
+Anyone with the **Manage extensions** [permission](/locks/permissions) can also change it in the Share links settings: open **Extension settings**, then **Edit extensions**, then configure Share links. Under the Standard preset, no one holds this permission.
+
+![Share links settings with the "Show on my profile" option ticked, above the Cancel and Save buttons](/img/shared-links-running-config-show-on-profile.png)
 
 ### Voting from the profile
 
@@ -55,6 +59,6 @@ Votes from the profile follow the same rules as votes from the link: the same am
 
 ### Who can change it
 
-The **Show or hide the shared link on the wearer's profile** [permission](/locks/permissions) decides who can turn the option on or off. By default, only the wearer can. Under the Full trust preset, or with a custom contract that grants this permission, the keyholder can too. If a custom contract has no setting for this permission, only the wearer holds it.
+The **Show or hide the shared link on the wearer's profile** [permission](/locks/permissions) decides who can use the switch on the Share links page. By default, only the wearer can. Under the Full trust preset, or with a custom contract that grants this permission, the keyholder can too. If a custom contract has no setting for this permission, only the wearer holds it. Anyone with **Manage extensions** can also change the option from **Extension settings**.
 
 ![Extensions section of the lock permissions with the "Show or hide the shared link on the wearer's profile" row](/img/shared-links-permission-row.png)
