@@ -20,3 +20,37 @@ Visitors can vote once per day and per IP address.
 You can force yourself to share the link and your session with as many people as possible by activating the required number of visits. You will then need to reach the number of votes configured before normal unlocking. An enabled [emergency unlock](/locks/emergency-unlock) can still end the session without those votes.
 
 Finally, you can limit the votes only to logged-in users.
+
+## Show on my profile
+
+:::caution Feature preview
+Showing a shared link on your profile is being rolled out progressively. You may not see this option in the app yet.
+:::
+
+With **Show on my profile**, anyone visiting your profile can add or remove time from your lock, without opening the shared link.
+
+Tick **Show on my profile** in the Share links settings when you set up your lock. When a keyholder configures the lock, the option reads **Show on the wearer's profile**.
+
+![Share links settings with the "Show on my profile" option ticked](/img/shared-links-config-show-on-profile.png)
+
+You can turn it on or off at any time while the lock is running, with the **Show on my profile** switch on the lock's Share links page.
+
+![Show on my profile switch under "Your link" on the Share links page of a running lock](/img/shared-links-extension-page-profile-switch.png)
+
+### Voting from the profile
+
+While the lock is running, visitors see "You can change this lock's time" on the lock card of your profile, with buttons to add or remove time, and a random button if you allowed it.
+
+![Lock card on a profile with the "You can change this lock's time" strip and its add, remove and random buttons](/img/shared-links-profile-vote-bar.png)
+
+After a vote, the visitor sees a confirmation, then "You can vote again in..." until their next vote is allowed.
+
+![Confirmation "You added 1 hour!" and the "You can vote again in 5 hours" chip on the profile lock card](/img/shared-links-profile-vote-cooldown.png)
+
+Votes from the profile follow the same rules as votes from the link: the same amounts of time, the same limit of one vote per day, and the same signed-in restriction if you enabled it. They count toward the number of visits required.
+
+### Who can change it
+
+The **Show or hide the shared link on the wearer's profile** [permission](/locks/permissions) decides who can turn the option on or off. By default, only the wearer can. Under the Full trust preset, or with a custom contract, the keyholder can too.
+
+![Extensions section of the lock permissions with the "Show or hide the shared link on the wearer's profile" row](/img/shared-links-permission-row.png)
