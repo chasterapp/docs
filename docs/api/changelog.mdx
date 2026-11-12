@@ -16,11 +16,11 @@ Changes to the Public API and the Extensions API, newest first.
   - Documentation: [Lock events](/api/extensions-api/extension-communication/lock-events#receive-events)
 - Each extension config is limited to 2 MB
   - The size is measured on the JSON encoding of the config. A larger config is refused with `400`
-  - The limit applies when you save a configuration from a configuration token, update the `config` of a session, or set the default config of your extension
+  - The limit applies wherever an extension config is saved, for example when you save a configuration from a configuration token, update the `config` of a session, or set the default config of your extension
 
 **Minor changes**
 
-- `lock.offerToken` is always `null` in the locks sent to extensions (session payloads and webhooks)
+- `lock.offerToken` is always `null` in the locks sent to extensions (session payloads, `lockForUser` and webhooks)
 
 ## 2026-11-05
 

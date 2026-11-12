@@ -24,7 +24,8 @@ Open points settled:
 
 - `user` is `null` when the stored row has no user document (for example an event created without a user, or a user that cannot be populated). The page says "or `null` when the event has no user".
 - `role: user` means the wearer, per the notification service.
-- The cap also covers lock creation and extension edits, and lock/template token creation intentionally skips it (`partner-configuration-creation.service.ts` comment). The changelog lists only the three partner-facing places and does not describe stored oversized configs.
+- The cap is also asserted in lock creation, extension edits and validation, and partner configuration creation (it checks the extension default config). Only lock and template tokens copy a stored config and stay uncapped (`partner-configuration-creation.service.ts` comment). The changelog therefore says "wherever an extension config is saved, for example" the three partner-facing places, and does not describe stored oversized configs.
+- Round 1 review: `lockForUser` in `GET /api/extensions/auth/sessions/:mainToken` is built with `lockForPartner` (`partner-main-authorization.service.ts:183`), so the `offerToken` line names it.
 
 ## Checks
 

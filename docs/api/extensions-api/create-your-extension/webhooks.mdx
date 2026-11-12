@@ -209,7 +209,7 @@ flowchart LR
 | Visible history entries | Yes | Yes, depending on subscriptions |
 | Hidden events | No | Yes, depending on subscriptions |
 | Entries created by your own extension | Yes | No, unless you subscribe to them |
-| Fields in `data` | `actionLog` | `eventId`, `seq`, `type`, `payload`, `source`, `correlationId`, `causationId`, `role`, `user`, `createdAt` |
+| Fields in `data` | `actionLog` | `eventId`, `sessionId`, `seq`, `type`, `payload`, `source`, `correlationId`, `causationId`, `role`, `user`, `createdAt` |
 
 For the same history entry, `data.eventId` of `lock_event.created` equals `data.actionLog._id` of `action_log.created`, and both deliveries carry the same `X-Chaster-Event-Id`. `lock_event.created` has no `actionLog` and no rendered history text: use `action_log.created` to display history entries.
 

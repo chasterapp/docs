@@ -55,7 +55,7 @@ Chaster sends a `lock_event.created` webhook to your webhook URL for each event 
 | `correlationId` | The chain the event belongs to, or `null`.                                                        |
 | `causationId`   | The event or invocation that caused this event, or `null`.                                        |
 | `role`          | Who created the event: `user` (the wearer), `keyholder`, `extension` or `admin`.                  |
-| `user`          | The user who created the event, as `{ "_id", "username" }`, or `null` when the event has no user. |
+| `user`          | The user who created the event, as `{ "_id", "username" }`, or `null` when the event has no user or the user cannot be found. |
 | `createdAt`     | When the event was written, as an ISO 8601 date.                                                  |
 
 ### Choose which events you receive
