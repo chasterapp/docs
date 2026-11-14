@@ -77,7 +77,7 @@ You build an extension that assigns a task each time the Wheel of Fortune lands.
 - **Let other extensions use yours**: publish a [manifest](/api/extensions-api/extension-communication/manifest) and [answer invocations](/api/extensions-api/extension-communication/handling-invocations).
 - **Announce your own events**: emit typed events that other extensions can subscribe to. See [Emit an event](/api/extensions-api/extension-communication/lock-events#emit-an-event).
 
-The manifest of any published extension is available without authentication at `GET /api/extensions/:slug/manifest`.
+The manifest of any published extension is available without authentication at `GET /api/extensions/:slug/manifest`. You can also read it on the extension page: open the extension from the [extension list](https://chaster.app/extensions) and scroll to **For developers**, which lists its commands, queries and events with their fields, examples and JSON Schema.
 
 :::info
 All requests in this section use your developer token, like the rest of the Extensions API. See [Authentication](/api/extensions-api/authentication). Errors and rate limits are listed in [Errors and limits](/api/extensions-api/extension-communication/errors-and-limits).
