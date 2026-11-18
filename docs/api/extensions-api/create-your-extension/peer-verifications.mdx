@@ -209,7 +209,7 @@ For `visibility: "all_members"`, community voting lasts `delay` seconds: an inte
 
 A community timeout with zero votes produces `verified`. It does not invent approvals for unanswered criteria: their counts stay zero.
 
-For `visibility: "keyholder"`, the eligible keyholder reviews the image. There is no timeout. Valid community `delay` and `maxVotes` values are ignored for that audience, and history shows `endsAt: null` and `maxVotes: null`. A missing or ineligible keyholder returns 409, with no community fallback or automatic success.
+For `visibility: "keyholder"`, the eligible keyholder reviews the image. The review ends 7 days after creation: from its votes if there are any, otherwise as `unavailable` with `unavailableReason: "expired"`, which runs no rejection action. History shows that time as `endsAt`. A vote cast after the end is refused with 409. Valid community `delay` and `maxVotes` values are ignored for that audience, and history shows `maxVotes: null`. A missing or ineligible keyholder returns 409, with no community fallback or automatic success.
 
 ## Search all session history
 

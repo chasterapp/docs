@@ -284,7 +284,7 @@ This complete synthetic envelope shows a rejected review:
 }
 ```
 
-`status` is `verified` or `rejected`. `endedAt` is the stored verdict time; `sentAt` is the time of this delivery attempt. `requestId` also changes on retry, so use it for attempt diagnostics, not business deduplication. The payload contains no image bytes, private URLs, attachment tokens or voter identities.
+`status` is `verified`, `rejected` or `unavailable`. An `unavailable` review adds `unavailableReason`: `expired` when nobody reviewed an assigned review within 7 days of its creation (see [audience and completion rules](/api/extensions-api/create-your-extension/peer-verifications#audience-and-completion-rules)). It has zero `voteCounts` and no rejection actions run. `endedAt` is the stored verdict time; `sentAt` is the time of this delivery attempt. `requestId` also changes on retry, so use it for attempt diagnostics, not business deduplication. The payload contains no image bytes, private URLs, attachment tokens or voter identities.
 
 Deduplicate your durable partner work by `(data.peerVerificationId, event)`, for example `000000000000000000000301:peer_verification.ended`. After authenticating and validating the envelope, atomically accept that key and payload into your own durable inbox, then return a prompt 2xx acknowledgment. Process accepted work once according to your own storage/worker guarantees. Duplicate deliveries should receive a successful acknowledgment without repeating your business work. Do not mark work complete before it is durably accepted.
 
