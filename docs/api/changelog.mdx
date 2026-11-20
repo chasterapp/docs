@@ -9,10 +9,10 @@ Changes to the Public API and the Extensions API, newest first.
 
 **Deprecations**
 
-- The `submit` and `keyholderOpen` actions of the Hygiene opening extension on `POST /api/locks/:lockId/extensions/:extensionId/action` are deprecated and will be removed on 2027-02-18
-  - Call `POST /api/extensions/temporary-opening/:lockId/open` instead, with the wearer's token where you used `submit` and the keyholder's token where you used `keyholderOpen`. It needs the same `locks:write` scope
-  - The body is optional and accepts `extensionId` and `operationId` (a UUID)
-  - Until the removal, responses to these two actions carry a `Deprecation` header and a `Sunset` header with the removal date
+- The `submit` and `keyholderOpen` actions of the Hygiene opening extension on `POST /locks/:lockId/extensions/:extensionId/action` are deprecated and will be removed on 2027-02-18
+  - Call `POST /extensions/temporary-opening/:lockId/open` instead, with the wearer's token where you used `submit` and the keyholder's token where you used `keyholderOpen`. It needs the same `locks:write` scope
+  - The body accepts `extensionId`, the `:extensionId` of the old path, and `operationId`, a UUID. A wearer must send `operationId` when the lock is in Schedule mode
+  - With an upcoming server update, calls to these two actions will also return a `Deprecation` header and a `Sunset` header with the removal date
 
 ## 2026-11-13
 
