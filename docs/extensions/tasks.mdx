@@ -36,6 +36,18 @@ When using community verification, a verification request lasts up to the config
 
 For more information about how verification works, including the validation process and requirements for each mode, refer to the [Verification](/features/verification) documentation.
 
+### Experimental AI review
+
+Experimental AI review is available when the current wearer or current keyholder belongs to the eligible cohort. An eligible wearer can use it without a keyholder. Availability is evaluated for each request, regardless of saved review settings, and checked again during processing.
+
+:::caution Experimental AI review
+AI review is experimental. Your image is sent to an external AI service for processing. AI can make mistakes, and a rejected review can trigger configured punishments.
+:::
+
+AI has no community voting window. A completed review can be verified or rejected. If processing fails after bounded retries, or eligibility is lost before completion, the review can become unavailable. Unavailable is a processing outcome, not a failed check: it causes no rejection punishment, automatic validation or switch to community or keyholder review.
+
+With AI review, task completion and any configured points still require a verified result. An unavailable review does not grant points or complete the task.
+
 ### Tasks
 
 Configure the tasks you would like to do during your session. For each task, you can specify:
@@ -105,6 +117,7 @@ To complete a task:
 3. If verification is enabled and required, wait for validation:
    - **Community verification**: Wait for the community to validate your submission. Verification lasts up to the configured voting duration, so your points will be granted once the verification is accepted.
    - **Keyholder verification**: Wait for your keyholder to review and approve your submission.
+   - **AI review**: Wait for a verified result. An unavailable result does not complete the task or grant points.
 4. If no verification is required, simply mark the task as complete.
 
 If task points are enabled, you will earn the configured points upon successful completion. When you reach the target number of points required, your lock will be unlocked.

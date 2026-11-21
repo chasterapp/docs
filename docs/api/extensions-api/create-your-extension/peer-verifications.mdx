@@ -3,7 +3,7 @@ title: Standalone peer reviews
 sidebar_label: Standalone peer reviews
 ---
 
-Create a standalone review of a privately uploaded image from your extension backend. Chaster presents the checks to the community or an eligible keyholder, stores the verdict and runs your configured rejection actions. Neither the native Verification Picture extension nor the Penalties extension is required.
+Create a standalone review of a privately uploaded image from your extension backend. Chaster presents the checks to the community, an eligible keyholder or experimental AI, stores the verdict and runs your configured rejection actions. Neither the native Verification Picture extension nor the Penalties extension is required.
 
 This differs from [requesting a native verification picture](/api/extensions-api/interact-with-extensions/verification-picture), which asks the wearer to submit a photo through that extension. Here, your backend already has the image and creates its own review.
 
@@ -211,6 +211,140 @@ A community timeout with zero votes produces `verified`. It does not invent appr
 
 For `visibility: "keyholder"`, the eligible keyholder reviews the image. There is no timeout. Valid community `delay` and `maxVotes` values are ignored for that audience, and history shows `endsAt: null` and `maxVotes: null`. A missing or ineligible keyholder returns 409, with no community fallback or automatic success.
 
+## Experimental AI reviews
+
+Use `visibility: "ai"` on the same standalone creation endpoint for built-in `task`, `chastity_device` or `bondage` checks, or generic checks. The declared kind, active-lock ownership, authentication and wearer suspension restrictions still apply.
+
+:::caution Experimental AI review
+AI review is experimental. Your image is sent to an external AI service for processing. AI can make mistakes, and a rejected review can trigger configured punishments.
+:::
+
+Display an equivalent warning before photo capture or submission in your partner-owned interface. Chaster cannot enforce that warning in a third-party interface. Explain the configured rejection actions before the wearer submits their image.
+
+AI is available when the current wearer **or** current keyholder belongs to the eligible experimental cohort. An eligible wearer does not need a keyholder. Eligibility is evaluated on every request, regardless of stored configuration, developer identity or an earlier availability response, and is checked again during processing.
+
+This synthetic built-in request uses a task criterion. Replace `SYNTHETIC_ATTACHMENT_TOKEN` with the signed attachment credential from your private upload:
+
+```json
+{
+  "verificationTypeKey": "photo",
+  "attachmentToken": "SYNTHETIC_ATTACHMENT_TOKEN",
+  "visibility": "ai",
+  "checks": [
+    {
+      "name": "task",
+      "task": "Show the requested item"
+    }
+  ]
+}
+```
+
+This independent generic alternative preserves its custom criterion ID and exact reason set:
+
+```json
+{
+  "verificationTypeKey": "photo",
+  "attachmentToken": "SYNTHETIC_ATTACHMENT_TOKEN",
+  "visibility": "ai",
+  "checks": [
+    {
+      "name": "generic",
+      "id": "seal",
+      "title": "Seal",
+      "description": "Inspect",
+      "rejectionReasons": [
+        {
+          "slug": "unclear",
+          "text": "Seal unclear"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Generic IDs, criterion-local custom reasons and stored source identity have the same meaning as in human reviews. Do not substitute built-in reason slugs for your generic reasons. Chaster selects the model and provider through backend operational configuration; partners submit no model or provider field.
+
+The generic request returns **201 Created** with this ongoing response:
+
+```json
+{
+  "_id": "000000000000000000000002",
+  "status": "ongoing",
+  "checks": [
+    {
+      "name": "generic",
+      "id": "seal",
+      "title": "Seal",
+      "description": "Inspect",
+      "rejectionReasons": [
+        {
+          "slug": "unclear",
+          "text": "Seal unclear"
+        }
+      ]
+    }
+  ],
+  "punishments": [],
+  "createdAt": "2026-10-08T12:00:00.000Z",
+  "endsAt": null,
+  "endedAt": null,
+  "source": {
+    "extensionId": "000000000000000000000003",
+    "slug": "synthetic-partner",
+    "displayName": "Synthetic partner",
+    "sourceSessionId": "synthetic-origin",
+    "isDevelopedByCommunity": true
+  },
+  "verificationType": {
+    "key": "photo",
+    "label": "Photo"
+  },
+  "nbVerifiedVotes": 0,
+  "nbRejectedVotes": 0,
+  "rejectionReasons": [],
+  "checkResults": [
+    {
+      "checkId": "seal",
+      "name": "generic",
+      "checkIndex": 0,
+      "subcheckName": "generic",
+      "nbVerifiedVotes": 0,
+      "nbRejectedVotes": 0,
+      "rejectionReasons": []
+    }
+  ]
+}
+```
+
+AI has no community voting timer or quorum. Valid human `delay` and `maxVotes` settings are ignored: creation has `endsAt: null`, and history has `maxVotes: null`. Save the returned `_id` just as for a human review.
+
+When neither participant qualifies, creation returns **403 Forbidden**:
+
+```json
+{
+  "statusCode": 403,
+  "message": "AI review is unavailable for this lock.",
+  "error": "Forbidden"
+}
+```
+
+This eligibility check happens before attachment validation, review creation, changes to media expiry/retention or queueing. No review or processing job is created and the original image expiry is unchanged. There is no keyholder or community fallback.
+
+Choosing `visibility: "keyholder"` still returns **409 Conflict** when that reviewer is missing or ineligible:
+
+```json
+{
+  "statusCode": 409,
+  "message": "Keyholder reviewer is unavailable",
+  "error": "Conflict"
+}
+```
+
+Chaster makes bounded AI processing retries. Failed or exhausted processing can end as `unavailable`; loss of eligibility before completion can do the same. A validated AI rejection remains `rejected` and can trigger the snapshotted punishments. It is not a processing error to retry. There is no automatic approval, rejection or human fallback for an unavailable result.
+
+Processing retries are separate from webhook delivery retries and your creation requests. Do not blindly retry a disconnected or failed creation POST: it may have persisted a review, and resubmitting can create a duplicate. Save any returned ID, inspect history and assess duplication before deciding whether to submit again. History cannot prove exact request correlation.
+
 ## Search all session history
 
 `POST /api/extensions/sessions/:sessionId/peer-verifications/search` returns **200 OK**, scoped to both the creating partner and session. History remains readable after lock end while that session exists; a deleted session returns 404.
@@ -220,7 +354,7 @@ For all statuses and kinds, including retired kinds, send `{}`. Omitted or empty
 ```json
 {
   "criteria": {
-    "statuses": ["ongoing", "verified", "rejected"],
+    "statuses": ["ongoing", "verified", "rejected", "unavailable"],
     "verificationTypeKeys": ["photo"]
   },
   "limit": 1
@@ -342,7 +476,7 @@ Only if `hasMore` is true, send the returned `nextCursor` as `cursor` in the nex
 ```json
 {
   "criteria": {
-    "statuses": ["ongoing", "verified", "rejected"],
+    "statuses": ["ongoing", "verified", "rejected", "unavailable"],
     "verificationTypeKeys": ["photo"]
   },
   "limit": 1,
@@ -363,12 +497,148 @@ The criterion result shapes differ by surface:
 
 Preserve `checkId`, `checkIndex` and `subcheckName`. Creation/webhook `name` is the family; history `name` is the subcheck name. For generic checks, both names are `generic`. Counts belong to each criterion, including when reason slugs repeat. The example's seal has three approvals while the date has two: the overall review is rejected with only two approving votes out of three.
 
+### Unavailable AI outcomes
+
+History filters accept `ongoing`, `verified`, `rejected` and `unavailable`; use `{}` to include all statuses and kinds. Continue pagination with the same filters, including `unavailable` when you need it.
+
+An unavailable review is terminal with an `endedAt`, zero overall and criterion counts, and empty counted rejection reasons. Its declared `checks[].rejectionReasons` remain stored. It causes no rejection punishment and does not automatically approve, reject or switch to a human audience. Real `verified` and `rejected` outcomes keep their existing semantics.
+
+These are **independent alternatives**, reusing a synthetic review ID to illustrate two possible outcomes, not successive states of one review. Each is a complete final page with `hasMore: false` and no `nextCursor`.
+
+`provider_error` indicates failed or exhausted AI processing:
+
+```json
+{
+  "results": [
+    {
+      "_id": "000000000000000000000002",
+      "status": "unavailable",
+      "checks": [
+        {
+          "name": "generic",
+          "id": "seal",
+          "title": "Seal",
+          "description": "Inspect",
+          "rejectionReasons": [
+            {
+              "slug": "unclear",
+              "text": "Seal unclear"
+            }
+          ]
+        }
+      ],
+      "punishments": [],
+      "createdAt": "2026-10-08T12:00:00.000Z",
+      "endsAt": null,
+      "endedAt": "2026-10-08T12:01:00.000Z",
+      "source": {
+        "extensionId": "000000000000000000000003",
+        "slug": "synthetic-partner",
+        "displayName": "Synthetic partner",
+        "sourceSessionId": "synthetic-origin",
+        "isDevelopedByCommunity": true
+      },
+      "verificationType": {
+        "key": "photo",
+        "label": "Photo"
+      },
+      "nbVerifiedVotes": 0,
+      "nbRejectedVotes": 0,
+      "rejectionReasons": [],
+      "checkResults": [
+        {
+          "checkId": "seal",
+          "checkIndex": 0,
+          "subcheckName": "generic",
+          "name": "generic",
+          "approved": 0,
+          "rejected": 0,
+          "rejectionReasons": []
+        }
+      ],
+      "unavailableReason": "provider_error",
+      "maxVotes": null,
+      "voteCounts": {
+        "verified": 0,
+        "rejected": 0
+      }
+    }
+  ],
+  "hasMore": false
+}
+```
+
+`eligibility_revoked` indicates cohort access was lost before completion:
+
+```json
+{
+  "results": [
+    {
+      "_id": "000000000000000000000002",
+      "status": "unavailable",
+      "checks": [
+        {
+          "name": "generic",
+          "id": "seal",
+          "title": "Seal",
+          "description": "Inspect",
+          "rejectionReasons": [
+            {
+              "slug": "unclear",
+              "text": "Seal unclear"
+            }
+          ]
+        }
+      ],
+      "punishments": [],
+      "createdAt": "2026-10-08T12:00:00.000Z",
+      "endsAt": null,
+      "endedAt": "2026-10-08T12:01:00.000Z",
+      "source": {
+        "extensionId": "000000000000000000000003",
+        "slug": "synthetic-partner",
+        "displayName": "Synthetic partner",
+        "sourceSessionId": "synthetic-origin",
+        "isDevelopedByCommunity": true
+      },
+      "verificationType": {
+        "key": "photo",
+        "label": "Photo"
+      },
+      "nbVerifiedVotes": 0,
+      "nbRejectedVotes": 0,
+      "rejectionReasons": [],
+      "checkResults": [
+        {
+          "checkId": "seal",
+          "checkIndex": 0,
+          "subcheckName": "generic",
+          "name": "generic",
+          "approved": 0,
+          "rejected": 0,
+          "rejectionReasons": []
+        }
+      ],
+      "unavailableReason": "eligibility_revoked",
+      "maxVotes": null,
+      "voteCounts": {
+        "verified": 0,
+        "rejected": 0
+      }
+    }
+  ],
+  "hasMore": false
+}
+```
+
+The optional reason belongs to the history row (`results[i].unavailableReason`) and is emitted only for `unavailable`. History criterion totals remain `approved` and `rejected`; criterion reason totals remain `count`. Partner results contain no private feedback or machine-voter, model, provider or prompt provenance.
+
 ## Errors
 
 | Status | Situation                                                                                                                                                                                   |
 | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 400    | Invalid request, undeclared kind, invalid checks/actions, or inactive lock on creation (`You cannot modify an unlocked lock.`). Invalid history filters, limits or cursors also return 400. |
-| 403    | Wearer suspended from peer verifications, or invalid/expired attachment credential (including native upload tokens).                                                                        |
+| 403    | AI cohort eligibility unavailable, wearer suspended from peer verifications, or invalid/expired attachment credential (including native upload tokens).                                     |
 | 404    | Foreign, expired, missing or deleted attachment resource; missing/deleted or unauthorized session.                                                                                          |
 | 409    | Requested keyholder reviewer is missing or ineligible.                                                                                                                                      |
 

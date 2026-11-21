@@ -20,6 +20,16 @@ You can enable verification to require that your submitted images are reviewed a
 
 To learn more about how verification works, including the validation process and requirements for each mode, refer to the [Verification](/features/verification) documentation.
 
+### Experimental AI review
+
+Experimental AI review is available when the current wearer or current keyholder belongs to the eligible cohort. An eligible wearer can use it without a keyholder. Availability is evaluated for each request, regardless of saved review settings, and checked again during processing.
+
+:::caution Experimental AI review
+AI review is experimental. Your image is sent to an external AI service for processing. AI can make mistakes, and a rejected review can trigger configured punishments.
+:::
+
+AI has no community voting window. A completed review can be verified or rejected. If processing fails after bounded retries, or eligibility is lost before completion, the review can become unavailable. Unavailable is a processing outcome, not a failed check: it causes no rejection punishment, automatic validation or switch to community or keyholder review.
+
 ## Initial verification
 
 You can enable the "Require an initial verification" option to automatically request a verification picture as soon as the lock starts. This lets you prove that you are locked from the very beginning of your session, without waiting for your keyholder to ask for a verification.
