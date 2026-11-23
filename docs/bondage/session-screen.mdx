@@ -41,7 +41,7 @@ From top to bottom:
 - **Timer**: the **Time remaining** until the end of your lock. The timer reads **Frozen** with a snowflake when your timer is frozen.
 - **Locked**: how long you have been locked.
 - **Ends**: when your lock ends: a time if it's today, a weekday and time within the week, a date otherwise. It is hidden when the timer is frozen or hidden, and on small phones.
-- **Events**: what just happened on your lock: time added or removed, freeze, extensions, tasks, verification pictures, votes. Larger screens show a board of recent events; phones show the latest one.
+- **Events**: what just happened on your lock: time added or removed, freeze, extensions, tasks, verification pictures, votes. Most screens show a list of recent events, latest first; on small phones, only the latest one fits.
 - **Emergency release** and **Check-in** buttons, at the bottom where they are easy to reach. The check-in button shows the time left before your next check-in.
 
 On a tablet or computer, the same screen uses the extra space for a board you can read from a distance.
@@ -62,7 +62,7 @@ When the dead man's switch is on, the screen asks you to confirm you're OK at th
 
 1. The **Check-in** button counts down to the next check-in. You can tap it at any time to check in early and restart the interval.
 2. When the interval is up, the screen switches to **Safety check-in required**, with a **Confirm within** countdown: "Confirm you're OK to keep the session going."
-3. Tap **I'm OK**. The countdown resets, and the voice confirms when the next check-in is due.
+3. Tap **I'm OK**. The countdown resets and a tone confirms it. With **Spoken detail** on, the voice also says when the next check-in is due.
 4. If the grace period runs out without an answer, the lock is released ("Check-in missed. Releasing the lock.") and the screen shows your combination.
 
 <img src="/img/bondage-session-checkin-alarm.png" alt={`Safety check-in required screen`} className="img-phone" />
@@ -88,11 +88,11 @@ With sound on, the countdown ticks, louder in the last 5 seconds, and the voice 
 
 This differs from [emergency unlock](/locks/emergency-unlock) on a chastity lock: you don't type the confirmation phrase (it is only shown, as your safe phrase), you can't leave a message, and the countdown gives you a chance to cancel. Like a chastity emergency unlock, it is recorded in the lock history and your keyholder is notified.
 
-If your keyholder turns emergency unlock off during the countdown, the countdown stops and you go back to the session. A check-in that falls due during the countdown waits until you cancel it.
+If your keyholder turns emergency unlock off during the countdown, the countdown stops and you go back to the session. A check-in that falls due during the countdown only shows its prompt once you cancel, but its grace period keeps running: if it runs out first, you are released.
 
 ## End of the timer
 
-When your timer ends (or the maximum lock time is reached), what happens depends on **Automatic unlock**:
+When your lock is ready to unlock, what happens depends on **Automatic unlock**. The lock is ready when the timer has ended and nothing else holds it (a frozen timer, an extension, a minimum lock time), or as soon as the maximum lock time is reached.
 
 - **On** (default): the screen unlocks you by itself, within seconds, and shows your combination. If it can't reach Chaster, it retries.
 - **Off**: the screen shows **Ready to unlock**, "Your timer is up. Unlock to reveal your combination." Tap **Unlock**.

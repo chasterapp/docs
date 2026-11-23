@@ -58,13 +58,13 @@ The dead man's switch doesn't depend on emergency unlock: a missed check-in rele
 
 ## Maximum lock time
 
-A bondage lock must have a maximum lock time. In the duration settings, turn on **Limit lock time** and set a maximum at least as long as the maximum duration of the lock (or, for a lock using dates, a maximum date at least as late as the latest end date). Without it, the lock can't be created and you see:
+A bondage lock must have a maximum lock time. In the duration settings, make sure **Limit lock time** is on and set a maximum at least as long as the maximum duration of the lock (or, for a lock using dates, a maximum date at least as late as the latest end date). Without it, the lock can't be created and you see:
 
 > Bondage locks require a maximum lock time at least as long as the maximum duration.
 
 ![Duration settings with Limit lock time turned on for a bondage lock](/img/bondage-create-max-lock-time.png)
 
-The maximum lock time is your guarantee that the session ends, whatever happens to the timer: time added by your keyholder, votes, extensions, or a frozen timer. Once it is reached, the lock is ready to unlock even if the timer is frozen.
+The maximum lock time caps the session, whatever happens to the timer: time added by your keyholder, votes, extensions, or a frozen timer. Once it is reached, the lock is ready to unlock even if the timer is frozen or an extension is holding it. The release itself still happens on the [session screen](/bondage/session-screen#end-of-the-timer): it needs a connection, and a tap if automatic unlock is off.
 
 During the lock, the maximum lock time can be pushed later, but never removed: "The maximum lock time of a bondage lock cannot be removed." See [Lock permissions](/locks/permissions#direction-rules).
 
@@ -72,7 +72,7 @@ During the lock, the maximum lock time can be pushed later, but never removed: "
 
 After **Continue**, the recap step shows a bondage safety summary with **Emergency release**, **Safety check-ins** and **Automatic unlock**, each **On** or **Off**:
 
-- "Check-in every 5 min. If you don't confirm within 2 min, an emergency release is triggered."
+- "Check-in every 5 minutes. If you don't confirm within 2 minutes, an emergency release is triggered."
 - "Once the lock starts, open the session screen from the lock card. These safety settings only apply there."
 
 ![Onboarding recap with the bondage safety summary](/img/bondage-onboarding-recap.png)
