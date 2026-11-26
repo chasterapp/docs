@@ -11,13 +11,15 @@ Paths relative to `server/src/modules/` on chaster `main`.
 | `type` is `locking_method_released` / `locking_method_released_by_support` | `extension-manifest/data/event-type-aliases.ts` (default-prefix aliases); `lock-event-delivery/jobs/fan-out-lock-event.job.integration.test.ts` asserts `data.type` for both (`it.each`) |
 | Recovery row: `role: user`, `cause: recovery` | `lock/services/locking-method-release-event.service.test.ts` (`type: "locking_method_released"`, `role: "user"`, `payload: { cause: "recovery", lockingMethodKind: "combination" }`); `CAUSE_BY_TYPE` in `locking-method-release-event.service.ts` |
 | Support row: `role: admin`, `cause: support` | `lock-admin/controllers/lock-admin-release-locking-method.test.ts` (`role: "admin"`, `payload: { cause: "support", lockingMethodKind: "combination" }`) |
-| Support release on a locked lock also adds an `unlocked` event | same test: `rows(lock, "unlocked")` has length 1 |
-| `user` of the support row is the staff account | `userId: event.by` in `drain`; the admin test passes `by: staff._id` |
-| `lockingMethodKind` is `device`, else `combination`, else `partner` | `lock/helpers/locking-method-kind-of.ts`; enum in `lock/models/locking-method-for-public.model.ts` |
+| Support release on a locked lock also writes an `unlocked` history entry first (not a stream event type: it arrives with `type: null`) | same test: `rows(lock, "unlocked")` has length 1; `UnlockLockService`; `resolveEventType` has no alias for it |
+| `lockingMethodKind` is `device`, else `combination`, else `partner`; `partner` = locking provider extension, `device` = device paired with Chaster | `lock/helpers/locking-method-kind-of.ts`; enum in `lock/models/locking-method-for-public.model.ts` |
 | Payload has exactly `cause` and `lockingMethodKind` | `drain` entry payload; fan-out test asserts `payload: { cause, lockingMethodKind }` by equality |
-| No list or `["*"]` receives both; a list receives them only if it names them | fan-out test: legacy and listed partners get attempts, the partner whose list omits the type does not |
-| Both are visible history entries (also `action_log.created`) | `action-log/data/common-actions.ts` entries (titles and templates, not hidden) |
+| No list or `["*"]` receives both; a list cannot name them yet | fan-out test inserts subscriptions directly; but `isManifestId` (`extension-manifest/helpers/manifest-id.ts`) requires `<slug>.<kebab-name>` in `partner-extension-manifest.service.ts:84`, `webhook-console.service.ts:327` and `PutSessionSubscriptionsDto`, so snake_case names return `400 invalid-id` |
+| A session's own list replaces the extension setting | existing page text (`Per session`) |
+| Both are visible history entries (also `action_log.created`, unless `actionLogFeed` is `false`) | `action-log/data/common-actions.ts` entries (titles and templates, not hidden) |
 | Recovery applies to a deserted lock | `recoverCombination` in `lock/lock.service.ts` filters `status: Deserted` |
+
+Round 1 rework (review findings F1 to F4): the manifest instruction was removed (F1), `unlocked` reworded (F2), `device`/`partner` defined (F3), the staff-account sentence dropped as unverified (F4). The rework adds no link or heading, so the build result above still applies; `git diff --check` and the lint hook were rerun.
 
 Example payloads are the test values; `eventId`, `seq`, `user` and dates are synthetic, in the style of the existing example.
 

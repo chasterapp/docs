@@ -95,16 +95,14 @@ When the locking method of a lock is released outside a normal unlock, Chaster a
 | `type`                               | Sent when                                                                                                       | `role`  | `payload.cause` |
 | ------------------------------------ | --------------------------------------------------------------------------------------------------------------- | ------- | --------------- |
 | `locking_method_released`            | The wearer recovers a deserted lock.                                                                            | `user`  | `recovery`      |
-| `locking_method_released_by_support` | Chaster support releases the locking method. On a locked lock, the lock is also unlocked and an `unlocked` event is added. | `admin` | `support`       |
-
-For `locking_method_released_by_support`, `user` is the Chaster staff account that released the lock.
+| `locking_method_released_by_support` | Chaster support releases the locking method. On a locked lock, the lock is also unlocked and an `unlocked` history entry is written first. | `admin` | `support`       |
 
 The `payload` has two fields:
 
 | Field               | Description                                                                                                                            |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | `cause`             | `recovery` for `locking_method_released`, `support` for `locking_method_released_by_support`.                                           |
-| `lockingMethodKind` | What the lock held: `device` when it holds a device, otherwise `combination` when it has a combination, otherwise `partner`.            |
+| `lockingMethodKind` | What the lock held: `device`: a device paired with Chaster directly. `combination`: a combination held by Chaster. `partner`: a locking provider extension holds the lock. If a lock could match several, `device` wins, then `combination`.            |
 
 The `data` of a `locking_method_released` webhook for a lock with a combination:
 
@@ -133,7 +131,7 @@ A `locking_method_released_by_support` event has the same format, with `role` se
 Each release adds one event, so deduplicate on `eventId` like any other event. If your extension is a [locking provider](/api/extensions-api/locking-providers), release the locking method on your side when you receive the event.
 
 :::info
-An extension with no subscription list, or with `["*"]`, receives both events. An extension with a list receives them only if the list names `locking_method_released` and `locking_method_released_by_support`: add them in the [manifest](/api/extensions-api/extension-communication/manifest#subscriptions) or the Webhooks tab. Both events are visible in the lock history, so they are also sent as `action_log.created`: see [Choose which events you receive](#choose-which-events-you-receive).
+An extension with no subscription list, or with `["*"]` (**Receive everything** in the Webhooks tab), receives both events. A list in the manifest, the Webhooks tab or a session cannot name them yet: ids must look like `<slug>.<name>`, so these two names are rejected. A session's own list replaces the extension setting, so a session with a list does not receive them. Both events are visible in the lock history, so they are also sent as `action_log.created` unless your extension turned that feed off: see [Choose which events you receive](#choose-which-events-you-receive).
 :::
 
 ## Read the event stream
