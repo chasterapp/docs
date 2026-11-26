@@ -5,6 +5,15 @@ sidebar_label: Changelog
 
 Changes to the Public API and the Extensions API, newest first.
 
+## 2026-11-26
+
+**New features**
+
+- Two lock event types tell your extension that a lock's locking method was released: `locking_method_released` (the wearer recovered a deserted lock) and `locking_method_released_by_support` (Chaster support released it)
+  - `payload` carries `cause` (`recovery` or `support`) and `lockingMethodKind` (`combination`, `partner` or `device`)
+  - Extensions with no subscription list, or with `["*"]`, receive them. A list cannot name them yet, so an extension with a list does not receive them
+  - Documentation: [Locking method released](/api/extensions-api/extension-communication/lock-events#locking-method-released)
+
 ## 2026-11-20
 
 **Deprecations**
